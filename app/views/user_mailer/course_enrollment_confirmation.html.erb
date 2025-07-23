@@ -1,0 +1,18 @@
+<h1>Welcome to <%= @course.title %>!</h1>
+
+<p>Hi <%= @user.name %>,</p>
+
+<p>Congratulations! You have successfully enrolled in <strong><%= @course.title %></strong>.</p>
+
+<p>Course Details:</p>
+<ul>
+  <li>Instructor: <%= @course.instructor.name %></li>
+  <li>Duration: <%= @course.duration %> hours</li>
+  <li>Total Lessons: <%= @course.lessons.count %></li>
+</ul>
+
+<p>You can start learning right away by visiting your course:</p>
+<p><%= link_to "Go to Course", @course_url %></p>
+
+<p>Happy learning!</p>
+<p>The Learning Platform Team</p>

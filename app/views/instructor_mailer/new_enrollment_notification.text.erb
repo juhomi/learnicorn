@@ -1,0 +1,16 @@
+New Student Enrollment
+
+Hi <%= @instructor.name %>,
+
+Great news! A new student has enrolled in your course <%= @course.title %>.
+
+Student Details:
+- Name: <%= @student.name %>
+- Email: <%= @student.email %>
+- Enrolled: <%= @enrollment.enrolled_at.strftime("%B %d, %Y at %I:%M %p") %>
+
+You can view your course details and track student progress:
+<%= @course_url %>
+
+Keep up the great work!
+The Learning Platform Team

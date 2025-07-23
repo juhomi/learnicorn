@@ -1,0 +1,16 @@
+Welcome to <%= @course.title %>!
+
+Hi <%= @user.name %>,
+
+Congratulations! You have successfully enrolled in <%= @course.title %>.
+
+Course Details:
+- Instructor: <%= @course.instructor.name %>
+- Duration: <%= @course.duration %> hours
+- Total Lessons: <%= @course.lessons.count %>
+
+You can start learning right away by visiting your course:
+<%= @course_url %>
+
+Happy learning!
+The Learning Platform Team
