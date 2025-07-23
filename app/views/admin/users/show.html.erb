@@ -1,0 +1,128 @@
+<% content_for :title, @user.name %>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h3><%= @user.name %></h3>
+          <span class="badge bg-<%= @user.admin? ? 'danger' : @user.instructor? ? 'warning' : 'info' %> fs-6">
+            <%= @user.role.titleize %>
+          </span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Email:</strong> <%= @user.email %></p>
+            <p><strong>Role:</strong> <%= @user.role.titleize %></p>
+            <p><strong>Created:</strong> <%= @user.created_at.strftime("%B %d, %Y") %></p>
+            <p><strong>Updated:</strong> <%= @user.updated_at.strftime("%B %d, %Y") %></p>
+          </div>
+          <div class="col-md-6">
+            <% if @user.instructor? %>
+              <p><strong>Courses Created:</strong> <%= @user.courses.count %></p>
+              <p><strong>Published Courses:</strong> <%= @user.courses.published.count %></p>
+              <p><strong>Total Students:</strong> <%= @user.courses.joins(:enrollments).count %></p>
+            <% elsif @user.student? %>
+              <p><strong>Enrolled Courses:</strong> <%= @user.enrolled_courses.count %></p>
+              <p><strong>Completed Lessons:</strong> <%= @user.lesson_completions.count %></p>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% if @user.instructor? && @user.courses.any? %>
+      <div class="card mt-4">
+        <div class="card-header">
+          <h5>Courses Created</h5>
+        </div>
+        <div class="card-body">
+          <% @user.courses.each do |course| %>
+            <div class="mb-3">
+              <h6><%= course.title %></h6>
+              <p class="text-muted"><%= course.description %></p>
+              <small class="text-muted">
+                <%= course.lessons.count %> lessons • <%= course.students.count %> students
+                <% if course.published? %>
+                  <span class="badge bg-success">Published</span>
+                <% else %>
+                  <span class="badge bg-secondary">Draft</span>
+                <% end %>
+              </small>
+            </div>
+            <hr>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @user.student? && @user.enrolled_courses.any? %>
+      <div class="card mt-4">
+        <div class="card-header">
+          <h5>Enrolled Courses</h5>
+        </div>
+        <div class="card-body">
+          <% @user.enrolled_courses.each do |course| %>
+            <div class="mb-3">
+              <h6><%= course.title %></h6>
+              <p class="text-muted">by <%= course.instructor.name %></p>
+              <div class="progress mb-2">
+                <div class="progress-bar" role="progressbar" style="width: <%= course.completion_percentage_for(@user) %>%">
+                  <%= course.completion_percentage_for(@user) %>%
+                </div>
+              </div>
+              <small class="text-muted">
+                <%= @user.lesson_completions.joins(:lesson).where(lessons: { course: course }).count %> of <%= course.lessons.count %> lessons completed
+              </small>
+            </div>
+            <hr>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>User Actions</h6>
+      </div>
+      <div class="card-body">
+        <%= link_to "Edit User", edit_admin_user_path(@user), class: "btn btn-primary btn-sm w-100 mb-2" %>
+        <%= link_to "Back to Users", admin_users_path, class: "btn btn-secondary btn-sm w-100 mb-2" %>
+        <% unless @user == current_user %>
+          <%= link_to "Delete User", admin_user_path(@user), method: :delete, 
+              confirm: "Are you sure?", class: "btn btn-danger btn-sm w-100" %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>User Statistics</h6>
+      </div>
+      <div class="card-body">
+        <% if @user.instructor? %>
+          <p><strong>Total Courses:</strong> <%= @user.courses.count %></p>
+          <p><strong>Published Courses:</strong> <%= @user.courses.published.count %></p>
+          <p><strong>Total Lessons:</strong> <%= @user.courses.joins(:lessons).count %></p>
+          <p><strong>Total Students:</strong> <%= @user.courses.joins(:enrollments).count %></p>
+        <% elsif @user.student? %>
+          <p><strong>Enrolled Courses:</strong> <%= @user.enrolled_courses.count %></p>
+          <p><strong>Completed Lessons:</strong> <%= @user.lesson_completions.count %></p>
+          <p><strong>Total Lessons:</strong> <%= @user.enrolled_courses.joins(:lessons).count %></p>
+          <% if @user.enrolled_courses.joins(:lessons).count > 0 %>
+            <p><strong>Overall Progress:</strong> 
+              <%= ((@user.lesson_completions.count.to_f / @user.enrolled_courses.joins(:lessons).count) * 100).round(1) %>%
+            </p>
+          <% end %>
+        <% elsif @user.admin? %>
+          <p><strong>Role:</strong> Administrator</p>
+          <p><strong>Full Access:</strong> Yes</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

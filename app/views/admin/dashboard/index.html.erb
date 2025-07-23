@@ -1,0 +1,108 @@
+<% content_for :title, "Admin Dashboard" %>
+
+<div class="row">
+  <div class="col-12">
+    <h1>Admin Dashboard</h1>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card text-white bg-primary">
+      <div class="card-body">
+        <h5 class="card-title">Total Users</h5>
+        <h2><%= @total_users %></h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-white bg-success">
+      <div class="card-body">
+        <h5 class="card-title">Total Courses</h5>
+        <h2><%= @total_courses %></h2>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card text-white bg-info">
+      <div class="card-body">
+        <h5 class="card-title">Total Enrollments</h5>
+        <h2><%= @total_enrollments %></h2>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5>Recent Users</h5>
+      </div>
+      <div class="card-body">
+        <% if @recent_users.any? %>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_users.each do |user| %>
+                  <tr>
+                    <td><%= link_to user.name, admin_user_path(user) %></td>
+                    <td><%= user.email %></td>
+                    <td><%= user.role.titleize %></td>
+                    <td><%= user.created_at.strftime("%m/%d/%Y") %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p>No users found.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h5>Recent Courses</h5>
+      </div>
+      <div class="card-body">
+        <% if @recent_courses.any? %>
+          <div class="table-responsive">
+            <table class="table table-sm">
+              <thead>
+                <tr>
+                  <th>Title</th>
+                  <th>Instructor</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% @recent_courses.each do |course| %>
+                  <tr>
+                    <td><%= link_to course.title, admin_course_path(course) %></td>
+                    <td><%= course.instructor.name %></td>
+                    <td><%= course.published? ? "Published" : "Draft" %></td>
+                    <td><%= course.created_at.strftime("%m/%d/%Y") %></td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        <% else %>
+          <p>No courses found.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

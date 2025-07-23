@@ -1,0 +1,95 @@
+<% content_for :title, @lesson.title %>
+
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Courses", instructor_courses_path %></li>
+        <li class="breadcrumb-item"><%= link_to @course.title, instructor_course_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to "Lessons", instructor_course_lessons_path(@course) %></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= @lesson.title %></li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3><%= @lesson.title %></h3>
+            <p class="text-muted mb-0">Lesson <%= @lesson.position %> of <%= @course.lessons.count %></p>
+          </div>
+          <div>
+            <%= link_to "Edit Lesson", edit_instructor_course_lesson_path(@course, @lesson), class: "btn btn-outline-primary" %>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <% if @lesson.video_url.present? %>
+          <div class="mb-4">
+            <h6>Video URL:</h6>
+            <p><%= @lesson.video_url %></p>
+            <div class="embed-responsive embed-responsive-16by9">
+              <iframe class="embed-responsive-item" src="<%= @lesson.video_url %>" allowfullscreen></iframe>
+            </div>
+          </div>
+        <% end %>
+        
+        <div class="lesson-content">
+          <h6>Content:</h6>
+          <p><%= simple_format(@lesson.content) %></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Lesson Information</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Position:</strong> <%= @lesson.position %></p>
+        <p><strong>Course:</strong> <%= @course.title %></p>
+        <p><strong>Created:</strong> <%= @lesson.created_at.strftime("%B %d, %Y") %></p>
+        <p><strong>Updated:</strong> <%= @lesson.updated_at.strftime("%B %d, %Y") %></p>
+        <p><strong>Has Video:</strong> <%= @lesson.video_url.present? ? "Yes" : "No" %></p>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Student Progress</h6>
+      </div>
+      <div class="card-body">
+        <% completed_students = @lesson.completed_by_users.count %>
+        <% total_students = @course.students.count %>
+        
+        <p><strong>Completed by:</strong> <%= completed_students %> of <%= total_students %> students</p>
+        
+        <% if total_students > 0 %>
+          <div class="progress">
+            <div class="progress-bar" role="progressbar" style="width: <%= (completed_students.to_f / total_students * 100).round(1) %>%">
+              <%= (completed_students.to_f / total_students * 100).round(1) %>%
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Actions</h6>
+      </div>
+      <div class="card-body">
+        <%= link_to "Edit Lesson", edit_instructor_course_lesson_path(@course, @lesson), class: "btn btn-primary btn-sm w-100 mb-2" %>
+        <%= link_to "Back to Lessons", instructor_course_lessons_path(@course), class: "btn btn-secondary btn-sm w-100 mb-2" %>
+        <%= link_to "Delete Lesson", instructor_course_lesson_path(@course, @lesson), method: :delete, 
+            confirm: "Are you sure?", class: "btn btn-danger btn-sm w-100" %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+ruby_course:
+  title: Ruby Programming
+  description: Learn Ruby programming from basics to advanced
+  duration: 40
+  instructor: instructor
+
+javascript_course:
+  title: JavaScript Fundamentals
+  description: Master JavaScript programming concepts
+  duration: 30
+  instructor: instructor

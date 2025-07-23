@@ -1,0 +1,79 @@
+<% content_for :title, "My Courses" %>
+
+<div class="row">
+  <div class="col-12">
+    <h1>My Courses</h1>
+    <p class="text-muted">Courses you're enrolled in</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <% if @enrolled_courses.any? %>
+      <% @enrolled_courses.each do |course| %>
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-8">
+                <h5 class="card-title"><%= link_to course.title, student_course_path(course), class: "text-decoration-none" %></h5>
+                <p class="card-text text-muted">by <%= course.instructor.name %></p>
+                <p class="card-text"><%= course.description %></p>
+                <small class="text-muted">Duration: <%= course.duration %> hours • <%= course.lessons.count %> lessons</small>
+              </div>
+              <div class="col-md-4">
+                <div class="text-center">
+                  <div class="progress mb-2">
+                    <div class="progress-bar" role="progressbar" style="width: <%= course.completion_percentage_for(current_user) %>%">
+                      <%= course.completion_percentage_for(current_user) %>%
+                    </div>
+                  </div>
+                  <small class="text-muted">
+                    <%= current_user.lesson_completions.joins(:lesson).where(lessons: { course: course }).count %> of <%= course.lessons.count %> lessons completed
+                  </small>
+                  <div class="mt-2">
+                    <%= link_to "Continue Learning", student_course_path(course), class: "btn btn-primary btn-sm" %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="card">
+        <div class="card-body text-center">
+          <h5>No Enrolled Courses</h5>
+          <p class="text-muted">You haven't enrolled in any courses yet.</p>
+          <%= link_to "Browse Available Courses", courses_path, class: "btn btn-primary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Available Courses</h6>
+      </div>
+      <div class="card-body">
+        <% if @available_courses.any? %>
+          <% @available_courses.first(5).each do |course| %>
+            <div class="mb-3">
+              <h6 class="mb-1"><%= link_to course.title, course_path(course), class: "text-decoration-none small" %></h6>
+              <small class="text-muted">by <%= course.instructor.name %></small>
+              <div class="mt-1">
+                <%= link_to "View Details", course_path(course), class: "btn btn-outline-primary btn-sm" %>
+              </div>
+            </div>
+            <hr>
+          <% end %>
+          <div class="text-center">
+            <%= link_to "Browse All Courses", courses_path, class: "btn btn-sm btn-primary" %>
+          </div>
+        <% else %>
+          <p class="text-muted small">No new courses available.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

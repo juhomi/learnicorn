@@ -1,0 +1,124 @@
+<% content_for :title, @course.title %>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3><%= @course.title %></h3>
+            <p class="text-muted mb-0">
+              <% if @course.published? %>
+                <span class="badge bg-success">Published</span>
+              <% else %>
+                <span class="badge bg-secondary">Draft</span>
+              <% end %>
+            </p>
+          </div>
+          <div>
+            <%= link_to "Edit Course", edit_instructor_course_path(@course), class: "btn btn-outline-primary" %>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p><%= @course.description %></p>
+        <div class="row">
+          <div class="col-md-4">
+            <strong>Duration:</strong> <%= @course.duration %> hours
+          </div>
+          <div class="col-md-4">
+            <strong>Lessons:</strong> <%= @lessons.count %>
+          </div>
+          <div class="col-md-4">
+            <strong>Students:</strong> <%= @students.count %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5 class="mb-0">Course Lessons</h5>
+          <%= link_to "Add New Lesson", new_instructor_course_lesson_path(@course), class: "btn btn-primary btn-sm" %>
+        </div>
+      </div>
+      <div class="card-body">
+        <% if @lessons.any? %>
+          <% @lessons.each do |lesson| %>
+            <div class="d-flex align-items-center mb-3">
+              <div class="me-3">
+                <span class="badge bg-secondary"><%= lesson.position %></span>
+              </div>
+              <div class="flex-grow-1">
+                <h6 class="mb-1"><%= link_to lesson.title, instructor_course_lesson_path(@course, lesson), class: "text-decoration-none" %></h6>
+                <small class="text-muted">
+                  <%= truncate(lesson.content, length: 80) %>
+                  <% if lesson.video_url.present? %>
+                    <span class="badge bg-info">📹 Video</span>
+                  <% end %>
+                </small>
+              </div>
+              <div>
+                <%= link_to "Edit", edit_instructor_course_lesson_path(@course, lesson), class: "btn btn-sm btn-outline-primary" %>
+                <%= link_to "Delete", instructor_course_lesson_path(@course, lesson), method: :delete, 
+                    confirm: "Are you sure?", class: "btn btn-sm btn-outline-danger" %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center">
+            <h6>No lessons created yet</h6>
+            <p class="text-muted">Add your first lesson to get started!</p>
+            <%= link_to "Add Lesson", new_instructor_course_lesson_path(@course), class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Course Statistics</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Total Lessons:</strong> <%= @lessons.count %></p>
+        <p><strong>Enrolled Students:</strong> <%= @students.count %></p>
+        <p><strong>Duration:</strong> <%= @course.duration %> hours</p>
+        <p><strong>Status:</strong> 
+          <% if @course.published? %>
+            <span class="badge bg-success">Published</span>
+          <% else %>
+            <span class="badge bg-secondary">Draft</span>
+          <% end %>
+        </p>
+        <p><strong>Created:</strong> <%= @course.created_at.strftime("%B %d, %Y") %></p>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Enrolled Students</h6>
+      </div>
+      <div class="card-body">
+        <% if @students.any? %>
+          <% @students.each do |student| %>
+            <div class="mb-2">
+              <strong><%= student.name %></strong>
+              <br>
+              <small class="text-muted">
+                Progress: <%= @course.completion_percentage_for(student) %>%
+                <div class="progress progress-sm mt-1">
+                  <div class="progress-bar" role="progressbar" style="width: <%= @course.completion_percentage_for(student) %>%"></div>
+                </div>
+              </small>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted">No students enrolled yet.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

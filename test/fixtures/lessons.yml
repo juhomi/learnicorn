@@ -1,0 +1,22 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+ruby_intro:
+  title: Introduction to Ruby
+  content: This lesson covers the basics of Ruby programming language
+  video_url: https://example.com/ruby-intro
+  course: ruby_course
+  position: 1
+
+ruby_variables:
+  title: Ruby Variables
+  content: Learn about variables and data types in Ruby
+  video_url: https://example.com/ruby-variables
+  course: ruby_course
+  position: 2
+
+ruby_methods:
+  title: Ruby Methods
+  content: Understanding methods and functions in Ruby
+  video_url: https://example.com/ruby-methods
+  course: ruby_course
+  position: 3

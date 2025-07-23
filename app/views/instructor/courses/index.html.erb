@@ -1,0 +1,67 @@
+<% content_for :title, "My Courses" %>
+
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>My Courses</h1>
+      <%= link_to "Create New Course", new_instructor_course_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <% if @courses.any? %>
+    <% @courses.each do |course| %>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title">
+              <%= link_to course.title, instructor_course_path(course), class: "text-decoration-none" %>
+            </h5>
+            <p class="card-text"><%= truncate(course.description, length: 100) %></p>
+            <div class="mb-2">
+              <% if course.published? %>
+                <span class="badge bg-success">Published</span>
+              <% else %>
+                <span class="badge bg-secondary">Draft</span>
+              <% end %>
+            </div>
+            <div class="row">
+              <div class="col-6">
+                <small class="text-muted">Duration: <%= course.duration %> hours</small>
+              </div>
+              <div class="col-6">
+                <small class="text-muted">Lessons: <%= course.lessons.count %></small>
+              </div>
+            </div>
+            <div class="row mt-2">
+              <div class="col-6">
+                <small class="text-muted">Students: <%= course.students.count %></small>
+              </div>
+              <div class="col-6">
+                <small class="text-muted">Created: <%= course.created_at.strftime("%m/%d/%Y") %></small>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="btn-group w-100" role="group">
+              <%= link_to "View", instructor_course_path(course), class: "btn btn-outline-primary btn-sm" %>
+              <%= link_to "Edit", edit_instructor_course_path(course), class: "btn btn-outline-secondary btn-sm" %>
+              <%= link_to "Lessons", instructor_course_lessons_path(course), class: "btn btn-outline-info btn-sm" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5>No Courses Created</h5>
+          <p class="text-muted">Create your first course to get started!</p>
+          <%= link_to "Create Course", new_instructor_course_path, class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

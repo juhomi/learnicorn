@@ -1,0 +1,143 @@
+<% content_for :title, @course.title %>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3><%= @course.title %></h3>
+            <p class="text-muted mb-0">by <%= @course.instructor.name %></p>
+          </div>
+          <div>
+            <% if @course.published? %>
+              <span class="badge bg-success fs-6">Published</span>
+            <% else %>
+              <span class="badge bg-secondary fs-6">Draft</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <p><%= @course.description %></p>
+        <div class="row">
+          <div class="col-md-4">
+            <strong>Duration:</strong> <%= @course.duration %> hours
+          </div>
+          <div class="col-md-4">
+            <strong>Lessons:</strong> <%= @course.lessons.count %>
+          </div>
+          <div class="col-md-4">
+            <strong>Students:</strong> <%= @course.students.count %>
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col-md-4">
+            <strong>Created:</strong> <%= @course.created_at.strftime("%m/%d/%Y") %>
+          </div>
+          <div class="col-md-4">
+            <strong>Updated:</strong> <%= @course.updated_at.strftime("%m/%d/%Y") %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <% if @course.lessons.any? %>
+      <div class="card mt-4">
+        <div class="card-header">
+          <h5>Course Lessons</h5>
+        </div>
+        <div class="card-body">
+          <% @course.lessons.ordered.each do |lesson| %>
+            <div class="d-flex align-items-center mb-3">
+              <div class="me-3">
+                <span class="badge bg-secondary"><%= lesson.position %></span>
+              </div>
+              <div class="flex-grow-1">
+                <h6 class="mb-1"><%= lesson.title %></h6>
+                <small class="text-muted">
+                  <%= truncate(lesson.content, length: 100) %>
+                  <% if lesson.video_url.present? %>
+                    <span class="badge bg-info">📹 Video</span>
+                  <% end %>
+                </small>
+              </div>
+              <div>
+                <small class="text-muted">
+                  <%= lesson.completed_by_users.count %> completed
+                </small>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @course.students.any? %>
+      <div class="card mt-4">
+        <div class="card-header">
+          <h5>Enrolled Students</h5>
+        </div>
+        <div class="card-body">
+          <% @course.students.each do |student| %>
+            <div class="d-flex align-items-center mb-3">
+              <div class="flex-grow-1">
+                <h6 class="mb-1"><%= student.name %></h6>
+                <small class="text-muted"><%= student.email %></small>
+              </div>
+              <div>
+                <div class="progress" style="width: 100px;">
+                  <div class="progress-bar" role="progressbar" style="width: <%= @course.completion_percentage_for(student) %>%"></div>
+                </div>
+                <small class="text-muted"><%= @course.completion_percentage_for(student) %>%</small>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Course Actions</h6>
+      </div>
+      <div class="card-body">
+        <%= link_to "Edit Course", edit_admin_course_path(@course), class: "btn btn-primary btn-sm w-100 mb-2" %>
+        <%= link_to "Back to Courses", admin_courses_path, class: "btn btn-secondary btn-sm w-100 mb-2" %>
+        <%= link_to "Delete Course", admin_course_path(@course), method: :delete, 
+            confirm: "Are you sure?", class: "btn btn-danger btn-sm w-100" %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Course Statistics</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Total Lessons:</strong> <%= @course.lessons.count %></p>
+        <p><strong>Enrolled Students:</strong> <%= @course.students.count %></p>
+        <p><strong>Total Enrollments:</strong> <%= @course.enrollments.count %></p>
+        <p><strong>Total Completions:</strong> <%= @course.lessons.joins(:lesson_completions).count %></p>
+        <% if @course.lessons.count > 0 && @course.students.count > 0 %>
+          <p><strong>Avg. Completion:</strong> 
+            <%= (@course.lessons.joins(:lesson_completions).count.to_f / (@course.lessons.count * @course.students.count) * 100).round(1) %>%
+          </p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Instructor Information</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Name:</strong> <%= @course.instructor.name %></p>
+        <p><strong>Email:</strong> <%= @course.instructor.email %></p>
+        <p><strong>Total Courses:</strong> <%= @course.instructor.courses.count %></p>
+        <p><strong>Published Courses:</strong> <%= @course.instructor.courses.published.count %></p>
+      </div>
+    </div>
+  </div>
+</div>

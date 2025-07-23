@@ -1,0 +1,55 @@
+<% content_for :title, "Browse Courses" %>
+
+<div class="row">
+  <div class="col-12">
+    <h1>Browse Courses</h1>
+    <p class="text-muted">Discover and enroll in courses</p>
+  </div>
+</div>
+
+<div class="row">
+  <% if @courses.any? %>
+    <% @courses.each do |course| %>
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="card-title"><%= link_to course.title, course_path(course), class: "text-decoration-none" %></h5>
+            <p class="card-text text-muted">by <%= course.instructor.name %></p>
+            <p class="card-text"><%= truncate(course.description, length: 100) %></p>
+            <div class="row">
+              <div class="col-6">
+                <small class="text-muted">Duration: <%= course.duration %> hours</small>
+              </div>
+              <div class="col-6">
+                <small class="text-muted">Lessons: <%= course.lessons.count %></small>
+              </div>
+            </div>
+          </div>
+          <div class="card-footer">
+            <div class="d-flex justify-content-between align-items-center">
+              <%= link_to "View Details", course_path(course), class: "btn btn-outline-primary btn-sm" %>
+              <% if current_user&.student? %>
+                <% if current_user.enrolled_courses.include?(course) %>
+                  <span class="badge bg-success">Enrolled</span>
+                <% else %>
+                  <%= form_with url: enroll_course_path(course), method: :post, local: true, class: "d-inline" do |form| %>
+                    <%= form.submit "Enroll", class: "btn btn-primary btn-sm" %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="col-12">
+      <div class="card">
+        <div class="card-body text-center">
+          <h5>No Courses Available</h5>
+          <p class="text-muted">There are no published courses at the moment.</p>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

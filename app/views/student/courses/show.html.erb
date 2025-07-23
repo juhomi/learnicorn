@@ -1,0 +1,96 @@
+<% content_for :title, @course.title %>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h3><%= @course.title %></h3>
+        <p class="text-muted mb-0">by <%= @course.instructor.name %></p>
+      </div>
+      <div class="card-body">
+        <p><%= @course.description %></p>
+        <div class="row">
+          <div class="col-md-6">
+            <small class="text-muted">Duration: <%= @course.duration %> hours</small>
+          </div>
+          <div class="col-md-6">
+            <small class="text-muted">Lessons: <%= @lessons.count %></small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5>Course Lessons</h5>
+      </div>
+      <div class="card-body">
+        <% if @lessons.any? %>
+          <% @lessons.each_with_index do |lesson, index| %>
+            <div class="d-flex align-items-center mb-3">
+              <div class="me-3">
+                <% if @completed_lessons.include?(lesson.id) %>
+                  <span class="badge bg-success">✓</span>
+                <% else %>
+                  <span class="badge bg-secondary"><%= index + 1 %></span>
+                <% end %>
+              </div>
+              <div class="flex-grow-1">
+                <h6 class="mb-1">
+                  <%= link_to lesson.title, student_course_lesson_path(@course, lesson), class: "text-decoration-none" %>
+                </h6>
+                <small class="text-muted">Lesson <%= lesson.position %></small>
+              </div>
+              <div>
+                <% if @completed_lessons.include?(lesson.id) %>
+                  <small class="text-success">Completed</small>
+                <% else %>
+                  <%= link_to "Start", student_course_lesson_path(@course, lesson), class: "btn btn-sm btn-outline-primary" %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted">No lessons available yet.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Your Progress</h6>
+      </div>
+      <div class="card-body">
+        <div class="text-center">
+          <div class="progress mb-3">
+            <div class="progress-bar" role="progressbar" style="width: <%= @completion_percentage %>%">
+              <%= @completion_percentage %>%
+            </div>
+          </div>
+          <p class="mb-2">
+            <strong><%= @completed_lessons.count %></strong> of <strong><%= @lessons.count %></strong> lessons completed
+          </p>
+          <% if @completion_percentage == 100 %>
+            <div class="alert alert-success" role="alert">
+              🎉 Congratulations! You've completed this course!
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Course Information</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Instructor:</strong> <%= @course.instructor.name %></p>
+        <p><strong>Duration:</strong> <%= @course.duration %> hours</p>
+        <p><strong>Enrolled:</strong> <%= @enrollment.enrolled_at.strftime("%B %d, %Y") %></p>
+        <p><strong>Total Lessons:</strong> <%= @lessons.count %></p>
+      </div>
+    </div>
+  </div>
+</div>

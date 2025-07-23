@@ -1,0 +1,405 @@
+<!-- Hero Section -->
+<section class="hero-section min-vh-100 d-flex align-items-center position-relative overflow-hidden" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+  <!-- Animated Background Elements -->
+  <div class="position-absolute top-0 start-0 w-100 h-100">
+    <div class="floating-element position-absolute" style="top: 10%; left: 10%; animation: float 6s ease-in-out infinite;">
+      <i class="fas fa-graduation-cap text-white opacity-25 display-1"></i>
+    </div>
+    <div class="floating-element position-absolute" style="top: 20%; right: 15%; animation: float 8s ease-in-out infinite 2s;">
+      <i class="fas fa-book text-white opacity-25 display-2"></i>
+    </div>
+    <div class="floating-element position-absolute" style="bottom: 30%; left: 20%; animation: float 7s ease-in-out infinite 4s;">
+      <i class="fas fa-lightbulb text-white opacity-25 display-3"></i>
+    </div>
+  </div>
+  
+  <div class="container position-relative">
+    <div class="row align-items-center">
+      <div class="col-lg-6 text-white">
+        <h1 class="display-1 fw-bold mb-4">
+          🦄 Learnicorn
+          <span class="d-block display-4 text-warning">Learn Without Limits</span>
+        </h1>
+        <p class="lead mb-4 fs-3">
+          The most intuitive Learning Management System that transforms how educators teach and students learn
+        </p>
+        <p class="mb-5 fs-5 text-white-75">
+          Join thousands of educators and learners worldwide in creating meaningful educational experiences
+        </p>
+        
+        <!-- CTA Buttons -->
+        <div class="d-flex flex-column flex-sm-row gap-3 mb-5">
+          <%= link_to "Start Learning Today", signup_path, class: "btn btn-warning btn-lg px-5 py-3 fw-bold" %>
+          <%= link_to "Sign In", login_path, class: "btn btn-outline-light btn-lg px-5 py-3 fw-bold" %>
+          <%= link_to "Learn More", marketing_path, class: "btn btn-outline-warning btn-lg px-5 py-3 fw-bold" %>
+        </div>
+        
+        <!-- Stats -->
+        <div class="row g-4 mt-4">
+          <div class="col-4 text-center">
+            <div class="h2 fw-bold text-warning mb-1"><%= @total_courses %>+</div>
+            <small class="text-white-75">Active Courses</small>
+          </div>
+          <div class="col-4 text-center">
+            <div class="h2 fw-bold text-warning mb-1"><%= @total_students %>+</div>
+            <small class="text-white-75">Happy Students</small>
+          </div>
+          <div class="col-4 text-center">
+            <div class="h2 fw-bold text-warning mb-1"><%= @total_instructors %>+</div>
+            <small class="text-white-75">Expert Instructors</small>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-6 text-center">
+        <div class="position-relative">
+          <!-- Mock Dashboard Preview -->
+          <div class="bg-white rounded-3 shadow-lg p-4 mb-4" style="transform: rotate(-5deg);">
+            <div class="d-flex align-items-center mb-3">
+              <div class="bg-primary rounded-circle p-2 me-3">
+                <i class="fas fa-chart-line text-white"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Learning Progress</h6>
+                <small class="text-muted">Track your achievements</small>
+              </div>
+            </div>
+            <div class="progress mb-2" style="height: 10px;">
+              <div class="progress-bar bg-success" style="width: 75%"></div>
+            </div>
+            <small class="text-muted">75% Complete - Keep going!</small>
+          </div>
+          
+          <div class="bg-white rounded-3 shadow-lg p-4" style="transform: rotate(5deg); margin-top: -20px;">
+            <div class="d-flex align-items-center mb-3">
+              <div class="bg-success rounded-circle p-2 me-3">
+                <i class="fas fa-trophy text-white"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Achievement Unlocked!</h6>
+                <small class="text-muted">Course completion badge</small>
+              </div>
+            </div>
+            <div class="text-center">
+              <i class="fas fa-medal text-warning h1"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-lg-8 mx-auto">
+        <h2 class="display-4 fw-bold mb-4">Why Choose Learnicorn?</h2>
+        <p class="lead text-muted">Everything you need to create, manage, and deliver exceptional learning experiences</p>
+      </div>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body text-center p-4">
+            <div class="bg-primary bg-gradient rounded-circle p-3 d-inline-flex mb-4">
+              <i class="fas fa-graduation-cap text-white h2 mb-0"></i>
+            </div>
+            <h5 class="fw-bold mb-3">For Students</h5>
+            <p class="text-muted mb-4">Access courses anytime, anywhere. Track your progress and achieve your learning goals with our intuitive interface.</p>
+            <ul class="list-unstyled text-start">
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Interactive course content</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Progress tracking</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Achievement badges</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Mobile-friendly design</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body text-center p-4">
+            <div class="bg-success bg-gradient rounded-circle p-3 d-inline-flex mb-4">
+              <i class="fas fa-chalkboard-teacher text-white h2 mb-0"></i>
+            </div>
+            <h5 class="fw-bold mb-3">For Instructors</h5>
+            <p class="text-muted mb-4">Create engaging courses, manage students, and track their progress with powerful teaching tools.</p>
+            <ul class="list-unstyled text-start">
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Course creation tools</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Student management</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Analytics dashboard</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Assignment grading</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm hover-lift">
+          <div class="card-body text-center p-4">
+            <div class="bg-warning bg-gradient rounded-circle p-3 d-inline-flex mb-4">
+              <i class="fas fa-cogs text-white h2 mb-0"></i>
+            </div>
+            <h5 class="fw-bold mb-3">For Administrators</h5>
+            <p class="text-muted mb-4">Complete control over your learning platform with comprehensive admin tools and analytics.</p>
+            <ul class="list-unstyled text-start">
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>User management</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Course oversight</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>Detailed reporting</li>
+              <li class="mb-2"><i class="fas fa-check text-success me-2"></i>System configuration</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-lg-8 mx-auto">
+        <h2 class="display-4 fw-bold mb-4">How It Works</h2>
+        <p class="lead text-muted">Get started with Learnicorn in three simple steps</p>
+      </div>
+    </div>
+    
+    <div class="row g-4 align-items-center">
+      <div class="col-lg-4 text-center">
+        <div class="position-relative">
+          <div class="bg-primary bg-gradient rounded-circle p-4 d-inline-flex mb-4" style="width: 100px; height: 100px;">
+            <span class="text-white fw-bold h1 m-auto">1</span>
+          </div>
+          <h4 class="fw-bold mb-3">Sign Up</h4>
+          <p class="text-muted">Create your account as a student or instructor. It's free and takes less than a minute.</p>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 text-center">
+        <div class="position-relative">
+          <div class="bg-success bg-gradient rounded-circle p-4 d-inline-flex mb-4" style="width: 100px; height: 100px;">
+            <span class="text-white fw-bold h1 m-auto">2</span>
+          </div>
+          <h4 class="fw-bold mb-3">Explore & Learn</h4>
+          <p class="text-muted">Browse courses, enroll in subjects that interest you, or create your own course content.</p>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 text-center">
+        <div class="position-relative">
+          <div class="bg-warning bg-gradient rounded-circle p-4 d-inline-flex mb-4" style="width: 100px; height: 100px;">
+            <span class="text-white fw-bold h1 m-auto">3</span>
+          </div>
+          <h4 class="fw-bold mb-3">Achieve Goals</h4>
+          <p class="text-muted">Complete courses, track your progress, and earn achievements as you master new skills.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="row text-center mb-5">
+      <div class="col-lg-8 mx-auto">
+        <h2 class="display-4 fw-bold mb-4">What Our Users Say</h2>
+        <p class="lead text-muted">Join thousands of satisfied learners and educators</p>
+      </div>
+    </div>
+    
+    <div class="row g-4">
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex mb-3">
+              <% 5.times do %>
+                <i class="fas fa-star text-warning me-1"></i>
+              <% end %>
+            </div>
+            <p class="mb-4">"Learnicorn has revolutionized how I teach my students. The progress tracking and engagement tools are fantastic!"</p>
+            <div class="d-flex align-items-center">
+              <div class="bg-primary rounded-circle p-2 me-3">
+                <i class="fas fa-user text-white"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Sarah Johnson</h6>
+                <small class="text-muted">Math Instructor</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex mb-3">
+              <% 5.times do %>
+                <i class="fas fa-star text-warning me-1"></i>
+              <% end %>
+            </div>
+            <p class="mb-4">"As a student, I love how easy it is to track my progress and stay motivated. The interface is so intuitive!"</p>
+            <div class="d-flex align-items-center">
+              <div class="bg-success rounded-circle p-2 me-3">
+                <i class="fas fa-user text-white"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Michael Chen</h6>
+                <small class="text-muted">Computer Science Student</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-lg-4">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex mb-3">
+              <% 5.times do %>
+                <i class="fas fa-star text-warning me-1"></i>
+              <% end %>
+            </div>
+            <p class="mb-4">"Managing our entire learning platform has never been easier. The admin tools are comprehensive yet simple to use."</p>
+            <div class="d-flex align-items-center">
+              <div class="bg-warning rounded-circle p-2 me-3">
+                <i class="fas fa-user text-white"></i>
+              </div>
+              <div>
+                <h6 class="mb-0">Emily Rodriguez</h6>
+                <small class="text-muted">Education Administrator</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5 bg-primary text-white">
+  <div class="container">
+    <div class="row text-center">
+      <div class="col-lg-8 mx-auto">
+        <h2 class="display-4 fw-bold mb-4">Ready to Transform Your Learning?</h2>
+        <p class="lead mb-5">Join the Learnicorn community today and experience the future of education</p>
+        
+        <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+          <%= link_to "Get Started - It's Free!", signup_path, class: "btn btn-warning btn-lg px-5 py-3 fw-bold" %>
+          <%= link_to "Already a member? Sign In", login_path, class: "btn btn-outline-light btn-lg px-5 py-3 fw-bold" %>
+        </div>
+        
+        <p class="mt-4 text-white-75">
+          <i class="fas fa-shield-alt me-2"></i>
+          No credit card required • Free to get started • Cancel anytime
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-dark text-white py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-4 mb-4">
+        <h4 class="fw-bold mb-4">🦄 Learnicorn</h4>
+        <p class="text-white-75 mb-4">The most intuitive Learning Management System that transforms how educators teach and students learn.</p>
+        <div class="d-flex gap-3">
+          <a href="#" class="text-white-75 hover-text-white"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="text-white-75 hover-text-white"><i class="fab fa-twitter"></i></a>
+          <a href="#" class="text-white-75 hover-text-white"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" class="text-white-75 hover-text-white"><i class="fab fa-instagram"></i></a>
+        </div>
+      </div>
+      
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h6 class="fw-bold mb-3">Product</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><%= link_to "Features", marketing_path, class: "text-white-75 text-decoration-none hover-text-white" %></li>
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Pricing</a></li>
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Demo</a></li>
+        </ul>
+      </div>
+      
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h6 class="fw-bold mb-3">Support</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Help Center</a></li>
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Contact Us</a></li>
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Documentation</a></li>
+        </ul>
+      </div>
+      
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h6 class="fw-bold mb-3">Company</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">About</a></li>
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Blog</a></li>
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Careers</a></li>
+        </ul>
+      </div>
+      
+      <div class="col-lg-2 col-md-6 mb-4">
+        <h6 class="fw-bold mb-3">Legal</h6>
+        <ul class="list-unstyled">
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Privacy</a></li>
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Terms</a></li>
+          <li class="mb-2"><a href="#" class="text-white-75 text-decoration-none hover-text-white">Security</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <hr class="my-4 border-white-25">
+    
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <p class="mb-0 text-white-75">&copy; 2024 Learnicorn. All rights reserved.</p>
+      </div>
+      <div class="col-md-6 text-md-end">
+        <p class="mb-0 text-white-75">Made with ❤️ for educators and learners worldwide</p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Custom Styles -->
+<style>
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+  }
+  
+  .hover-lift {
+    transition: transform 0.3s ease;
+  }
+  
+  .hover-lift:hover {
+    transform: translateY(-5px);
+  }
+  
+  .hover-text-white:hover {
+    color: white !important;
+  }
+  
+  .text-white-75 {
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  
+  .text-white-50 {
+    color: rgba(255, 255, 255, 0.5) !important;
+  }
+  
+  .border-white-25 {
+    border-color: rgba(255, 255, 255, 0.25) !important;
+  }
+</style>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">

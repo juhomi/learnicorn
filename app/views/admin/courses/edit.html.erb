@@ -1,0 +1,62 @@
+<% content_for :title, "Edit Course" %>
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h3>Edit Course</h3>
+      </div>
+      <div class="card-body">
+        <%= form_with model: @course, url: admin_course_path(@course), local: true do |form| %>
+          <% if @course.errors.any? %>
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                <% @course.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= form.label :title, class: "form-label" %>
+            <%= form.text_field :title, class: "form-control", required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :description, class: "form-label" %>
+            <%= form.text_area :description, class: "form-control", rows: 4, required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :duration, "Duration (hours)", class: "form-label" %>
+            <%= form.number_field :duration, class: "form-control", min: 1, required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :instructor_id, "Instructor", class: "form-label" %>
+            <%= form.select :instructor_id, options_from_collection_for_select(@instructors, :id, :name, @course.instructor_id), 
+                {}, { class: "form-select", required: true } %>
+          </div>
+
+          <div class="mb-3">
+            <div class="form-check">
+              <%= form.check_box :published, class: "form-check-input" %>
+              <%= form.label :published, "Publish this course", class: "form-check-label" %>
+              <small class="form-text text-muted">Published courses are visible to students.</small>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <%= link_to "Cancel", admin_course_path(@course), class: "btn btn-secondary" %>
+            <div>
+              <%= form.submit "Update Course", class: "btn btn-primary" %>
+              <%= link_to "Delete Course", admin_course_path(@course), method: :delete, 
+                  confirm: "Are you sure?", class: "btn btn-danger" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

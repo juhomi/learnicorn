@@ -1,0 +1,70 @@
+<% content_for :title, "#{@course.title} - Lessons" %>
+
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Courses", instructor_courses_path %></li>
+        <li class="breadcrumb-item"><%= link_to @course.title, instructor_course_path(@course) %></li>
+        <li class="breadcrumb-item active" aria-current="page">Lessons</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>Lessons for "<%= @course.title %>"</h1>
+      <%= link_to "Add New Lesson", new_instructor_course_lesson_path(@course), class: "btn btn-primary" %>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <% if @lessons.any? %>
+          <% @lessons.each do |lesson| %>
+            <div class="card mb-3">
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-8">
+                    <div class="d-flex align-items-center">
+                      <span class="badge bg-secondary me-3"><%= lesson.position %></span>
+                      <div>
+                        <h5 class="mb-1"><%= link_to lesson.title, instructor_course_lesson_path(@course, lesson), class: "text-decoration-none" %></h5>
+                        <p class="text-muted mb-1"><%= truncate(lesson.content, length: 150) %></p>
+                        <small class="text-muted">
+                          <% if lesson.video_url.present? %>
+                            <span class="badge bg-info">📹 Video</span>
+                          <% end %>
+                          Created: <%= lesson.created_at.strftime("%m/%d/%Y") %>
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-4 text-end">
+                    <div class="btn-group" role="group">
+                      <%= link_to "View", instructor_course_lesson_path(@course, lesson), class: "btn btn-outline-primary btn-sm" %>
+                      <%= link_to "Edit", edit_instructor_course_lesson_path(@course, lesson), class: "btn btn-outline-secondary btn-sm" %>
+                      <%= link_to "Delete", instructor_course_lesson_path(@course, lesson), method: :delete, 
+                          confirm: "Are you sure?", class: "btn btn-outline-danger btn-sm" %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center">
+            <h5>No lessons created yet</h5>
+            <p class="text-muted">Add your first lesson to get started!</p>
+            <%= link_to "Add Lesson", new_instructor_course_lesson_path(@course), class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,58 @@
+<% content_for :title, "Create New User" %>
+
+<div class="row justify-content-center">
+  <div class="col-md-6">
+    <div class="card">
+      <div class="card-header">
+        <h3>Create New User</h3>
+      </div>
+      <div class="card-body">
+        <%= form_with model: @user, url: admin_users_path, local: true do |form| %>
+          <% if @user.errors.any? %>
+            <div class="alert alert-danger">
+              <ul class="mb-0">
+                <% @user.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+
+          <div class="mb-3">
+            <%= form.label :name, class: "form-label" %>
+            <%= form.text_field :name, class: "form-control", required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :email, class: "form-label" %>
+            <%= form.email_field :email, class: "form-control", required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :password, class: "form-label" %>
+            <%= form.password_field :password, class: "form-control", required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :password_confirmation, class: "form-label" %>
+            <%= form.password_field :password_confirmation, class: "form-control", required: true %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :role, class: "form-label" %>
+            <%= form.select :role, options_for_select([
+              ['Student', 'student'],
+              ['Instructor', 'instructor'],
+              ['Admin', 'admin']
+            ], @user.role), { prompt: 'Select role' }, { class: "form-select", required: true } %>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <%= link_to "Cancel", admin_users_path, class: "btn btn-secondary" %>
+            <%= form.submit "Create User", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

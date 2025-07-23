@@ -1,0 +1,123 @@
+<% content_for :title, @lesson.title %>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><%= link_to "Courses", courses_path %></li>
+            <li class="breadcrumb-item"><%= link_to @course.title, course_path(@course) %></li>
+            <li class="breadcrumb-item active" aria-current="page"><%= @lesson.title %></li>
+          </ol>
+        </nav>
+      </div>
+      <div class="card-body">
+        <h3><%= @lesson.title %></h3>
+        <p class="text-muted">Lesson <%= @lesson.position %> of <%= @course.lessons.count %></p>
+        
+        <% if @lesson.video_url.present? %>
+          <div class="mb-4">
+            <div class="ratio ratio-16x9">
+              <iframe src="<%= @lesson.video_url %>" allowfullscreen></iframe>
+            </div>
+          </div>
+        <% end %>
+        
+        <div class="lesson-content">
+          <%= simple_format(@lesson.content) %>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <% if @previous_lesson %>
+              <%= link_to "← Previous: #{@previous_lesson.title}", course_lesson_path(@course, @previous_lesson), class: "btn btn-outline-secondary" %>
+            <% end %>
+          </div>
+          <div class="text-center">
+            <% if current_user&.student? %>
+              <% if @is_completed %>
+                <span class="badge bg-success fs-6">✓ Completed</span>
+              <% else %>
+                <%= link_to "Mark as Complete", complete_course_lesson_path(@course, @lesson), method: :post, class: "btn btn-success" %>
+              <% end %>
+            <% end %>
+          </div>
+          <div>
+            <% if @next_lesson %>
+              <%= link_to "Next: #{@next_lesson.title} →", course_lesson_path(@course, @next_lesson), class: "btn btn-primary" %>
+            <% else %>
+              <%= link_to "Back to Course", course_path(@course), class: "btn btn-outline-primary" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Course Progress</h6>
+      </div>
+      <div class="card-body">
+        <% if current_user&.student? %>
+          <div class="progress mb-3">
+            <div class="progress-bar" role="progressbar" style="width: <%= @course.completion_percentage_for(current_user) %>%">
+              <%= @course.completion_percentage_for(current_user) %>%
+            </div>
+          </div>
+          <p class="text-center text-muted">
+            <%= current_user.lesson_completions.joins(:lesson).where(lessons: { course: @course }).count %> of <%= @course.lessons.count %> lessons completed
+          </p>
+        <% else %>
+          <p class="text-muted text-center">Login as a student to track your progress</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>All Lessons</h6>
+      </div>
+      <div class="card-body">
+        <% @course.lessons.ordered.each do |lesson| %>
+          <div class="d-flex align-items-center mb-2">
+            <div class="me-2">
+              <% if current_user&.student? && lesson.completed_by?(current_user) %>
+                <span class="badge bg-success">✓</span>
+              <% elsif lesson == @lesson %>
+                <span class="badge bg-primary">●</span>
+              <% else %>
+                <span class="badge bg-secondary"><%= lesson.position %></span>
+              <% end %>
+            </div>
+            <div class="flex-grow-1">
+              <% if lesson == @lesson %>
+                <strong><%= lesson.title %></strong>
+              <% else %>
+                <%= link_to lesson.title, course_lesson_path(@course, lesson), class: "text-decoration-none small" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Course Information</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Course:</strong> <%= @course.title %></p>
+        <p><strong>Instructor:</strong> <%= @course.instructor.name %></p>
+        <p><strong>Duration:</strong> <%= @course.duration %> hours</p>
+        <p><strong>Total Lessons:</strong> <%= @course.lessons.count %></p>
+      </div>
+    </div>
+  </div>
+</div>

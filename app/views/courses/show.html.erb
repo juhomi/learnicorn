@@ -1,0 +1,116 @@
+<% content_for :title, @course.title %>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h2><%= @course.title %></h2>
+        <p class="text-muted mb-0">by <%= @course.instructor.name %></p>
+      </div>
+      <div class="card-body">
+        <p class="lead"><%= @course.description %></p>
+        <div class="row">
+          <div class="col-md-4">
+            <strong>Duration:</strong> <%= @course.duration %> hours
+          </div>
+          <div class="col-md-4">
+            <strong>Lessons:</strong> <%= @lessons.count %>
+          </div>
+          <div class="col-md-4">
+            <strong>Students:</strong> <%= @course.students.count %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-4">
+      <div class="card-header">
+        <h5>Course Curriculum</h5>
+      </div>
+      <div class="card-body">
+        <% if @lessons.any? %>
+          <% @lessons.each_with_index do |lesson, index| %>
+            <div class="d-flex align-items-center mb-3">
+              <div class="me-3">
+                <span class="badge bg-secondary"><%= index + 1 %></span>
+              </div>
+              <div class="flex-grow-1">
+                <h6 class="mb-1"><%= lesson.title %></h6>
+                <small class="text-muted">Lesson <%= lesson.position %></small>
+              </div>
+              <div>
+                <% if @is_enrolled %>
+                  <%= link_to "View", course_lesson_path(@course, lesson), class: "btn btn-sm btn-outline-primary" %>
+                <% else %>
+                  <span class="text-muted">🔒</span>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <p class="text-muted">No lessons available yet.</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Course Actions</h6>
+      </div>
+      <div class="card-body">
+        <% if current_user %>
+          <% if current_user.student? %>
+            <% if @is_enrolled %>
+              <div class="alert alert-success" role="alert">
+                ✓ You are enrolled in this course
+              </div>
+              <%= link_to "Go to Course", student_course_path(@course), class: "btn btn-primary w-100" %>
+            <% elsif @can_enroll %>
+              <%= form_with url: enroll_course_path(@course), method: :post, local: true do |form| %>
+                <%= form.submit "Enroll in Course", class: "btn btn-primary w-100" %>
+              <% end %>
+            <% else %>
+              <div class="alert alert-info" role="alert">
+                Only students can enroll in courses
+              </div>
+            <% end %>
+          <% else %>
+            <div class="alert alert-info" role="alert">
+              You are logged in as <%= current_user.role.titleize %>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="alert alert-warning" role="alert">
+            Please log in to enroll in this course
+          </div>
+          <%= link_to "Login", login_path, class: "btn btn-primary w-100" %>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Course Information</h6>
+      </div>
+      <div class="card-body">
+        <p><strong>Instructor:</strong> <%= @course.instructor.name %></p>
+        <p><strong>Duration:</strong> <%= @course.duration %> hours</p>
+        <p><strong>Total Lessons:</strong> <%= @lessons.count %></p>
+        <p><strong>Enrolled Students:</strong> <%= @course.students.count %></p>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>About the Instructor</h6>
+      </div>
+      <div class="card-body">
+        <h6><%= @course.instructor.name %></h6>
+        <p class="text-muted">Course Instructor</p>
+        <p><strong>Total Courses:</strong> <%= @course.instructor.courses.published.count %></p>
+      </div>
+    </div>
+  </div>
+</div>

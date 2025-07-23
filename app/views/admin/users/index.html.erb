@@ -1,0 +1,66 @@
+<% content_for :title, "Manage Users" %>
+
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>Manage Users</h1>
+      <%= link_to "Add New User", new_admin_user_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Courses</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @users.each do |user| %>
+                <tr>
+                  <td><%= link_to user.name, admin_user_path(user), class: "text-decoration-none" %></td>
+                  <td><%= user.email %></td>
+                  <td>
+                    <span class="badge bg-<%= user.admin? ? 'danger' : user.instructor? ? 'warning' : 'info' %>">
+                      <%= user.role.titleize %>
+                    </span>
+                  </td>
+                  <td>
+                    <% if user.instructor? %>
+                      <%= user.courses.count %> created
+                    <% elsif user.student? %>
+                      <%= user.enrolled_courses.count %> enrolled
+                    <% else %>
+                      -
+                    <% end %>
+                  </td>
+                  <td><%= user.created_at.strftime("%m/%d/%Y") %></td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <%= link_to "View", admin_user_path(user), class: "btn btn-outline-primary btn-sm" %>
+                      <%= link_to "Edit", edit_admin_user_path(user), class: "btn btn-outline-secondary btn-sm" %>
+                      <% unless user == current_user %>
+                        <%= link_to "Delete", admin_user_path(user), method: :delete, 
+                            confirm: "Are you sure?", class: "btn btn-outline-danger btn-sm" %>
+                      <% end %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

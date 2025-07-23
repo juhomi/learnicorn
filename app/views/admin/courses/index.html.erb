@@ -1,0 +1,60 @@
+<% content_for :title, "Manage Courses" %>
+
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1>Manage Courses</h1>
+      <%= link_to "Add New Course", new_admin_course_path, class: "btn btn-primary" %>
+    </div>
+  </div>
+</div>
+
+<div class="row mt-3">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Instructor</th>
+                <th>Status</th>
+                <th>Students</th>
+                <th>Lessons</th>
+                <th>Created</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @courses.each do |course| %>
+                <tr>
+                  <td><%= link_to course.title, admin_course_path(course), class: "text-decoration-none" %></td>
+                  <td><%= course.instructor.name %></td>
+                  <td>
+                    <% if course.published? %>
+                      <span class="badge bg-success">Published</span>
+                    <% else %>
+                      <span class="badge bg-secondary">Draft</span>
+                    <% end %>
+                  </td>
+                  <td><%= course.students.count %></td>
+                  <td><%= course.lessons.count %></td>
+                  <td><%= course.created_at.strftime("%m/%d/%Y") %></td>
+                  <td>
+                    <div class="btn-group" role="group">
+                      <%= link_to "View", admin_course_path(course), class: "btn btn-outline-primary btn-sm" %>
+                      <%= link_to "Edit", edit_admin_course_path(course), class: "btn btn-outline-secondary btn-sm" %>
+                      <%= link_to "Delete", admin_course_path(course), method: :delete, 
+                          confirm: "Are you sure?", class: "btn btn-outline-danger btn-sm" %>
+                    </div>
+                  </td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

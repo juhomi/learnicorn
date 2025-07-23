@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+admin:
+  name: Admin User
+  email: admin@example.com
+  password_digest: password
+  role: admin
+
+instructor:
+  name: John Instructor
+  email: instructor@example.com
+  password_digest: password
+  role: instructor
+
+student:
+  name: Jane Student
+  email: student@example.com
+  password_digest: password
+  role: student

@@ -1,0 +1,179 @@
+<!-- Marketing Hero Section -->
+<section class="hero-section min-vh-100 d-flex align-items-center position-relative overflow-hidden" style="background: linear-gradient(135deg, #6b5b95 0%, #88619a 100%);">
+  <div class="container position-relative">
+    <div class="row">
+      <div class="col-12 text-center text-white">
+        <!-- Logo and Main Title -->
+        <div class="mb-5">
+          <div class="d-flex justify-content-center align-items-center mb-4">
+            <div class="unicorn-logo me-3" style="font-size: 4rem;">🦄</div>
+            <h1 class="display-1 fw-bold mb-0">Learnicorn</h1>
+          </div>
+          <p class="lead fs-3 mb-5">Simple, powerful learning management system connecting instructors and students</p>
+        </div>
+        
+        <!-- Two Column Layout -->
+        <div class="row g-4 mt-5">
+          <!-- For Instructors -->
+          <div class="col-lg-6">
+            <div class="instructor-card bg-white bg-opacity-10 backdrop-blur rounded-4 p-5 h-100 text-start">
+              <div class="d-flex align-items-center mb-4">
+                <div class="icon-wrapper me-3" style="font-size: 3rem;">👨‍🏫</div>
+                <h2 class="h1 fw-bold mb-0">For Instructors</h2>
+              </div>
+              <p class="lead mb-4">Everything you need to create and manage successful online courses</p>
+              
+              <!-- Features List -->
+              <div class="features-list">
+                <div class="feature-item mb-4 p-3 bg-white bg-opacity-10 rounded-3">
+                  <div class="d-flex align-items-center">
+                    <div class="feature-icon me-3" style="font-size: 2rem;">🎯</div>
+                    <div>
+                      <h5 class="fw-bold mb-1">Easy Course Creation</h5>
+                      <p class="mb-0 text-white-75">Intuitive drag-and-drop course builder. Create engaging lessons with multimedia content in minutes, not hours.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="feature-item mb-4 p-3 bg-white bg-opacity-10 rounded-3">
+                  <div class="d-flex align-items-center">
+                    <div class="feature-icon me-3" style="font-size: 2rem;">📊</div>
+                    <div>
+                      <h5 class="fw-bold mb-1">Student Analytics & Tracking</h5>
+                      <p class="mb-0 text-white-75">Real-time insights into student progress, engagement rates, completion statistics, and detailed performance analytics.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="feature-item mb-4 p-3 bg-white bg-opacity-10 rounded-3">
+                  <div class="d-flex align-items-center">
+                    <div class="feature-icon me-3" style="font-size: 2rem;">💰</div>
+                    <div>
+                      <h5 class="fw-bold mb-1">Monetize Your Expertise</h5>
+                      <p class="mb-0 text-white-75">Built-in payment processing, enrollment management, and pricing tools to turn your knowledge into income.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- For Students -->
+          <div class="col-lg-6">
+            <div class="student-card bg-white bg-opacity-10 backdrop-blur rounded-4 p-5 h-100 text-start">
+              <div class="d-flex align-items-center mb-4">
+                <div class="icon-wrapper me-3" style="font-size: 3rem;">👨‍🎓</div>
+                <h2 class="h1 fw-bold mb-0">For Students</h2>
+              </div>
+              <p class="lead mb-4">Learn effectively with tools designed for your educational success</p>
+              
+              <!-- Features List -->
+              <div class="features-list">
+                <div class="feature-item mb-4 p-3 bg-white bg-opacity-10 rounded-3">
+                  <div class="d-flex align-items-center">
+                    <div class="feature-icon me-3" style="font-size: 2rem;">🚀</div>
+                    <div>
+                      <h5 class="fw-bold mb-1">Simple One-Click Enrollment</h5>
+                      <p class="mb-0 text-white-75">Instant access to courses with seamless enrollment process. Start learning immediately after purchase.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="feature-item mb-4 p-3 bg-white bg-opacity-10 rounded-3">
+                  <div class="d-flex align-items-center">
+                    <div class="feature-icon me-3" style="font-size: 2rem;">⏰</div>
+                    <div>
+                      <h5 class="fw-bold mb-1">Learn at Your Own Pace</h5>
+                      <p class="mb-0 text-white-75">Self-paced learning with flexible scheduling. Study when it works for you with comprehensive progress tracking.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="feature-item mb-4 p-3 bg-white bg-opacity-10 rounded-3">
+                  <div class="d-flex align-items-center">
+                    <div class="feature-icon me-3" style="font-size: 2rem;">🏆</div>
+                    <div>
+                      <h5 class="fw-bold mb-1">Professional Certificates</h5>
+                      <p class="mb-0 text-white-75">Earn verifiable, industry-recognized certificates upon completion. Share achievements on LinkedIn and resumes.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- CTA Section -->
+        <div class="cta-section mt-5 pt-5">
+          <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+              <%= link_to "Get Started Today", signup_path, class: "btn btn-warning btn-lg px-5 py-3 fw-bold me-3 mb-3" %>
+              <%= link_to "Sign In", login_path, class: "btn btn-outline-light btn-lg px-5 py-3 fw-bold mb-3" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+  .backdrop-blur {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+  }
+  
+  .text-white-75 {
+    color: rgba(255, 255, 255, 0.75) !important;
+  }
+  
+  .feature-item {
+    transition: all 0.3s ease;
+  }
+  
+  .feature-item:hover {
+    transform: translateY(-3px);
+    background: rgba(255, 255, 255, 0.15) !important;
+  }
+  
+  .instructor-card, .student-card {
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .instructor-card:hover, .student-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  }
+  
+  .btn-warning {
+    background: linear-gradient(45deg, #ffc107, #ff9800);
+    border: none;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+  }
+  
+  .btn-warning:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.4);
+  }
+  
+  .btn-outline-light:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
+  }
+  
+  @media (max-width: 768px) {
+    .display-1 {
+      font-size: 3rem;
+    }
+    
+    .feature-item {
+      margin-bottom: 1rem !important;
+    }
+    
+    .instructor-card, .student-card {
+      padding: 2rem !important;
+    }
+  }
+</style>
