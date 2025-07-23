@@ -66,13 +66,13 @@ class EnrollmentTest < ActiveSupport::TestCase
   end
 
   test "should belong to user" do
-    enrollment = enrollments(:student_ruby_enrollment)
+    enrollment = Enrollment.create!(user: users(:student), course: courses(:ruby_course))
     assert_respond_to enrollment, :user
     assert_kind_of User, enrollment.user
   end
 
   test "should belong to course" do
-    enrollment = enrollments(:student_ruby_enrollment)
+    enrollment = Enrollment.create!(user: users(:student), course: courses(:ruby_course))
     assert_respond_to enrollment, :course
     assert_kind_of Course, enrollment.course
   end

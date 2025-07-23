@@ -49,7 +49,7 @@ class UserTest < ActiveSupport::TestCase
   end
 
   test "should require role" do
-    user = User.new(name: "John Doe", email: "john@example.com", password: "password123")
+    user = User.new(name: "John Doe", email: "john@example.com", password: "password123", role: nil)
     assert_not user.valid?
     assert_includes user.errors[:role], "can't be blank"
   end
@@ -190,6 +190,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "should destroy associated enrollments when user is deleted" do
     student = users(:student)
+    # Create an enrollment
+    Enrollment.create!(user: student, course: courses(:ruby_course))
     enrollment_count = student.enrollments.count
     assert enrollment_count > 0
     student.destroy
@@ -198,6 +200,8 @@ class UserTest < ActiveSupport::TestCase
 
   test "should destroy associated lesson_completions when user is deleted" do
     student = users(:student)
+    # Create a lesson completion
+    LessonCompletion.create!(user: student, lesson: lessons(:ruby_intro))
     completion_count = student.lesson_completions.count
     assert completion_count > 0
     student.destroy

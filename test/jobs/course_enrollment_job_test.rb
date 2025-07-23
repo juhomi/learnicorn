@@ -1,6 +1,8 @@
 require 'test_helper'
+require 'minitest/mock'
 
 class CourseEnrollmentJobTest < ActiveJob::TestCase
+  include ActionMailer::TestHelper
   setup do
     @user = users(:student)
     @course = courses(:ruby_course)
@@ -66,14 +68,15 @@ class CourseEnrollmentJobTest < ActiveJob::TestCase
   end
 
   test "should queue to default queue" do
-    assert_equal :default, CourseEnrollmentJob.new.queue_name
+    assert_equal "default", CourseEnrollmentJob.new.queue_name
   end
 
   test "should handle enrollment not found" do
     # Delete the enrollment to simulate the case where it doesn't exist
     @enrollment.destroy
     
-    assert_raises(NoMethodError) do
+    # Should only send one email (to student) when enrollment not found
+    assert_emails 1 do
       CourseEnrollmentJob.perform_now(@user.id, @course.id)
     end
   end

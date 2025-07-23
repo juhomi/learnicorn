@@ -152,6 +152,8 @@ class CourseTest < ActiveSupport::TestCase
 
   test "should destroy associated enrollments when course is deleted" do
     course = courses(:ruby_course)
+    # Create an enrollment
+    Enrollment.create!(user: users(:student), course: course)
     enrollment_count = course.enrollments.count
     assert enrollment_count > 0
     course.destroy

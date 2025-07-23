@@ -66,13 +66,13 @@ class LessonCompletionTest < ActiveSupport::TestCase
   end
 
   test "should belong to user" do
-    lesson_completion = lesson_completions(:student_ruby_intro_completion)
+    lesson_completion = LessonCompletion.create!(user: users(:student), lesson: lessons(:ruby_intro))
     assert_respond_to lesson_completion, :user
     assert_kind_of User, lesson_completion.user
   end
 
   test "should belong to lesson" do
-    lesson_completion = lesson_completions(:student_ruby_intro_completion)
+    lesson_completion = LessonCompletion.create!(user: users(:student), lesson: lessons(:ruby_intro))
     assert_respond_to lesson_completion, :lesson
     assert_kind_of Lesson, lesson_completion.lesson
   end
@@ -174,9 +174,9 @@ class LessonCompletionTest < ActiveSupport::TestCase
     student = users(:student)
     
     # Create multiple lessons
-    lesson1 = course.lessons.create!(title: "Lesson 1", content: "Content 1", position: 1)
-    lesson2 = course.lessons.create!(title: "Lesson 2", content: "Content 2", position: 2)
-    lesson3 = course.lessons.create!(title: "Lesson 3", content: "Content 3", position: 3)
+    lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 1)
+    lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 2)
+    lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 3)
     
     # Complete lessons progressively
     completion1 = LessonCompletion.create!(user: student, lesson: lesson1, completed_at: 3.days.ago)

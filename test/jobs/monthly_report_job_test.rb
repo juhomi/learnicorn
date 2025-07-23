@@ -1,6 +1,7 @@
 require 'test_helper'
 
 class MonthlyReportJobTest < ActiveJob::TestCase
+  include ActionMailer::TestHelper
   setup do
     @instructor = users(:instructor)
     @month = 6

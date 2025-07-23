@@ -11,6 +11,7 @@ class User < ApplicationRecord
   has_many :enrolled_courses, through: :enrollments, source: :course
   has_many :lesson_completions, dependent: :destroy
   
+  
   def admin?
     role == 'admin'
   end
@@ -42,6 +43,7 @@ class User < ApplicationRecord
   end
   
   private
+  
   
   def password_confirmation_matches
     return unless password_confirmation

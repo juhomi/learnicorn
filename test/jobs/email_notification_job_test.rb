@@ -1,6 +1,7 @@
 require 'test_helper'
 
 class EmailNotificationJobTest < ActiveJob::TestCase
+  include ActionMailer::TestHelper
   setup do
     @user = users(:student)
     @course = courses(:ruby_course)

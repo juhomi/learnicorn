@@ -160,6 +160,8 @@ class LessonTest < ActiveSupport::TestCase
 
   test "should destroy associated lesson_completions when lesson is deleted" do
     lesson = lessons(:ruby_intro)
+    # Create a lesson completion
+    LessonCompletion.create!(user: users(:student), lesson: lesson)
     completion_count = lesson.lesson_completions.count
     assert completion_count > 0
     lesson.destroy
@@ -167,10 +169,10 @@ class LessonTest < ActiveSupport::TestCase
   end
 
   test "ordered scope should return lessons ordered by position" do
-    course = courses(:ruby_course)
-    lesson1 = course.lessons.create!(title: "Lesson 1", content: "Content 1", position: 3)
-    lesson2 = course.lessons.create!(title: "Lesson 2", content: "Content 2", position: 1)
-    lesson3 = course.lessons.create!(title: "Lesson 3", content: "Content 3", position: 2)
+    course = Course.create!(title: "Test Course", description: "Test course for ordering", duration: 30, instructor: users(:instructor))
+    lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 3)
+    lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 1)
+    lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 2)
     
     ordered_lessons = course.lessons.ordered
     assert_equal [lesson2, lesson3, lesson1], ordered_lessons.to_a
@@ -194,10 +196,10 @@ class LessonTest < ActiveSupport::TestCase
   end
 
   test "next_lesson should return next lesson in course" do
-    course = courses(:ruby_course)
-    lesson1 = course.lessons.create!(title: "Lesson 1", content: "Content 1", position: 1)
-    lesson2 = course.lessons.create!(title: "Lesson 2", content: "Content 2", position: 2)
-    lesson3 = course.lessons.create!(title: "Lesson 3", content: "Content 3", position: 3)
+    course = Course.create!(title: "Test Course", description: "Test course for navigation", duration: 30, instructor: users(:instructor))
+    lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 1)
+    lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 2)
+    lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 3)
     
     assert_equal lesson2, lesson1.next_lesson
     assert_equal lesson3, lesson2.next_lesson
@@ -205,10 +207,10 @@ class LessonTest < ActiveSupport::TestCase
   end
 
   test "previous_lesson should return previous lesson in course" do
-    course = courses(:ruby_course)
-    lesson1 = course.lessons.create!(title: "Lesson 1", content: "Content 1", position: 1)
-    lesson2 = course.lessons.create!(title: "Lesson 2", content: "Content 2", position: 2)
-    lesson3 = course.lessons.create!(title: "Lesson 3", content: "Content 3", position: 3)
+    course = Course.create!(title: "Test Course", description: "Test course for navigation", duration: 30, instructor: users(:instructor))
+    lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 1)
+    lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 2)
+    lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 3)
     
     assert_nil lesson1.previous_lesson
     assert_equal lesson1, lesson2.previous_lesson
@@ -216,10 +218,10 @@ class LessonTest < ActiveSupport::TestCase
   end
 
   test "next_lesson should work with non-sequential positions" do
-    course = courses(:ruby_course)
-    lesson1 = course.lessons.create!(title: "Lesson 1", content: "Content 1", position: 10)
-    lesson2 = course.lessons.create!(title: "Lesson 2", content: "Content 2", position: 20)
-    lesson3 = course.lessons.create!(title: "Lesson 3", content: "Content 3", position: 30)
+    course = Course.create!(title: "Test Course", description: "Test course for navigation", duration: 30, instructor: users(:instructor))
+    lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 10)
+    lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 20)
+    lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 30)
     
     assert_equal lesson2, lesson1.next_lesson
     assert_equal lesson3, lesson2.next_lesson
@@ -227,10 +229,10 @@ class LessonTest < ActiveSupport::TestCase
   end
 
   test "previous_lesson should work with non-sequential positions" do
-    course = courses(:ruby_course)
-    lesson1 = course.lessons.create!(title: "Lesson 1", content: "Content 1", position: 10)
-    lesson2 = course.lessons.create!(title: "Lesson 2", content: "Content 2", position: 20)
-    lesson3 = course.lessons.create!(title: "Lesson 3", content: "Content 3", position: 30)
+    course = Course.create!(title: "Test Course", description: "Test course for navigation", duration: 30, instructor: users(:instructor))
+    lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 10)
+    lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 20)
+    lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 30)
     
     assert_nil lesson1.previous_lesson
     assert_equal lesson1, lesson2.previous_lesson

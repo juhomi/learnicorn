@@ -52,6 +52,9 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+  
+  # Rails controller testing support for assert_template and similar methods
+  # gem "rails-controller-testing"  # Temporarily disabled due to installation issues
 end
 
 group :development do

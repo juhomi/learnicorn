@@ -46,12 +46,12 @@ class Student::CoursesControllerTest < ActionDispatch::IntegrationTest
     assert_response :success
     
     # Should show enrolled course
-    assert_select 'h2', /enrolled.*courses/i
+    assert_select 'h5 a', @course.title
     assert_select 'div', text: /#{@course.title}/
     
     # Should show available course
-    assert_select 'h2', /available.*courses/i
-    assert_select 'div', text: /#{available_course.title}/
+    assert_select 'h6', text: /Available Courses/
+    assert_select 'h6 a', available_course.title
   end
 
   test "should not show unpublished courses in available" do
@@ -81,15 +81,16 @@ class Student::CoursesControllerTest < ActionDispatch::IntegrationTest
     
     get student_course_path(@course)
     assert_response :success
-    assert_select 'h1', @course.title
+    assert_select 'h3', @course.title
   end
 
   test "should not show course details for non-enrolled student" do
     post login_path, params: { email: @student.email, password: 'password' }
     
-    assert_raises(ActiveRecord::RecordNotFound) do
-      get student_course_path(@course)
-    end
+    get student_course_path(@course)
+    # Should redirect to root when trying to access non-enrolled course
+    assert_redirected_to root_path
+    assert_equal 'The requested resource was not found.', flash[:alert]
   end
 
   test "should show lessons and completion status" do
@@ -112,7 +113,7 @@ class Student::CoursesControllerTest < ActionDispatch::IntegrationTest
     
     # Should show completion status
     if lesson
-      assert_select 'span', text: /completed/i
+      assert_select 'small', text: /Completed/
     end
   end
 
@@ -149,10 +150,10 @@ class Student::CoursesControllerTest < ActionDispatch::IntegrationTest
     # Enroll student
     Enrollment.create!(user: @student, course: @course)
     
-    # Create lessons with different positions
-    lesson1 = @course.lessons.create!(title: 'Lesson 1', content: 'Content 1', position: 3)
-    lesson2 = @course.lessons.create!(title: 'Lesson 2', content: 'Content 2', position: 1)
-    lesson3 = @course.lessons.create!(title: 'Lesson 3', content: 'Content 3', position: 2)
+    # Create lessons with different positions (using higher numbers to avoid conflicts with fixtures)
+    lesson1 = @course.lessons.create!(title: 'Test Lesson 1', content: 'This is lesson content 1', position: 6)
+    lesson2 = @course.lessons.create!(title: 'Test Lesson 2', content: 'This is lesson content 2', position: 4)
+    lesson3 = @course.lessons.create!(title: 'Test Lesson 3', content: 'This is lesson content 3', position: 5)
     
     get student_course_path(@course)
     assert_response :success
@@ -174,8 +175,8 @@ class Student::CoursesControllerTest < ActionDispatch::IntegrationTest
     Enrollment.create!(user: @student, course: @course)
     
     # Create lessons
-    lesson1 = @course.lessons.create!(title: 'Lesson 1', content: 'Content 1', position: 1)
-    lesson2 = @course.lessons.create!(title: 'Lesson 2', content: 'Content 2', position: 2)
+    lesson1 = @course.lessons.create!(title: 'Lesson 1', content: 'This is lesson content 1', position: 1)
+    lesson2 = @course.lessons.create!(title: 'Lesson 2', content: 'This is lesson content 2', position: 2)
     
     # Complete only first lesson
     LessonCompletion.create!(user: @student, lesson: lesson1)

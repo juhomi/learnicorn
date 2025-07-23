@@ -35,6 +35,9 @@ module ApplicationHelper
   end
 
   def format_duration(minutes)
+    # Handle negative values by returning 0m
+    return "0m" if minutes < 0
+    
     hours = minutes / 60
     mins = minutes % 60
     

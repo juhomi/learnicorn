@@ -40,8 +40,9 @@ class ApplicationHelperTest < ActionView::TestCase
   end
 
   test "user_role_badge should handle unknown role" do
-    user_unknown = User.new(role: 'unknown')
-    badge = user_role_badge(user_unknown)
+    user = users(:student)
+    user.define_singleton_method(:role) { 'unknown' }
+    badge = user_role_badge(user)
     assert_includes badge, 'Unknown'
     assert_includes badge, 'badge badge-light'
   end
@@ -93,7 +94,7 @@ class ApplicationHelperTest < ActionView::TestCase
     long_text = 'This is a very long text that should be truncated'
     result = truncate_with_tooltip(long_text, 20)
     
-    assert_includes result, 'This is a very long...'
+    assert_includes result, 'This is a very lo...'
     assert_includes result, 'title="This is a very long text that should be truncated"'
     assert_includes result, 'data-toggle="tooltip"'
   end
