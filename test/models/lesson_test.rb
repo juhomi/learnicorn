@@ -43,25 +43,23 @@ class LessonTest < ActiveSupport::TestCase
     assert_includes lesson.errors[:title], "is too long (maximum is 100 characters)"
   end
 
-  test "should require content" do
+  test "should not require content" do
     lesson = Lesson.new(
       title: "Introduction to Ruby",
       position: 1,
       course: courses(:ruby_course)
     )
-    assert_not lesson.valid?
-    assert_includes lesson.errors[:content], "can't be blank"
+    assert lesson.valid?
   end
 
-  test "should require content to be at least 10 characters" do
+  test "should allow short content" do
     lesson = Lesson.new(
       title: "Introduction to Ruby",
       content: "Short",
       position: 1,
       course: courses(:ruby_course)
     )
-    assert_not lesson.valid?
-    assert_includes lesson.errors[:content], "is too short (minimum is 10 characters)"
+    assert lesson.valid?
   end
 
   test "should require content to be at most 5000 characters" do
@@ -173,15 +171,15 @@ class LessonTest < ActiveSupport::TestCase
     lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 3)
     lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 1)
     lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 2)
-    
+
     ordered_lessons = course.lessons.ordered
-    assert_equal [lesson2, lesson3, lesson1], ordered_lessons.to_a
+    assert_equal [ lesson2, lesson3, lesson1 ], ordered_lessons.to_a
   end
 
   test "completed_by? should return true when user has completed lesson" do
     lesson = lessons(:ruby_intro)
     student = users(:student)
-    
+
     LessonCompletion.create!(user: student, lesson: lesson)
     assert lesson.completed_by?(student)
   end
@@ -189,7 +187,7 @@ class LessonTest < ActiveSupport::TestCase
   test "completed_by? should return false when user has not completed lesson" do
     lesson = lessons(:ruby_intro)
     student = users(:student)
-    
+
     # Make sure no completion exists
     LessonCompletion.where(user: student, lesson: lesson).destroy_all
     assert_not lesson.completed_by?(student)
@@ -200,7 +198,7 @@ class LessonTest < ActiveSupport::TestCase
     lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 1)
     lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 2)
     lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 3)
-    
+
     assert_equal lesson2, lesson1.next_lesson
     assert_equal lesson3, lesson2.next_lesson
     assert_nil lesson3.next_lesson
@@ -211,7 +209,7 @@ class LessonTest < ActiveSupport::TestCase
     lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 1)
     lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 2)
     lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 3)
-    
+
     assert_nil lesson1.previous_lesson
     assert_equal lesson1, lesson2.previous_lesson
     assert_equal lesson2, lesson3.previous_lesson
@@ -222,7 +220,7 @@ class LessonTest < ActiveSupport::TestCase
     lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 10)
     lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 20)
     lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 30)
-    
+
     assert_equal lesson2, lesson1.next_lesson
     assert_equal lesson3, lesson2.next_lesson
     assert_nil lesson3.next_lesson
@@ -233,7 +231,7 @@ class LessonTest < ActiveSupport::TestCase
     lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 10)
     lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 20)
     lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 30)
-    
+
     assert_nil lesson1.previous_lesson
     assert_equal lesson1, lesson2.previous_lesson
     assert_equal lesson2, lesson3.previous_lesson

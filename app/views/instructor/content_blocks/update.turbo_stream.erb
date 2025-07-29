@@ -1,0 +1,52 @@
+<%= turbo_stream.replace "content_block_form" do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i>
+    <strong>Updated!</strong> Content block was successfully updated.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<%= turbo_stream.update "content-blocks-container" do %>
+  <% if @lesson.has_content_blocks? %>
+    <% @lesson.ordered_content_blocks.each do |content_block| %>
+      <div class="<%= 'recently-updated' if content_block.id == @content_block.id %>">
+        <%= render "instructor/content_blocks/content_block", content_block: content_block %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="empty-content-state">
+      <div class="empty-content-icon">
+        <i class="fas fa-plus-circle"></i>
+      </div>
+      <h6>No content blocks yet</h6>
+      <p>Add your first content block to start creating your lesson.</p>
+      <div class="empty-content-actions">
+        <%= link_to new_instructor_course_lesson_content_block_path(@course, @lesson, block_type: 'text'), 
+                    class: "btn btn-outline-primary btn-sm",
+                    data: { turbo_frame: "content_block_form" } do %>
+          <i class="fas fa-font"></i> Start with Text
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<script>
+  // Add animation to updated content block
+  setTimeout(() => {
+    const updatedBlock = document.querySelector('.recently-updated');
+    if (updatedBlock) {
+      updatedBlock.style.border = '2px solid #007bff';
+      updatedBlock.style.borderRadius = '8px';
+      updatedBlock.style.backgroundColor = '#f8f9ff';
+      updatedBlock.style.transition = 'all 0.3s ease';
+      
+      // Remove the highlight after 3 seconds
+      setTimeout(() => {
+        updatedBlock.style.border = 'none';
+        updatedBlock.style.backgroundColor = 'transparent';
+        updatedBlock.classList.remove('recently-updated');
+      }, 3000);
+    }
+  }, 100);
+</script>

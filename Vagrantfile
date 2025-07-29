@@ -13,9 +13,9 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
   config.vm.box = "ubuntu/focal64"
-  
+
    config.vm.provider "virtualbox" do |vb|
-    vb.gui = false          
+    vb.gui = false
     vb.memory = "4096"      # Optional: increase RAM
     vb.cpus = 3            # Optional: improve boot speed
   end

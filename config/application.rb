@@ -3,12 +3,12 @@ require_relative "boot"
 require "rails/all"
 
 # Load environment variables from .env file
-env_file = File.expand_path('.env', __dir__ + '/..')
+env_file = File.expand_path(".env", __dir__ + "/..")
 if File.exist?(env_file)
   File.readlines(env_file).each do |line|
     line = line.strip
-    next if line.empty? || line.start_with?('#')
-    key, value = line.split('=', 2)
+    next if line.empty? || line.start_with?("#")
+    key, value = line.split("=", 2)
     ENV[key] = value if key && value
   end
 end

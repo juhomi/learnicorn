@@ -1,13 +1,13 @@
-require 'simplecov'
-SimpleCov.start 'rails' do
-  add_filter '/bin/'
-  add_filter '/db/'
-  add_filter '/spec/'
-  add_filter '/test/'
-  add_filter '/vendor/'
-  
+require "simplecov"
+SimpleCov.start "rails" do
+  add_filter "/bin/"
+  add_filter "/db/"
+  add_filter "/spec/"
+  add_filter "/test/"
+  add_filter "/vendor/"
+
   # Ensure coverage is collected properly
-  track_files '{app,lib}/**/*.rb'
+  track_files "{app,lib}/**/*.rb"
 end
 
 ENV["RAILS_ENV"] ||= "test"

@@ -51,23 +51,6 @@
           </div>
         <% end %>
 
-        <% if @lesson.content.present? || @lesson.video_url.present? %>
-          <div class="mt-4 pt-4 border-top">
-            <h6 class="text-muted small">Legacy Content Preview</h6>
-            <% if @lesson.video_url.present? %>
-              <div class="mb-3">
-                <div class="ratio ratio-16x9">
-                  <iframe src="<%= @lesson.video_url %>" allowfullscreen class="rounded"></iframe>
-                </div>
-              </div>
-            <% end %>
-            <% if @lesson.content.present? %>
-              <div class="lesson-text-content">
-                <%= simple_format(@lesson.content) %>
-              </div>
-            <% end %>
-          </div>
-        <% end %>
       </div>
     </div>
   </div>
@@ -82,7 +65,6 @@
         <p><strong>Course:</strong> <%= @course.title %></p>
         <p><strong>Created:</strong> <%= @lesson.created_at.strftime("%B %d, %Y") %></p>
         <p><strong>Updated:</strong> <%= @lesson.updated_at.strftime("%B %d, %Y") %></p>
-        <p><strong>Has Video:</strong> <%= @lesson.video_url.present? ? "Yes" : "No" %></p>
       </div>
     </div>
 

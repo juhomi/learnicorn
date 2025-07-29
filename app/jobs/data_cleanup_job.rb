@@ -4,10 +4,10 @@ class DataCleanupJob < ApplicationJob
   def perform
     # Clean up old session data
     cleanup_old_sessions
-    
+
     # Clean up incomplete user registrations (if any)
     cleanup_incomplete_registrations
-    
+
     # Clean up orphaned records
     cleanup_orphaned_records
   end

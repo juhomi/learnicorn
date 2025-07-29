@@ -3,50 +3,50 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   # Authentication routes
-  get '/login', to: 'sessions#new'
-  post '/login', to: 'sessions#create'
-  delete '/logout', to: 'sessions#destroy'
-  
-  get '/signup', to: 'users#new'
-  post '/signup', to: 'users#create'
-  
+  get "/login", to: "sessions#new"
+  post "/login", to: "sessions#create"
+  delete "/logout", to: "sessions#destroy"
+
+  get "/signup", to: "users#new"
+  post "/signup", to: "users#create"
+
   # Root path - show marketing landing page for non-authenticated users
-  root 'home#index'
-  
+  root "home#index"
+
   # Marketing page
-  get '/marketing', to: 'marketing#index'
-  
+  get "/marketing", to: "marketing#index"
+
   # Dashboard route for authenticated users
-  get '/dashboard', to: 'dashboard#index'
-  
+  get "/dashboard", to: "dashboard#index"
+
   # Code Editor route
-  get '/editor', to: 'editor#index'
-  
+  get "/editor", to: "editor#index"
+
   # Public course browsing
-  resources :courses, only: [:index, :show] do
+  resources :courses, only: [ :index, :show ] do
     member do
       post :enroll
     end
-    resources :lessons, only: [:show] do
+    resources :lessons, only: [ :show ] do
       member do
         post :complete
       end
-      resources :content_blocks, except: [:index]
+      resources :content_blocks, except: [ :index ]
     end
   end
-  
+
   # Admin namespace
   namespace :admin do
-    get '/', to: 'dashboard#index'
+    get "/", to: "dashboard#index"
     resources :users
     resources :courses
     resources :lessons
-    resources :enrollments, only: [:index, :show, :destroy]
+    resources :enrollments, only: [ :index, :show, :destroy ]
   end
-  
+
   # Instructor namespace
   namespace :instructor do
-    get '/', to: 'dashboard#index'
+    get "/", to: "dashboard#index"
     resources :courses do
       resources :lessons do
         resources :content_blocks do
@@ -59,15 +59,15 @@ Rails.application.routes.draw do
         end
       end
     end
-    resources :enrollments, only: [:index, :show]
+    resources :enrollments, only: [ :index, :show ]
   end
-  
+
   # Student namespace
   namespace :student do
-    get '/', to: 'dashboard#index'
-    resources :courses, only: [:index, :show] do
-      resources :lessons, only: [:show]
+    get "/", to: "dashboard#index"
+    resources :courses, only: [ :index, :show ] do
+      resources :lessons, only: [ :show ]
     end
-    resources :enrollments, only: [:index, :show]
+    resources :enrollments, only: [ :index, :show ]
   end
 end

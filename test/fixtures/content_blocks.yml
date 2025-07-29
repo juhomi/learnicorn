@@ -1,19 +1,28 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-text_block_one:
-  lesson: one
+text_block_ruby_intro:
+  lesson: ruby_intro
   block_type: 0
   position: 1
-  content: "This is a sample text content for lesson one."
+  content: "This is a sample text content for Ruby introduction lesson."
   file_url: 
   alt_text: 
   metadata: {}
 
-video_block_two:
-  lesson: two  
+video_block_ruby_variables:
+  lesson: ruby_variables
   block_type: 2
   position: 1
   content: 
   file_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
   alt_text: 
+  metadata: {}
+
+image_block_ruby_methods:
+  lesson: ruby_methods
+  block_type: 1
+  position: 1
+  content: 
+  file_url: "https://example.com/ruby-methods-diagram.png"
+  alt_text: "Ruby methods diagram"
   metadata: {} 

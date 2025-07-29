@@ -24,7 +24,7 @@ class EnrollmentTest < ActiveSupport::TestCase
   test "should require unique user per course" do
     # Create first enrollment
     Enrollment.create!(user: users(:student), course: courses(:ruby_course))
-    
+
     # Try to create duplicate enrollment
     duplicate_enrollment = Enrollment.new(user: users(:student), course: courses(:ruby_course))
     assert_not duplicate_enrollment.valid?
@@ -39,10 +39,10 @@ class EnrollmentTest < ActiveSupport::TestCase
       duration: 30,
       instructor: users(:instructor)
     )
-    
+
     # Create first enrollment
     enrollment1 = Enrollment.create!(user: users(:student), course: courses(:ruby_course))
-    
+
     # Create second enrollment with same user, different course
     enrollment2 = Enrollment.new(user: users(:student), course: course2)
     assert enrollment2.valid?
@@ -56,10 +56,10 @@ class EnrollmentTest < ActiveSupport::TestCase
       role: "student",
       password: "password123"
     )
-    
+
     # Create first enrollment
     enrollment1 = Enrollment.create!(user: users(:student), course: courses(:ruby_course))
-    
+
     # Create second enrollment with different user, same course
     enrollment2 = Enrollment.new(user: student2, course: courses(:ruby_course))
     assert enrollment2.valid?
@@ -82,7 +82,7 @@ class EnrollmentTest < ActiveSupport::TestCase
       user: users(:student),
       course: courses(:ruby_course)
     )
-    
+
     assert_nil enrollment.enrolled_at
     enrollment.save!
     assert_not_nil enrollment.enrolled_at
@@ -96,7 +96,7 @@ class EnrollmentTest < ActiveSupport::TestCase
       course: courses(:ruby_course),
       enrolled_at: specific_time
     )
-    
+
     enrollment.save!
     assert_equal specific_time.to_i, enrollment.enrolled_at.to_i
   end
@@ -108,7 +108,7 @@ class EnrollmentTest < ActiveSupport::TestCase
       course: courses(:ruby_course),
       enrolled_at: 3.days.ago
     )
-    
+
     # Create second course for second enrollment
     course2 = Course.create!(
       title: "JavaScript Course",
@@ -116,13 +116,13 @@ class EnrollmentTest < ActiveSupport::TestCase
       duration: 30,
       instructor: users(:instructor)
     )
-    
+
     enrollment2 = Enrollment.create!(
       user: users(:student),
       course: course2,
       enrolled_at: 1.day.ago
     )
-    
+
     # Create third course for third enrollment
     course3 = Course.create!(
       title: "Python Course",
@@ -130,26 +130,26 @@ class EnrollmentTest < ActiveSupport::TestCase
       duration: 35,
       instructor: users(:instructor)
     )
-    
+
     enrollment3 = Enrollment.create!(
       user: users(:student),
       course: course3,
       enrolled_at: 2.days.ago
     )
-    
+
     recent_enrollments = Enrollment.recent
-    assert_equal [enrollment2, enrollment3, enrollment1], recent_enrollments.to_a
+    assert_equal [ enrollment2, enrollment3, enrollment1 ], recent_enrollments.to_a
   end
 
   test "should use current time for enrolled_at if not provided" do
     freeze_time = Time.current
-    
+
     travel_to freeze_time do
       enrollment = Enrollment.create!(
         user: users(:student),
         course: courses(:ruby_course)
       )
-      
+
       assert_equal freeze_time.to_i, enrollment.enrolled_at.to_i
     end
   end
@@ -159,11 +159,11 @@ class EnrollmentTest < ActiveSupport::TestCase
       user: users(:student),
       course: courses(:ruby_course)
     )
-    
+
     # Mock the callback being called
     enrollment.send(:set_enrolled_at)
     first_time = enrollment.enrolled_at
-    
+
     # Call again - should not change
     enrollment.send(:set_enrolled_at)
     assert_equal first_time, enrollment.enrolled_at

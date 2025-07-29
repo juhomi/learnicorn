@@ -24,7 +24,7 @@ class LessonCompletionTest < ActiveSupport::TestCase
   test "should require unique user per lesson" do
     # Create first lesson completion
     LessonCompletion.create!(user: users(:student), lesson: lessons(:ruby_intro))
-    
+
     # Try to create duplicate lesson completion
     duplicate_completion = LessonCompletion.new(user: users(:student), lesson: lessons(:ruby_intro))
     assert_not duplicate_completion.valid?
@@ -39,10 +39,10 @@ class LessonCompletionTest < ActiveSupport::TestCase
       position: 2,
       course: courses(:ruby_course)
     )
-    
+
     # Create first lesson completion
     completion1 = LessonCompletion.create!(user: users(:student), lesson: lessons(:ruby_intro))
-    
+
     # Create second lesson completion with same user, different lesson
     completion2 = LessonCompletion.new(user: users(:student), lesson: lesson2)
     assert completion2.valid?
@@ -56,10 +56,10 @@ class LessonCompletionTest < ActiveSupport::TestCase
       role: "student",
       password: "password123"
     )
-    
+
     # Create first lesson completion
     completion1 = LessonCompletion.create!(user: users(:student), lesson: lessons(:ruby_intro))
-    
+
     # Create second lesson completion with different user, same lesson
     completion2 = LessonCompletion.new(user: student2, lesson: lessons(:ruby_intro))
     assert completion2.valid?
@@ -82,7 +82,7 @@ class LessonCompletionTest < ActiveSupport::TestCase
       user: users(:student),
       lesson: lessons(:ruby_intro)
     )
-    
+
     assert_nil lesson_completion.completed_at
     lesson_completion.save!
     assert_not_nil lesson_completion.completed_at
@@ -96,7 +96,7 @@ class LessonCompletionTest < ActiveSupport::TestCase
       lesson: lessons(:ruby_intro),
       completed_at: specific_time
     )
-    
+
     lesson_completion.save!
     assert_equal specific_time.to_i, lesson_completion.completed_at.to_i
   end
@@ -108,7 +108,7 @@ class LessonCompletionTest < ActiveSupport::TestCase
       lesson: lessons(:ruby_intro),
       completed_at: 3.days.ago
     )
-    
+
     # Create second lesson
     lesson2 = Lesson.create!(
       title: "Ruby Variables",
@@ -116,13 +116,13 @@ class LessonCompletionTest < ActiveSupport::TestCase
       position: 2,
       course: courses(:ruby_course)
     )
-    
+
     completion2 = LessonCompletion.create!(
       user: users(:student),
       lesson: lesson2,
       completed_at: 1.day.ago
     )
-    
+
     # Create third lesson
     lesson3 = Lesson.create!(
       title: "Ruby Methods",
@@ -130,26 +130,26 @@ class LessonCompletionTest < ActiveSupport::TestCase
       position: 3,
       course: courses(:ruby_course)
     )
-    
+
     completion3 = LessonCompletion.create!(
       user: users(:student),
       lesson: lesson3,
       completed_at: 2.days.ago
     )
-    
+
     recent_completions = LessonCompletion.recent
-    assert_equal [completion2, completion3, completion1], recent_completions.to_a
+    assert_equal [ completion2, completion3, completion1 ], recent_completions.to_a
   end
 
   test "should use current time for completed_at if not provided" do
     freeze_time = Time.current
-    
+
     travel_to freeze_time do
       lesson_completion = LessonCompletion.create!(
         user: users(:student),
         lesson: lessons(:ruby_intro)
       )
-      
+
       assert_equal freeze_time.to_i, lesson_completion.completed_at.to_i
     end
   end
@@ -159,11 +159,11 @@ class LessonCompletionTest < ActiveSupport::TestCase
       user: users(:student),
       lesson: lessons(:ruby_intro)
     )
-    
+
     # Mock the callback being called
     lesson_completion.send(:set_completed_at)
     first_time = lesson_completion.completed_at
-    
+
     # Call again - should not change
     lesson_completion.send(:set_completed_at)
     assert_equal first_time, lesson_completion.completed_at
@@ -172,17 +172,17 @@ class LessonCompletionTest < ActiveSupport::TestCase
   test "should track lesson completion across course progress" do
     course = courses(:ruby_course)
     student = users(:student)
-    
+
     # Create multiple lessons
     lesson1 = course.lessons.create!(title: "Lesson 1", content: "This is lesson content 1", position: 1)
     lesson2 = course.lessons.create!(title: "Lesson 2", content: "This is lesson content 2", position: 2)
     lesson3 = course.lessons.create!(title: "Lesson 3", content: "This is lesson content 3", position: 3)
-    
+
     # Complete lessons progressively
     completion1 = LessonCompletion.create!(user: student, lesson: lesson1, completed_at: 3.days.ago)
     completion2 = LessonCompletion.create!(user: student, lesson: lesson2, completed_at: 2.days.ago)
     completion3 = LessonCompletion.create!(user: student, lesson: lesson3, completed_at: 1.day.ago)
-    
+
     # Verify completions are tracked
     assert_equal 3, student.lesson_completions.count
     assert_includes student.lesson_completions, completion1

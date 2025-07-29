@@ -23,7 +23,7 @@ class InstructorMailer < ApplicationMailer
     @courses = instructor.courses.includes(:students, :lessons)
     @total_students = @courses.joins(:enrollments).count
     @total_lessons = @courses.joins(:lessons).count
-    
+
     mail(to: @instructor.email, subject: "Monthly report for #{Date::MONTHNAMES[month]} #{year}")
   end
 end

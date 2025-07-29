@@ -1,9 +1,17 @@
 <%= turbo_frame_tag "content_block_form" do %>
-  <div class="card">
-    <div class="card-header">
-      <h5><%= @content_block.persisted? ? "Edit" : "New" %> Content Block</h5>
+  <div class="content-block-form-container mb-4">
+    <div class="form-header">
+      <div class="d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <div class="form-icon">
+            <i class="fas fa-<%= @content_block.persisted? ? 'edit' : 'plus' %>"></i>
+          </div>
+          <h6 class="mb-0 ms-2"><%= @content_block.persisted? ? "Edit" : "Add" %> Content Block</h6>
+        </div>
+        <button type="button" class="btn-close" onclick="clearContentBlockForm()"></button>
+      </div>
     </div>
-    <div class="card-body" data-controller="content-block-form">
+    <div class="form-body" data-controller="content-block-form">
       <%= form_with model: [@course, @lesson, @content_block], 
                     url: @content_block.persisted? ? 
                          instructor_course_lesson_content_block_path(@course, @lesson, @content_block) : 
@@ -12,73 +20,128 @@
                     data: { turbo_frame: "content_block_form" } do |form| %>
         
         <% if @content_block.errors.any? %>
-          <div class="alert alert-danger">
-            <h6><%= pluralize(@content_block.errors.count, "error") %> prohibited this content block from being saved:</h6>
-            <ul class="mb-0">
+          <div class="alert alert-danger alert-dismissible fade show">
+            <i class="fas fa-exclamation-triangle"></i>
+            <strong>Please fix the following errors:</strong>
+            <ul class="mb-0 mt-2">
               <% @content_block.errors.full_messages.each do |message| %>
                 <li><%= message %></li>
               <% end %>
             </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           </div>
         <% end %>
 
-        <div class="mb-3">
-          <%= form.label :block_type, class: "form-label" %>
-          <%= form.select :block_type, 
-                          options_for_select([
-                            ['Text', 'text'],
-                            ['Image', 'image'], 
-                            ['Video', 'video']
-                          ], @content_block.block_type), 
-                          {},
-                          { class: "form-select", 
-                            data: { 
-                              content_block_form_target: "blockType",
-                              action: "change->content-block-form#toggleFields" 
-                            } } %>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="mb-3">
+              <%= form.label :block_type, "Content Type", class: "form-label form-label-sm" %>
+              <div class="content-type-selector">
+                <% [['Text', 'text', 'font'], ['Image', 'image', 'image'], ['Video', 'video', 'video']].each do |label, value, icon| %>
+                  <div class="content-type-option <%= 'active' if @content_block.block_type == value %>" 
+                       data-value="<%= value %>" 
+                       onclick="selectContentType(this, '<%= value %>')">
+                    <i class="fas fa-<%= icon %>"></i>
+                    <span><%= label %></span>
+                  </div>
+                <% end %>
+              </div>
+              <%= form.hidden_field :block_type, 
+                                   data: { 
+                                     content_block_form_target: "blockType",
+                                     action: "change->content-block-form#toggleFields" 
+                                   } %>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="mb-3">
+              <%= form.label :position, "Position", class: "form-label form-label-sm" %>
+              <%= form.number_field :position, class: "form-control form-control-sm", min: 1, placeholder: "Auto" %>
+              <div class="form-text-sm">Leave blank to add at the end</div>
+            </div>
+          </div>
         </div>
 
-        <div class="mb-3">
-          <%= form.label :position, class: "form-label" %>
-          <%= form.number_field :position, class: "form-control", min: 1 %>
-          <div class="form-text">Leave blank to add at the end</div>
-        </div>
 
         <div id="text-fields" class="content-type-fields" style="<%= 'display: none;' unless @content_block.text? %>">
           <div class="mb-3">
-            <%= form.label :content, class: "form-label" %>
-            <%= form.text_area :content, rows: 8, class: "form-control" %>
-            <div class="form-text">You can use basic HTML tags for formatting</div>
+            <%= form.label :content, "Text Content", class: "form-label form-label-sm" %>
+            <%= form.text_area :content, rows: 5, class: "form-control", 
+                               placeholder: "Enter your text content. You can use basic HTML tags for formatting." %>
+            <div class="form-text-sm"><i class="fas fa-code"></i> HTML formatting supported</div>
           </div>
         </div>
 
         <div id="image-fields" class="content-type-fields" style="<%= 'display: none;' unless @content_block.image? %>">
-          <div class="mb-3">
-            <%= form.label :file_url, "Image URL", class: "form-label" %>
-            <%= form.url_field :file_url, class: "form-control" %>
-          </div>
-          <div class="mb-3">
-            <%= form.label :alt_text, "Alt Text", class: "form-label" %>
-            <%= form.text_field :alt_text, class: "form-control" %>
-            <div class="form-text">Describe the image for accessibility</div>
+          <div class="row">
+            <div class="col-md-8">
+              <div class="mb-3">
+                <%= form.label :file_url, "Image URL", class: "form-label form-label-sm" %>
+                <%= form.url_field :file_url, class: "form-control", 
+                                   placeholder: "https://example.com/image.jpg" %>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <%= form.label :alt_text, "Alt Text", class: "form-label form-label-sm" %>
+                <%= form.text_field :alt_text, class: "form-control", 
+                                    placeholder: "Image description" %>
+                <div class="form-text-sm"><i class="fas fa-universal-access"></i> For accessibility</div>
+              </div>
+            </div>
           </div>
         </div>
 
         <div id="video-fields" class="content-type-fields" style="<%= 'display: none;' unless @content_block.video? %>">
           <div class="mb-3">
-            <%= form.label :file_url, "Video URL", class: "form-label" %>
-            <%= form.url_field :file_url, class: "form-control" %>
-            <div class="form-text">YouTube, Vimeo, or direct video file URLs supported</div>
+            <%= form.label :file_url, "Video URL", class: "form-label form-label-sm" %>
+            <%= form.url_field :file_url, class: "form-control", 
+                               placeholder: "YouTube, Vimeo, or direct video URL" %>
+            <div class="form-text-sm"><i class="fas fa-play-circle"></i> YouTube, Vimeo, and direct video files supported</div>
           </div>
         </div>
 
-        <div class="d-flex justify-content-between">
-          <%= form.submit class: "btn btn-primary" %>
-          <%= link_to "Cancel", instructor_course_lesson_path(@course, @lesson), 
-                      class: "btn btn-secondary",
-                      data: { turbo_frame: "_top" } %>
+        <div class="form-actions">
+          <%= form.submit class: "btn btn-primary btn-sm", 
+                          value: (@content_block.persisted? ? "Update Content" : "Add Content"),
+                          data: { 
+                            disable_with: (@content_block.persisted? ? "<i class='fas fa-spinner fa-spin'></i> Updating..." : "<i class='fas fa-spinner fa-spin'></i> Adding...") 
+                          } %>
+          <button type="button" class="btn btn-outline-secondary btn-sm" 
+                  onclick="clearContentBlockForm()">Cancel</button>
         </div>
       <% end %>
     </div>
   </div>
+
+  <script>
+    function selectContentType(element, value) {
+      // Remove active class from all options
+      document.querySelectorAll('.content-type-option').forEach(option => {
+        option.classList.remove('active');
+      });
+      
+      // Add active class to selected option
+      element.classList.add('active');
+      
+      // Update hidden field and trigger change event
+      const hiddenField = document.querySelector('#content_block_block_type');
+      hiddenField.value = value;
+      hiddenField.dispatchEvent(new Event('change'));
+    }
+    
+    function clearContentBlockForm() {
+      // Create a turbo stream to clear the form
+      fetch('<%= instructor_course_lesson_path(@course, @lesson) %>', {
+        method: 'GET',
+        headers: {
+          'Accept': 'text/vnd.turbo-stream.html',
+          'Turbo-Frame': 'content_block_form'
+        }
+      }).then(response => response.text())
+      .then(html => {
+        document.getElementById('content_block_form').innerHTML = '';
+      });
+    }
+  </script>
 <% end %>

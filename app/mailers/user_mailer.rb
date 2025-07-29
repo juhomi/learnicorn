@@ -2,7 +2,7 @@ class UserMailer < ApplicationMailer
   def welcome_email(user)
     @user = user
     @url = root_url
-    mail(to: @user.email, subject: 'Welcome to Learning Platform!')
+    mail(to: @user.email, subject: "Welcome to Learning Platform!")
   end
 
   def course_enrollment_confirmation(user, course)
@@ -23,7 +23,7 @@ class UserMailer < ApplicationMailer
   def course_published_notification(course)
     @course = course
     @course_url = course_url(@course)
-    
+
     # Send to all students
     User.student.find_each do |student|
       mail(to: student.email, subject: "New course available: #{@course.title}")

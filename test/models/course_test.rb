@@ -168,7 +168,7 @@ class CourseTest < ActiveSupport::TestCase
       instructor: users(:instructor),
       published: true
     )
-    
+
     unpublished_course = Course.create!(
       title: "Unpublished Course",
       description: "This is an unpublished course",
@@ -176,7 +176,7 @@ class CourseTest < ActiveSupport::TestCase
       instructor: users(:instructor),
       published: false
     )
-    
+
     published_courses = Course.published
     assert_includes published_courses, published_course
     assert_not_includes published_courses, unpublished_course
@@ -189,7 +189,7 @@ class CourseTest < ActiveSupport::TestCase
       duration: 30,
       instructor: users(:instructor)
     )
-    
+
     student = users(:student)
     assert_equal 0, course.completion_percentage_for(student)
   end
@@ -197,11 +197,11 @@ class CourseTest < ActiveSupport::TestCase
   test "completion_percentage_for should calculate correct percentage" do
     course = courses(:ruby_course)
     student = users(:student)
-    
+
     # Assuming course has lessons and some are completed
     total_lessons = course.lessons.count
     completed_lessons = student.lesson_completions.joins(:lesson).where(lessons: { course: course }).count
-    
+
     expected_percentage = (completed_lessons.to_f / total_lessons * 100).round(2)
     assert_equal expected_percentage, course.completion_percentage_for(student)
   end
@@ -213,7 +213,7 @@ class CourseTest < ActiveSupport::TestCase
       duration: 30,
       instructor: users(:instructor)
     )
-    
+
     student = users(:student)
     assert_not course.completed_by?(student)
   end
@@ -221,24 +221,24 @@ class CourseTest < ActiveSupport::TestCase
   test "completed_by? should return true when all lessons are completed" do
     course = courses(:ruby_course)
     student = users(:student)
-    
+
     # Complete all lessons for the student
     course.lessons.each do |lesson|
       LessonCompletion.find_or_create_by(user: student, lesson: lesson)
     end
-    
+
     assert course.completed_by?(student)
   end
 
   test "completed_by? should return false when not all lessons are completed" do
     course = courses(:ruby_course)
     student = users(:student)
-    
+
     # Only complete some lessons (not all)
     course.lessons.first(1).each do |lesson|
       LessonCompletion.find_or_create_by(user: student, lesson: lesson)
     end
-    
+
     assert_not course.completed_by?(student) if course.lessons.count > 1
   end
 end

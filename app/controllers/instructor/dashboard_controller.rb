@@ -1,6 +1,6 @@
 class Instructor::DashboardController < ApplicationController
   before_action :require_instructor!
-  
+
   def index
     @my_courses = current_user.courses.includes(:students, :lessons)
     @total_students = current_user.courses.joins(:enrollments).count

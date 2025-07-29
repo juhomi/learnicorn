@@ -1,0 +1,34 @@
+<%= turbo_stream.replace "content_block_form" do %>
+  <div class="alert alert-warning alert-dismissible fade show" role="alert">
+    <i class="fas fa-trash"></i>
+    <strong>Deleted!</strong> Content block was successfully removed.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<%= turbo_stream.update "content-blocks-container" do %>
+  <% if @lesson.has_content_blocks? %>
+    <% @lesson.ordered_content_blocks.each do |content_block| %>
+      <%= render "instructor/content_blocks/content_block", content_block: content_block %>
+    <% end %>
+  <% else %>
+    <div class="empty-content-state">
+      <div class="empty-content-icon">
+        <i class="fas fa-plus-circle"></i>
+      </div>
+      <h6>No content blocks yet</h6>
+      <p>Add your first content block to start creating your lesson.</p>
+      <div class="empty-content-actions">
+        <%= link_to new_instructor_course_lesson_content_block_path(@course, @lesson, block_type: 'text'), 
+                    class: "btn btn-outline-primary btn-sm",
+                    data: { turbo_frame: "content_block_form" } do %>
+          <i class="fas fa-font"></i> Start with Text
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.update "content-blocks-info" do %>
+  <p><strong>Content Blocks:</strong> <%= @lesson.content_blocks.count %></p>
+<% end %>

@@ -22,20 +22,10 @@
               <%= render "content_blocks/content_block", content_block: content_block %>
             <% end %>
           <% else %>
-            <!-- Fallback to legacy content if no content blocks -->
-            <% if @lesson.video_url.present? %>
-              <div class="mb-4">
-                <div class="ratio ratio-16x9">
-                  <iframe src="<%= @lesson.video_url %>" allowfullscreen class="rounded"></iframe>
-                </div>
-              </div>
-            <% end %>
-            
-            <% if @lesson.content.present? %>
-              <div class="lesson-text-content">
-                <%= simple_format(@lesson.content) %>
-              </div>
-            <% end %>
+            <div class="text-center py-5 text-muted">
+              <i class="fas fa-book-open fa-2x mb-3"></i>
+              <p>No content has been added to this lesson yet.</p>
+            </div>
           <% end %>
         </div>
       </div>
@@ -54,7 +44,11 @@
               <% if @is_completed %>
                 <span class="badge bg-success fs-6">✓ Completed</span>
               <% else %>
-                <%= link_to "Mark as Complete", complete_course_lesson_path(@course, @lesson), method: :post, class: "btn btn-success" %>
+                <%= form_with url: complete_course_lesson_path(@course, @lesson), method: :post, local: true, class: "d-inline" do |form| %>
+                  <%= form.submit "Mark as Complete", class: "btn btn-success", 
+                                  confirm: "Mark this lesson as completed?",
+                                  data: { disable_with: "<i class='fas fa-spinner fa-spin'></i> Completing..." } %>
+                <% end %>
               <% end %>
             <% end %>
           </div>

@@ -26,13 +26,13 @@ export default class extends Controller {
   }
 
   get contentBlocks() {
-    return this.element.querySelectorAll('.content-block')
+    return this.element.querySelectorAll('.content-block-item')
   }
 
   handleDragStart(event) {
-    if (!event.target.closest('.content-block')) return
+    if (!event.target.closest('.content-block-item')) return
     
-    const contentBlock = event.target.closest('.content-block')
+    const contentBlock = event.target.closest('.content-block-item')
     event.dataTransfer.setData('text/plain', contentBlock.dataset.contentBlockId)
     event.dataTransfer.effectAllowed = 'move'
     
@@ -113,9 +113,9 @@ export default class extends Controller {
 
   updatePositionLabels() {
     this.contentBlocks.forEach((block, index) => {
-      const positionLabel = block.querySelector('.drag-handle span:last-child')
+      const positionLabel = block.querySelector('.position-indicator')
       if (positionLabel) {
-        positionLabel.textContent = `Position ${index + 1}`
+        positionLabel.textContent = `#${index + 1}`
       }
       block.dataset.position = index + 1
     })

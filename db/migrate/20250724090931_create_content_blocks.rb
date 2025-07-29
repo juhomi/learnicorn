@@ -11,8 +11,8 @@ class CreateContentBlocks < ActiveRecord::Migration[8.0]
 
       t.timestamps
     end
-    
-    add_index :content_blocks, [:lesson_id, :position]
+
+    add_index :content_blocks, [ :lesson_id, :position ]
     add_index :content_blocks, :block_type
   end
 end

@@ -67,35 +67,38 @@
     <!-- Content Blocks Editor -->
     <div class="card mt-4">
       <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center">
-          <h5>Lesson Content</h5>
-          <div class="dropdown">
-            <button class="btn btn-success dropdown-toggle" type="button" data-bs-toggle="dropdown">
-              <i class="fas fa-plus"></i> Add Content Block
-            </button>
-            <ul class="dropdown-menu">
-              <li><%= link_to new_instructor_course_lesson_content_block_path(@course, @lesson, block_type: 'text'), 
-                              class: "dropdown-item",
-                              data: { turbo_frame: "content_block_form" } do %>
-                      <i class="fas fa-font text-primary"></i> Add Text Block
-                  <% end %></li>
-              <li><%= link_to new_instructor_course_lesson_content_block_path(@course, @lesson, block_type: 'image'), 
-                              class: "dropdown-item",
-                              data: { turbo_frame: "content_block_form" } do %>
-                      <i class="fas fa-image text-success"></i> Add Image Block
-                  <% end %></li>
-              <li><%= link_to new_instructor_course_lesson_content_block_path(@course, @lesson, block_type: 'video'), 
-                              class: "dropdown-item",
-                              data: { turbo_frame: "content_block_form" } do %>
-                      <i class="fas fa-video text-warning"></i> Add Video Block
-                  <% end %></li>
-            </ul>
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h5 class="mb-1">Lesson Content</h5>
+            <p class="text-muted small mb-0">
+              <i class="fas fa-info-circle"></i> 
+              Create rich content by combining text, images, and videos. Drag blocks to reorder.
+            </p>
+          </div>
+          <div class="add-content-buttons">
+            <%= link_to new_instructor_course_lesson_content_block_path(@course, @lesson, block_type: 'text'), 
+                        class: "add-content-btn text-btn",
+                        data: { turbo_frame: "content_block_form" },
+                        title: "Add Text Block" do %>
+              <i class="fas fa-font"></i>
+              <span>Text</span>
+            <% end %>
+            <%= link_to new_instructor_course_lesson_content_block_path(@course, @lesson, block_type: 'image'), 
+                        class: "add-content-btn image-btn",
+                        data: { turbo_frame: "content_block_form" },
+                        title: "Add Image Block" do %>
+              <i class="fas fa-image"></i>
+              <span>Image</span>
+            <% end %>
+            <%= link_to new_instructor_course_lesson_content_block_path(@course, @lesson, block_type: 'video'), 
+                        class: "add-content-btn video-btn",
+                        data: { turbo_frame: "content_block_form" },
+                        title: "Add Video Block" do %>
+              <i class="fas fa-video"></i>
+              <span>Video</span>
+            <% end %>
           </div>
         </div>
-        <p class="text-muted small mb-0 mt-2">
-          <i class="fas fa-info-circle"></i> 
-          Create rich content by combining text, images, and videos. Drag blocks to reorder them.
-        </p>
       </div>
       <div class="card-body">
         <%= turbo_frame_tag "content_block_form" %>
@@ -108,10 +111,19 @@
               <%= render "instructor/content_blocks/content_block", content_block: content_block %>
             <% end %>
           <% else %>
-            <div class="text-center py-5 text-muted">
-              <i class="fas fa-plus-circle fa-3x mb-3"></i>
+            <div class="empty-content-state">
+              <div class="empty-content-icon">
+                <i class="fas fa-plus-circle"></i>
+              </div>
               <h6>No content blocks yet</h6>
-              <p>Add your first content block using the button above to start creating your lesson.</p>
+              <p>Add your first content block to start creating your lesson.</p>
+              <div class="empty-content-actions">
+                <%= link_to new_instructor_course_lesson_content_block_path(@course, @lesson, block_type: 'text'), 
+                            class: "btn btn-outline-primary btn-sm",
+                            data: { turbo_frame: "content_block_form" } do %>
+                  <i class="fas fa-font"></i> Start with Text
+                <% end %>
+              </div>
             </div>
           <% end %>
         </div>

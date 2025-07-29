@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class ApplicationMailerTest < ActionMailer::TestCase
   test "should have correct default from address" do

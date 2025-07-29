@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class MonthlyReportJobTest < ActiveJob::TestCase
   include ActionMailer::TestHelper
@@ -17,19 +17,19 @@ class MonthlyReportJobTest < ActiveJob::TestCase
   test "should send report to all instructors" do
     # Create additional instructors
     instructor2 = User.create!(
-      name: 'Instructor 2',
-      email: 'instructor2@example.com',
-      password: 'password',
-      role: 'instructor'
+      name: "Instructor 2",
+      email: "instructor2@example.com",
+      password: "password",
+      role: "instructor"
     )
-    
+
     instructor3 = User.create!(
-      name: 'Instructor 3',
-      email: 'instructor3@example.com',
-      password: 'password',
-      role: 'instructor'
+      name: "Instructor 3",
+      email: "instructor3@example.com",
+      password: "password",
+      role: "instructor"
     )
-    
+
     # Should send to all 3 instructors
     assert_emails 3 do
       MonthlyReportJob.perform_now(@month, @year)
@@ -39,19 +39,19 @@ class MonthlyReportJobTest < ActiveJob::TestCase
   test "should not send to non-instructor users" do
     # Create students and admin
     User.create!(
-      name: 'Student User',
-      email: 'student@example.com',
-      password: 'password',
-      role: 'student'
+      name: "Student User",
+      email: "student@example.com",
+      password: "password",
+      role: "student"
     )
-    
+
     User.create!(
-      name: 'Admin User',
-      email: 'admin@example.com',
-      password: 'password',
-      role: 'admin'
+      name: "Admin User",
+      email: "admin@example.com",
+      password: "password",
+      role: "admin"
     )
-    
+
     # Should only send to the original instructor
     assert_emails 1 do
       MonthlyReportJob.perform_now(@month, @year)
@@ -61,7 +61,7 @@ class MonthlyReportJobTest < ActiveJob::TestCase
   test "should handle no instructors" do
     # Remove all instructors
     User.instructor.destroy_all
-    
+
     assert_emails 0 do
       MonthlyReportJob.perform_now(@month, @year)
     end
@@ -73,11 +73,11 @@ class MonthlyReportJobTest < ActiveJob::TestCase
 
   test "should handle different months and years" do
     test_cases = [
-      [1, 2024],
-      [12, 2023],
-      [6, 2025]
+      [ 1, 2024 ],
+      [ 12, 2023 ],
+      [ 6, 2025 ]
     ]
-    
+
     test_cases.each do |month, year|
       assert_emails 1 do
         MonthlyReportJob.perform_now(month, year)
@@ -88,11 +88,11 @@ class MonthlyReportJobTest < ActiveJob::TestCase
   test "should send emails with correct parameters" do
     mock_mailer = Minitest::Mock.new
     mock_mailer.expect :deliver_now, nil
-    
+
     InstructorMailer.stub :monthly_report, mock_mailer do
       MonthlyReportJob.perform_now(@month, @year)
     end
-    
+
     mock_mailer.verify
   end
 
@@ -102,11 +102,11 @@ class MonthlyReportJobTest < ActiveJob::TestCase
       User.create!(
         name: "Instructor #{i}",
         email: "instructor#{i}@example.com",
-        password: 'password',
-        role: 'instructor'
+        password: "password",
+        role: "instructor"
       )
     end
-    
+
     # Should send to all 11 instructors (original + 10 new)
     assert_emails 11 do
       MonthlyReportJob.perform_now(@month, @year)
@@ -121,9 +121,9 @@ class MonthlyReportJobTest < ActiveJob::TestCase
   test "should handle job serialization" do
     job = MonthlyReportJob.new(@month, @year)
     serialized = job.serialize
-    
-    assert_equal 'MonthlyReportJob', serialized['job_class']
-    assert_equal [@month, @year], serialized['arguments']
+
+    assert_equal "MonthlyReportJob", serialized["job_class"]
+    assert_equal [ @month, @year ], serialized["arguments"]
   end
 
   test "should enqueue with delay" do
@@ -137,7 +137,7 @@ class MonthlyReportJobTest < ActiveJob::TestCase
     assert_emails 1 do
       MonthlyReportJob.perform_now(1, 2024) # January
     end
-    
+
     assert_emails 1 do
       MonthlyReportJob.perform_now(12, 2024) # December
     end
@@ -148,7 +148,7 @@ class MonthlyReportJobTest < ActiveJob::TestCase
     assert_emails 1 do
       MonthlyReportJob.perform_now(0, 2024) # Invalid month
     end
-    
+
     assert_emails 1 do
       MonthlyReportJob.perform_now(13, 2024) # Invalid month
     end
@@ -163,12 +163,12 @@ class MonthlyReportJobTest < ActiveJob::TestCase
   test "should handle instructor with no courses" do
     # Create instructor with no courses
     instructor_no_courses = User.create!(
-      name: 'Instructor No Courses',
-      email: 'nocourses@example.com',
-      password: 'password',
-      role: 'instructor'
+      name: "Instructor No Courses",
+      email: "nocourses@example.com",
+      password: "password",
+      role: "instructor"
     )
-    
+
     # Should still send reports to all instructors
     assert_emails 2 do # original instructor + new instructor
       MonthlyReportJob.perform_now(@month, @year)
@@ -187,8 +187,8 @@ class MonthlyReportJobTest < ActiveJob::TestCase
   test "should handle instructor email delivery failure" do
     # Mock mailer to raise error
     mock_mailer = Minitest::Mock.new
-    mock_mailer.expect :deliver_now, -> { raise Net::SMTPError.new('SMTP Error') }
-    
+    mock_mailer.expect :deliver_now, -> { raise Net::SMTPError.new("SMTP Error") }
+
     InstructorMailer.stub :monthly_report, mock_mailer do
       assert_raises(Net::SMTPError) do
         MonthlyReportJob.perform_now(@month, @year)
@@ -202,11 +202,11 @@ class MonthlyReportJobTest < ActiveJob::TestCase
       User.create!(
         name: "Instructor #{i}",
         email: "instructor#{i}@example.com",
-        password: 'password',
-        role: 'instructor'
+        password: "password",
+        role: "instructor"
       )
     end
-    
+
     # Should handle large number of instructors without timeout
     assert_emails 101 do # original + 100 new
       Timeout.timeout(5) do # Should complete within 5 seconds

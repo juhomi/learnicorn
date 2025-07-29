@@ -16,17 +16,18 @@
         <h3><%= @lesson.title %></h3>
         <p class="text-muted">Lesson <%= @lesson.position %> of <%= @course.lessons.count %></p>
         
-        <% if @lesson.video_url.present? %>
-          <div class="mb-4">
-            <div class="embed-responsive embed-responsive-16by9">
-              <iframe class="embed-responsive-item" src="<%= @lesson.video_url %>" allowfullscreen></iframe>
-            </div>
+        <% if @lesson.has_content_blocks? %>
+          <div class="lesson-content">
+            <% @lesson.ordered_content_blocks.each do |content_block| %>
+              <%= render "content_blocks/content_block", content_block: content_block %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-5 text-muted">
+            <i class="fas fa-book-open fa-2x mb-3"></i>
+            <p>No content has been added to this lesson yet.</p>
           </div>
         <% end %>
-        
-        <div class="lesson-content">
-          <p><%= simple_format(@lesson.content) %></p>
-        </div>
       </div>
     </div>
 
@@ -42,7 +43,11 @@
             <% if @is_completed %>
               <span class="badge bg-success fs-6">✓ Completed</span>
             <% else %>
-              <%= link_to "Mark as Complete", complete_course_lesson_path(@course, @lesson), method: :post, class: "btn btn-success" %>
+              <%= form_with url: complete_course_lesson_path(@course, @lesson), method: :post, local: true, class: "d-inline" do |form| %>
+                <%= form.submit "Mark as Complete", class: "btn btn-success", 
+                                confirm: "Mark this lesson as completed?",
+                                data: { disable_with: "<i class='fas fa-spinner fa-spin'></i> Completing..." } %>
+              <% end %>
             <% end %>
           </div>
           <div>

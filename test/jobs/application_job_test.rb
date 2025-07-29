@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 class ApplicationJobTest < ActiveJob::TestCase
   test "should inherit from ActiveJob::Base" do
