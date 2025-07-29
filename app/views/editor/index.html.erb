@@ -1,0 +1,335 @@
+<% content_for :title, "Code Editor" %>
+
+<style>
+  /* Custom styles for the code editor */
+  .editor-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #1e1e1e;
+  }
+  
+  .editor-header {
+    background-color: #2d2d30;
+    color: #cccccc;
+    padding: 8px 16px;
+    border-bottom: 1px solid #3e3e42;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 35px;
+  }
+  
+  .editor-tabs {
+    display: flex;
+    align-items: center;
+  }
+  
+  .editor-tab {
+    background-color: #2d2d30;
+    color: #cccccc;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 0;
+    font-size: 13px;
+    position: relative;
+  }
+  
+  .editor-tab.active {
+    background-color: #1e1e1e;
+    color: #ffffff;
+  }
+  
+  .editor-tab:hover {
+    background-color: #094771;
+  }
+  
+  .editor-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .control-label {
+    font-size: 12px;
+    color: #cccccc;
+  }
+  
+  .control-select {
+    background-color: #3c3c3c;
+    color: #cccccc;
+    border: 1px solid #464647;
+    padding: 2px 6px;
+    font-size: 12px;
+    border-radius: 3px;
+  }
+  
+  .control-select:focus {
+    outline: none;
+    border-color: #007acc;
+  }
+  
+  .editor-main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+  
+  .file-explorer {
+    width: 250px;
+    background-color: #252526;
+    border-right: 1px solid #3e3e42;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .explorer-header {
+    background-color: #2d2d30;
+    color: #cccccc;
+    padding: 8px 12px;
+    border-bottom: 1px solid #3e3e42;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  
+  .explorer-content {
+    flex: 1;
+    padding: 8px 0;
+    overflow-y: auto;
+  }
+  
+  .file-item {
+    padding: 4px 12px;
+    color: #cccccc;
+    cursor: pointer;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .file-item:hover {
+    background-color: #2a2d2e;
+  }
+  
+  .file-item.active {
+    background-color: #094771;
+    color: #ffffff;
+  }
+  
+  .file-icon {
+    margin-right: 6px;
+    width: 16px;
+    height: 16px;
+  }
+  
+  .editor-content {
+    flex: 1;
+    position: relative;
+  }
+  
+  #monaco-editor {
+    width: 100%;
+    height: 100%;
+  }
+  
+  .status-bar {
+    background-color: #007acc;
+    color: #ffffff;
+    padding: 4px 16px;
+    font-size: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 22px;
+  }
+  
+  .status-left, .status-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .file-explorer {
+      display: none;
+    }
+    
+    .editor-controls {
+      display: none;
+    }
+  }
+</style>
+
+<div class="editor-container">
+  <!-- Header with tabs and controls -->
+  <div class="editor-header">
+    <div class="editor-tabs">
+      <button class="editor-tab active" data-file="app.rb">
+        <span>app.rb</span>
+      </button>
+    </div>
+    
+    <div class="editor-controls">
+      <div class="control-group">
+        <span class="control-label">Theme:</span>
+        <select class="control-select" id="theme-selector">
+          <option value="vs-dark">Dark</option>
+          <option value="vs">Light</option>
+          <option value="hc-black">High Contrast</option>
+        </select>
+      </div>
+      
+      <div class="control-group">
+        <span class="control-label">Font Size:</span>
+        <select class="control-select" id="font-size-selector">
+          <option value="12">12px</option>
+          <option value="13">13px</option>
+          <option value="14" selected>14px</option>
+          <option value="16">16px</option>
+          <option value="18">18px</option>
+        </select>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Main editor area -->
+  <div class="editor-main">
+    <!-- File explorer sidebar -->
+    <div class="file-explorer">
+      <div class="explorer-header">Explorer</div>
+      <div class="explorer-content">
+        <div class="file-item active" data-file="app.rb">
+          <span class="file-icon">💎</span>
+          <span>app.rb</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Monaco editor -->
+    <div class="editor-content">
+      <div id="monaco-editor"></div>
+    </div>
+  </div>
+  
+  <!-- Status bar -->
+  <div class="status-bar">
+    <div class="status-left">
+      <span>Ruby</span>
+      <span>UTF-8</span>
+      <span>LF</span>
+    </div>
+    <div class="status-right">
+      <span>Ln <span id="line-number">1</span>, Col <span id="column-number">1</span></span>
+      <span>Spaces: 2</span>
+    </div>
+  </div>
+</div>
+
+<!-- Monaco Editor CDN -->
+<script src="https://unpkg.com/monaco-editor@0.34.1/min/vs/loader.js"></script>
+
+<script>
+  // Sample Ruby code for app.rb file
+  const sampleFiles = {
+    'app.rb': `# Welcome to Ruby on Rails Code Editor
+# This is a sample Ruby application
+
+class Application
+  def initialize
+    @name = "Learning Platform"
+    @version = "1.0.0"
+  end
+  
+  def start
+    puts "Starting #{@name} v#{@version}"
+    setup_routes
+    load_environment
+  end
+  
+  private
+  
+  def setup_routes
+    # Configure application routes
+    Rails.application.routes.draw do
+      root 'home#index'
+      resources :users
+      resources :courses
+    end
+  end
+  
+  def load_environment
+    # Load application environment
+    puts "Environment: #{Rails.env}"
+  end
+end
+
+# Start the application
+app = Application.new
+app.start`
+  };
+
+  let editor;
+  let currentFile = 'app.rb';
+
+  // Initialize Monaco Editor
+  require.config({ paths: { 'vs': 'https://unpkg.com/monaco-editor@0.34.1/min/vs' }});
+  
+  require(['vs/editor/editor.main'], function() {
+    editor = monaco.editor.create(document.getElementById('monaco-editor'), {
+      value: sampleFiles[currentFile],
+      language: 'ruby',
+      theme: 'vs-dark',
+      fontSize: 14,
+      fontFamily: 'Monaco, Menlo, "Ubuntu Mono", monospace',
+      lineNumbers: 'on',
+      minimap: { enabled: true },
+      scrollBeyondLastLine: false,
+      automaticLayout: true,
+      tabSize: 2,
+      insertSpaces: true,
+      wordWrap: 'on',
+      bracketPairColorization: { enabled: true },
+      guides: {
+        bracketPairs: true,
+        indentation: true
+      }
+    });
+
+    // Update cursor position in status bar
+    editor.onDidChangeCursorPosition(function(e) {
+      document.getElementById('line-number').textContent = e.position.lineNumber;
+      document.getElementById('column-number').textContent = e.position.column;
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+      editor.layout();
+    });
+  });
+
+  // Simple functionality for single file editor
+  document.addEventListener('DOMContentLoaded', function() {
+    // Theme selector
+    document.getElementById('theme-selector').addEventListener('change', function() {
+      if (editor) {
+        monaco.editor.setTheme(this.value);
+      }
+    });
+
+    // Font size selector
+    document.getElementById('font-size-selector').addEventListener('change', function() {
+      if (editor) {
+        editor.updateOptions({ fontSize: parseInt(this.value) });
+      }
+    });
+  });
+</script>

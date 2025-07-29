@@ -1,0 +1,20 @@
+<div class="video-content mb-4">
+  <% if content_block.file_url.present? %>
+    <div class="ratio ratio-16x9">
+      <% if content_block.file_url.include?('youtube.com') || content_block.file_url.include?('youtu.be') %>
+        <iframe src="<%= youtube_embed_url(content_block.file_url) %>" 
+                allowfullscreen
+                class="rounded"></iframe>
+      <% elsif content_block.file_url.include?('vimeo.com') %>
+        <iframe src="<%= vimeo_embed_url(content_block.file_url) %>" 
+                allowfullscreen
+                class="rounded"></iframe>
+      <% else %>
+        <video controls class="w-100 rounded">
+          <source src="<%= content_block.file_url %>" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      <% end %>
+    </div>
+  <% end %>
+</div>

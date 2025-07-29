@@ -1,0 +1,84 @@
+<%= turbo_frame_tag "content_block_form" do %>
+  <div class="card">
+    <div class="card-header">
+      <h5><%= @content_block.persisted? ? "Edit" : "New" %> Content Block</h5>
+    </div>
+    <div class="card-body" data-controller="content-block-form">
+      <%= form_with model: [@course, @lesson, @content_block], 
+                    url: @content_block.persisted? ? 
+                         instructor_course_lesson_content_block_path(@course, @lesson, @content_block) : 
+                         instructor_course_lesson_content_blocks_path(@course, @lesson),
+                    local: false,
+                    data: { turbo_frame: "content_block_form" } do |form| %>
+        
+        <% if @content_block.errors.any? %>
+          <div class="alert alert-danger">
+            <h6><%= pluralize(@content_block.errors.count, "error") %> prohibited this content block from being saved:</h6>
+            <ul class="mb-0">
+              <% @content_block.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <div class="mb-3">
+          <%= form.label :block_type, class: "form-label" %>
+          <%= form.select :block_type, 
+                          options_for_select([
+                            ['Text', 'text'],
+                            ['Image', 'image'], 
+                            ['Video', 'video']
+                          ], @content_block.block_type), 
+                          {},
+                          { class: "form-select", 
+                            data: { 
+                              content_block_form_target: "blockType",
+                              action: "change->content-block-form#toggleFields" 
+                            } } %>
+        </div>
+
+        <div class="mb-3">
+          <%= form.label :position, class: "form-label" %>
+          <%= form.number_field :position, class: "form-control", min: 1 %>
+          <div class="form-text">Leave blank to add at the end</div>
+        </div>
+
+        <div id="text-fields" class="content-type-fields" style="<%= 'display: none;' unless @content_block.text? %>">
+          <div class="mb-3">
+            <%= form.label :content, class: "form-label" %>
+            <%= form.text_area :content, rows: 8, class: "form-control" %>
+            <div class="form-text">You can use basic HTML tags for formatting</div>
+          </div>
+        </div>
+
+        <div id="image-fields" class="content-type-fields" style="<%= 'display: none;' unless @content_block.image? %>">
+          <div class="mb-3">
+            <%= form.label :file_url, "Image URL", class: "form-label" %>
+            <%= form.url_field :file_url, class: "form-control" %>
+          </div>
+          <div class="mb-3">
+            <%= form.label :alt_text, "Alt Text", class: "form-label" %>
+            <%= form.text_field :alt_text, class: "form-control" %>
+            <div class="form-text">Describe the image for accessibility</div>
+          </div>
+        </div>
+
+        <div id="video-fields" class="content-type-fields" style="<%= 'display: none;' unless @content_block.video? %>">
+          <div class="mb-3">
+            <%= form.label :file_url, "Video URL", class: "form-label" %>
+            <%= form.url_field :file_url, class: "form-control" %>
+            <div class="form-text">YouTube, Vimeo, or direct video file URLs supported</div>
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between">
+          <%= form.submit class: "btn btn-primary" %>
+          <%= link_to "Cancel", instructor_course_lesson_path(@course, @lesson), 
+                      class: "btn btn-secondary",
+                      data: { turbo_frame: "_top" } %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+<% end %>

@@ -1,0 +1,27 @@
+<div class="video-content-block">
+  <div class="card">
+    <div class="card-body">
+      <% if content_block.file_url.present? %>
+        <div class="embed-responsive embed-responsive-16by9">
+          <% if content_block.file_url.include?('youtube.com') || content_block.file_url.include?('youtu.be') %>
+            <iframe class="embed-responsive-item" 
+                    src="<%= youtube_embed_url(content_block.file_url) %>" 
+                    allowfullscreen></iframe>
+          <% elsif content_block.file_url.include?('vimeo.com') %>
+            <iframe class="embed-responsive-item" 
+                    src="<%= vimeo_embed_url(content_block.file_url) %>" 
+                    allowfullscreen></iframe>
+          <% else %>
+            <video class="w-100" controls>
+              <source src="<%= content_block.file_url %>" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          <% end %>
+        </div>
+        <p class="text-muted mt-2 small">Video URL: <%= content_block.file_url %></p>
+      <% else %>
+        <p class="text-muted">No video URL provided</p>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -15,14 +15,15 @@ Vagrant.configure("2") do |config|
   config.vm.box = "ubuntu/focal64"
   
    config.vm.provider "virtualbox" do |vb|
-    vb.gui = true           # Force VM window to open
-    vb.memory = "2048"      # Optional: increase RAM
-    vb.cpus = 2             # Optional: improve boot speed
+    vb.gui = false          
+    vb.memory = "4096"      # Optional: increase RAM
+    vb.cpus = 3            # Optional: improve boot speed
   end
 
   Vagrant.configure("2") do |config|
-    config.vm.boot_timeout = 600 # Correct: Sets VM boot timeout to 10 minutes
-    config.ssh.connect_timeout = 60 # Correct: Sets SSH connection timeout to 60 seconds
+    config.vm.boot_timeout = 1200 # Correct: Sets VM boot timeout to 10 minutes
+    config.ssh.connect_timeout = 600 # Correct: Sets SSH connection timeout to 60 seconds
+     config.ssh.max_tries = 6
   end
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs

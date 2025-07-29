@@ -19,7 +19,7 @@ class Instructor::LessonsController < ApplicationController
     @lesson = @course.lessons.build(lesson_params)
     
     if @lesson.save
-      redirect_to instructor_course_lesson_path(@course, @lesson), notice: 'Lesson created successfully!'
+      redirect_to instructor_course_lesson_path(@course, @lesson), notice: 'Lesson created successfully! Now you can add content blocks below.'
     else
       render :new
     end
@@ -52,6 +52,6 @@ class Instructor::LessonsController < ApplicationController
   end
   
   def lesson_params
-    params.require(:lesson).permit(:title, :content, :video_url, :position)
+    params.require(:lesson).permit(:title, :content, :position)
   end
 end

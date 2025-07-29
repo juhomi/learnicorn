@@ -16,16 +16,27 @@
         <h3><%= @lesson.title %></h3>
         <p class="text-muted">Lesson <%= @lesson.position %> of <%= @course.lessons.count %></p>
         
-        <% if @lesson.video_url.present? %>
-          <div class="mb-4">
-            <div class="ratio ratio-16x9">
-              <iframe src="<%= @lesson.video_url %>" allowfullscreen></iframe>
-            </div>
-          </div>
-        <% end %>
-        
-        <div class="lesson-content">
-          <%= simple_format(@lesson.content) %>
+        <div class="lesson-content mt-4">
+          <% if @lesson.has_content_blocks? %>
+            <% @lesson.ordered_content_blocks.each do |content_block| %>
+              <%= render "content_blocks/content_block", content_block: content_block %>
+            <% end %>
+          <% else %>
+            <!-- Fallback to legacy content if no content blocks -->
+            <% if @lesson.video_url.present? %>
+              <div class="mb-4">
+                <div class="ratio ratio-16x9">
+                  <iframe src="<%= @lesson.video_url %>" allowfullscreen class="rounded"></iframe>
+                </div>
+              </div>
+            <% end %>
+            
+            <% if @lesson.content.present? %>
+              <div class="lesson-text-content">
+                <%= simple_format(@lesson.content) %>
+              </div>
+            <% end %>
+          <% end %>
         </div>
       </div>
     </div>

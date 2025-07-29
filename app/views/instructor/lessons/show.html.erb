@@ -28,20 +28,46 @@
         </div>
       </div>
       <div class="card-body">
-        <% if @lesson.video_url.present? %>
-          <div class="mb-4">
-            <h6>Video URL:</h6>
-            <p><%= @lesson.video_url %></p>
-            <div class="embed-responsive embed-responsive-16by9">
-              <iframe class="embed-responsive-item" src="<%= @lesson.video_url %>" allowfullscreen></iframe>
-            </div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6>Lesson Content</h6>
+          <div>
+            <%= link_to "Edit Content Blocks", edit_instructor_course_lesson_path(@course, @lesson), 
+                        class: "btn btn-primary btn-sm" %>
+          </div>
+        </div>
+
+        <% if @lesson.has_content_blocks? %>
+          <div class="lesson-content">
+            <% @lesson.ordered_content_blocks.each do |content_block| %>
+              <%= render "content_blocks/content_block", content_block: content_block %>
+            <% end %>
+          </div>
+        <% else %>
+          <div class="text-center py-4 text-muted">
+            <i class="fas fa-edit fa-2x mb-3"></i>
+            <p>No content blocks created yet.</p>
+            <p><%= link_to "Start adding content blocks", edit_instructor_course_lesson_path(@course, @lesson), 
+                           class: "btn btn-primary btn-sm" %></p>
           </div>
         <% end %>
-        
-        <div class="lesson-content">
-          <h6>Content:</h6>
-          <p><%= simple_format(@lesson.content) %></p>
-        </div>
+
+        <% if @lesson.content.present? || @lesson.video_url.present? %>
+          <div class="mt-4 pt-4 border-top">
+            <h6 class="text-muted small">Legacy Content Preview</h6>
+            <% if @lesson.video_url.present? %>
+              <div class="mb-3">
+                <div class="ratio ratio-16x9">
+                  <iframe src="<%= @lesson.video_url %>" allowfullscreen class="rounded"></iframe>
+                </div>
+              </div>
+            <% end %>
+            <% if @lesson.content.present? %>
+              <div class="lesson-text-content">
+                <%= simple_format(@lesson.content) %>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
   </div>

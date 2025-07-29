@@ -24,15 +24,11 @@
           </div>
 
           <div class="mb-3">
-            <%= form.label :content, class: "form-label" %>
-            <%= form.text_area :content, class: "form-control", rows: 8, required: true %>
-            <div class="form-text">Write the lesson content here. This will be displayed to students.</div>
-          </div>
-
-          <div class="mb-3">
-            <%= form.label :video_url, "Video URL (optional)", class: "form-label" %>
-            <%= form.url_field :video_url, class: "form-control" %>
-            <div class="form-text">Add a video URL to embed in the lesson (YouTube, Vimeo, etc.)</div>
+            <%= form.label :content, "Initial Content (optional)", class: "form-label" %>
+            <%= form.text_area :content, class: "form-control", rows: 4 %>
+            <div class="form-text">
+              <strong>Optional:</strong> Add some basic content to get started. You'll use Content Blocks for rich, mixed-media content after creating the lesson.
+            </div>
           </div>
 
           <div class="mb-3">

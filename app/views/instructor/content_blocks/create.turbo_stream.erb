@@ -1,0 +1,47 @@
+<%= turbo_stream.replace "content_block_form" do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i>
+    <strong>Success!</strong> Content block was successfully created.
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<%= turbo_stream.update "content-blocks-container" do %>
+  <% if @lesson.has_content_blocks? %>
+    <% @lesson.ordered_content_blocks.each do |content_block| %>
+      <div class="<%= 'newly-created' if content_block.id == @content_block.id %>">
+        <%= render "instructor/content_blocks/content_block", content_block: content_block %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="text-center py-5 text-muted">
+      <i class="fas fa-plus-circle fa-3x mb-3"></i>
+      <h6>No content blocks yet</h6>
+      <p>Add your first content block using the button above to start creating your lesson.</p>
+    </div>
+  <% end %>
+<% end %>
+
+<script>
+  // Add animation to newly created content block
+  setTimeout(() => {
+    const newBlock = document.querySelector('.newly-created');
+    if (newBlock) {
+      newBlock.style.border = '2px solid #28a745';
+      newBlock.style.borderRadius = '8px';
+      newBlock.style.backgroundColor = '#f8fff8';
+      newBlock.style.transition = 'all 0.3s ease';
+      
+      // Remove the highlight after 3 seconds
+      setTimeout(() => {
+        newBlock.style.border = 'none';
+        newBlock.style.backgroundColor = 'transparent';
+        newBlock.classList.remove('newly-created');
+      }, 3000);
+    }
+  }, 100);
+</script>
+
+<%= turbo_stream.update "content-blocks-info" do %>
+  <p><strong>Content Blocks:</strong> <%= @lesson.content_blocks.count %></p>
+<% end %>

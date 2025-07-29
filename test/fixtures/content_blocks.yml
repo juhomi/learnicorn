@@ -1,0 +1,19 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+text_block_one:
+  lesson: one
+  block_type: 0
+  position: 1
+  content: "This is a sample text content for lesson one."
+  file_url: 
+  alt_text: 
+  metadata: {}
+
+video_block_two:
+  lesson: two  
+  block_type: 2
+  position: 1
+  content: 
+  file_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+  alt_text: 
+  metadata: {} 

@@ -10,9 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_07_23_114046) do
+ActiveRecord::Schema[8.0].define(version: 2025_07_24_091036) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "content_blocks", force: :cascade do |t|
+    t.bigint "lesson_id", null: false
+    t.integer "block_type", null: false
+    t.integer "position", null: false
+    t.text "content"
+    t.string "file_url"
+    t.string "alt_text"
+    t.json "metadata", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["block_type"], name: "index_content_blocks_on_block_type"
+    t.index ["lesson_id", "position"], name: "index_content_blocks_on_lesson_id_and_position"
+    t.index ["lesson_id"], name: "index_content_blocks_on_lesson_id"
+  end
 
   create_table "courses", force: :cascade do |t|
     t.string "title"
@@ -65,6 +80,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_07_23_114046) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "content_blocks", "lessons"
   add_foreign_key "courses", "users", column: "instructor_id"
   add_foreign_key "enrollments", "courses"
   add_foreign_key "enrollments", "users"

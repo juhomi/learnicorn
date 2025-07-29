@@ -1,0 +1,13 @@
+<div class="image-content mb-4">
+  <% if content_block.file_url.present? %>
+    <div class="text-center">
+      <img src="<%= content_block.file_url %>" 
+           alt="<%= content_block.alt_text %>" 
+           class="img-fluid rounded shadow-sm" 
+           style="max-width: 100%; height: auto;" />
+      <% if content_block.alt_text.present? %>
+        <p class="text-muted mt-2 small fst-italic"><%= content_block.alt_text %></p>
+      <% end %>
+    </div>
+  <% end %>
+</div>

@@ -19,6 +19,9 @@ Rails.application.routes.draw do
   # Dashboard route for authenticated users
   get '/dashboard', to: 'dashboard#index'
   
+  # Code Editor route
+  get '/editor', to: 'editor#index'
+  
   # Public course browsing
   resources :courses, only: [:index, :show] do
     member do
@@ -28,6 +31,7 @@ Rails.application.routes.draw do
       member do
         post :complete
       end
+      resources :content_blocks, except: [:index]
     end
   end
   
@@ -44,7 +48,16 @@ Rails.application.routes.draw do
   namespace :instructor do
     get '/', to: 'dashboard#index'
     resources :courses do
-      resources :lessons
+      resources :lessons do
+        resources :content_blocks do
+          member do
+            patch :move
+          end
+          collection do
+            patch :reorder
+          end
+        end
+      end
     end
     resources :enrollments, only: [:index, :show]
   end

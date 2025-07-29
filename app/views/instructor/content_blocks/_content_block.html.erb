@@ -1,0 +1,27 @@
+<div class="content-block" data-content-block-id="<%= content_block.id %>" data-position="<%= content_block.position %>">
+  <div class="content-block-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="drag-handle">
+        <i class="fas fa-grip-vertical text-muted"></i>
+        <span class="badge badge-<%= content_block_type_color(content_block.block_type) %> ms-2">
+          <%= content_block.block_type.titleize %>
+        </span>
+        <span class="text-muted ms-2">Position <%= content_block.position %></span>
+      </div>
+      <div class="content-block-actions">
+        <%= link_to "Edit", edit_instructor_course_lesson_content_block_path(@course, @lesson, content_block), 
+            class: "btn btn-sm btn-outline-primary", 
+            data: { turbo_frame: "content_block_form" } %>
+        <%= link_to "Delete", instructor_course_lesson_content_block_path(@course, @lesson, content_block), 
+            method: :delete, 
+            confirm: "Are you sure?", 
+            class: "btn btn-sm btn-outline-danger",
+            data: { turbo_method: :delete } %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="content-block-body mt-2">
+    <%= render "instructor/content_blocks/#{content_block.block_type}_display", content_block: content_block %>
+  </div>
+</div>

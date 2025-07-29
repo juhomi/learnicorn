@@ -1,0 +1,16 @@
+<div class="image-content-block">
+  <div class="card">
+    <div class="card-body">
+      <% if content_block.file_url.present? %>
+        <img src="<%= content_block.file_url %>" 
+             alt="<%= content_block.alt_text %>" 
+             class="img-fluid rounded" />
+        <% if content_block.alt_text.present? %>
+          <p class="text-muted mt-2 small"><%= content_block.alt_text %></p>
+        <% end %>
+      <% else %>
+        <p class="text-muted">No image URL provided</p>
+      <% end %>
+    </div>
+  </div>
+</div>
