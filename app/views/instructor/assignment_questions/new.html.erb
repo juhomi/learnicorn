@@ -1,0 +1,248 @@
+<% content_for :title, "Add Question" %>
+
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Courses", instructor_courses_path %></li>
+        <li class="breadcrumb-item"><%= link_to @course.title, instructor_course_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to "Lessons", instructor_course_lessons_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to @lesson.title, instructor_course_lesson_path(@course, @lesson) %></li>
+        <li class="breadcrumb-item"><%= link_to @assignment.title, instructor_course_lesson_assignment_path(@course, @lesson, @assignment) %></li>
+        <li class="breadcrumb-item active" aria-current="page">Add Question</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h4>Add New Question</h4>
+        <p class="text-muted mb-0">
+          <i class="fas fa-<%= @question.multiple_choice? ? 'list' : @question.true_false? ? 'check-circle' : @question.coding? ? 'code' : 'edit' %>"></i>
+          <%= @question.question_type.titleize %>
+        </p>
+      </div>
+      <div class="card-body">
+        <%= form_with model: [@course, @lesson, @assignment, @question], 
+                      url: instructor_course_lesson_assignment_assignment_questions_path(@course, @lesson, @assignment), 
+                      local: true do |form| %>
+          
+          <% if @question.errors.any? %>
+            <div class="alert alert-danger alert-dismissible fade show">
+              <i class="fas fa-exclamation-triangle"></i>
+              <strong>Please fix the following errors:</strong>
+              <ul class="mb-0 mt-2">
+                <% @question.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% end %>
+
+          <%= form.hidden_field :question_type, value: @question.question_type %>
+
+          <div class="mb-3">
+            <%= form.label :question_text, "Question", class: "form-label" %>
+            <%= form.text_area :question_text, class: "form-control", rows: 4, required: true,
+                               placeholder: "Enter your question here..." %>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6">
+              <div class="mb-3">
+                <%= form.label :points, "Points", class: "form-label" %>
+                <%= form.number_field :points, class: "form-control", min: 1, value: 10 %>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="mb-3">
+                <%= form.label :position, "Position", class: "form-label" %>
+                <%= form.number_field :position, class: "form-control", min: 1, 
+                                      value: (@assignment.assignment_questions.count + 1) %>
+              </div>
+            </div>
+          </div>
+
+          <!-- Multiple Choice Options -->
+          <% if @question.multiple_choice? %>
+            <div class="mb-4">
+              <label class="form-label">Answer Choices</label>
+              <div id="choices-container">
+                <% 4.times do |i| %>
+                  <div class="choice-item mb-2">
+                    <div class="input-group">
+                      <span class="input-group-text">
+                        <input type="radio" name="correct_choice" value="<%= i %>" 
+                               <%= 'checked' if i == 0 %> aria-label="Mark as correct answer">
+                      </span>
+                      <span class="input-group-text"><%= ('A'.ord + i).chr %></span>
+                      <input type="text" name="assignment_question[choices][]" 
+                             class="form-control" placeholder="Enter choice <%= ('A'.ord + i).chr %>"
+                             <%= 'required' if i < 2 %>>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+              <small class="form-text text-muted">
+                <i class="fas fa-info-circle"></i>
+                Select the radio button to mark the correct answer. At least 2 choices required.
+              </small>
+            </div>
+          <% end %>
+
+          <!-- True/False -->
+          <% if @question.true_false? %>
+            <div class="mb-3">
+              <%= form.label :correct_answer, "Correct Answer", class: "form-label" %>
+              <%= form.select :correct_answer, 
+                              options_for_select([['True', '1'], ['False', '0']], '1'), 
+                              {}, 
+                              { class: "form-select" } %>
+            </div>
+          <% end %>
+
+          <!-- Coding Question -->
+          <% if @question.coding? %>
+            <div class="mb-3">
+              <%= form.label :correct_answer, "Expected Code/Keywords", class: "form-label" %>
+              <%= form.text_area :correct_answer, class: "form-control", rows: 6,
+                                 placeholder: "Enter expected code solution or keywords to check for..." %>
+              <small class="form-text text-muted">
+                For automatic grading, list keywords or code patterns separated by commas.
+              </small>
+            </div>
+          <% end %>
+
+          <!-- Essay Question -->
+          <% if @question.essay? %>
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <strong>Essay questions require manual grading.</strong>
+              Students will submit text responses that you'll need to grade individually.
+            </div>
+          <% end %>
+
+          <!-- Explanation (Optional) -->
+          <div class="mb-3">
+            <%= form.label :explanation, "Explanation (Optional)", class: "form-label" %>
+            <%= form.text_area :explanation, class: "form-control", rows: 3,
+                               placeholder: "Provide explanation to help students understand the correct answer..." %>
+            <small class="form-text text-muted">
+              This explanation will be shown to students after they submit their answer.
+            </small>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <%= link_to "Cancel", instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                        class: "btn btn-secondary" %>
+            <%= form.submit "Add Question", class: "btn btn-primary",
+                            data: { disable_with: "<i class='fas fa-spinner fa-spin'></i> Adding..." } %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Question Type Guide</h6>
+      </div>
+      <div class="card-body">
+        <% case @question.question_type %>
+        <% when 'multiple_choice' %>
+          <div class="question-type-guide">
+            <h6><i class="fas fa-list text-primary"></i> Multiple Choice</h6>
+            <ul class="small">
+              <li>Automatically graded</li>
+              <li>2-4 answer choices</li>
+              <li>Only one correct answer</li>
+              <li>Perfect for factual questions</li>
+            </ul>
+          </div>
+        <% when 'true_false' %>
+          <div class="question-type-guide">
+            <h6><i class="fas fa-check-circle text-success"></i> True/False</h6>
+            <ul class="small">
+              <li>Automatically graded</li>
+              <li>Simple true or false answer</li>
+              <li>Great for concept verification</li>
+              <li>Quick to answer</li>
+            </ul>
+          </div>
+        <% when 'coding' %>
+          <div class="question-type-guide">
+            <h6><i class="fas fa-code text-warning"></i> Coding Question</h6>
+            <ul class="small">
+              <li>Semi-automatic grading</li>
+              <li>Students submit code</li>
+              <li>Keywords/patterns checked</li>
+              <li>May need manual review</li>
+            </ul>
+          </div>
+        <% when 'essay' %>
+          <div class="question-type-guide">
+            <h6><i class="fas fa-edit text-info"></i> Essay Question</h6>
+            <ul class="small">
+              <li>Manual grading required</li>
+              <li>Open-ended responses</li>
+              <li>Longer text answers</li>
+              <li>Critical thinking assessment</li>
+            </ul>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Assignment Progress</h6>
+      </div>
+      <div class="card-body">
+        <div class="progress-step mb-2">
+          <i class="fas fa-check-circle text-success"></i>
+          <span class="ms-2">Assignment created</span>
+        </div>
+        <div class="progress-step mb-2">
+          <i class="fas fa-clock text-primary"></i>
+          <span class="ms-2">Adding questions (<%= @assignment.total_questions %>)</span>
+        </div>
+        <div class="progress-step mb-2">
+          <i class="fas fa-eye text-muted"></i>
+          <span class="ms-2">Preview & test</span>
+        </div>
+        <div class="progress-step">
+          <i class="fas fa-share text-muted"></i>
+          <span class="ms-2">Publish to students</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Handle multiple choice correct answer selection
+document.addEventListener('DOMContentLoaded', function() {
+  const correctRadios = document.querySelectorAll('input[name="correct_choice"]');
+  const form = document.querySelector('form');
+  
+  if (correctRadios.length > 0) {
+    // Add hidden field for correct answer
+    const correctAnswerField = document.createElement('input');
+    correctAnswerField.type = 'hidden';
+    correctAnswerField.name = 'assignment_question[correct_answer]';
+    correctAnswerField.value = '0'; // Default to first choice
+    form.appendChild(correctAnswerField);
+    
+    correctRadios.forEach((radio, index) => {
+      radio.addEventListener('change', function() {
+        correctAnswerField.value = index.toString();
+      });
+    });
+  }
+});
+</script>

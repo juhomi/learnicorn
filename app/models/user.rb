@@ -10,6 +10,8 @@ class User < ApplicationRecord
   has_many :enrollments, dependent: :destroy
   has_many :enrolled_courses, through: :enrollments, source: :course
   has_many :lesson_completions, dependent: :destroy
+  has_many :completed_lessons, through: :lesson_completions, source: :lesson
+  has_many :assignment_submissions, dependent: :destroy
 
 
   def admin?

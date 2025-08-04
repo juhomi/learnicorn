@@ -1,0 +1,310 @@
+<% content_for :title, "Taking Assignment: #{@assignment.title}" %>
+
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Courses", student_courses_path %></li>
+        <li class="breadcrumb-item"><%= link_to @course.title, student_course_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to @lesson.title, student_course_lesson_path(@course, @lesson) %></li>
+        <li class="breadcrumb-item"><%= link_to "Assignments", student_course_lesson_assignments_path(@course, @lesson) %></li>
+        <li class="breadcrumb-item"><%= link_to @assignment.title, student_course_lesson_assignment_path(@course, @lesson, @assignment) %></li>
+        <li class="breadcrumb-item active" aria-current="page">Taking Assignment</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-9">
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h4>
+              <i class="fas fa-<%= @assignment.quiz? ? 'question-circle text-primary' : @assignment.coding? ? 'code text-success' : @assignment.essay? ? 'edit text-warning' : 'tasks text-info' %>"></i>
+              <%= @assignment.title %>
+            </h4>
+            <small class="text-muted">
+              <%= @assignment.assignment_questions.count %> questions | <%= @assignment.max_score %> points total
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <%= form_with url: submit_student_course_lesson_assignment_path(@course, @lesson, @assignment),
+                      method: :post,
+                      id: "assignment-form",
+                      local: false do |form| %>
+          
+          <% if @assignment.instructions.present? %>
+            <div class="alert alert-info mb-4">
+              <h6><i class="fas fa-info-circle"></i> Instructions</h6>
+              <%= simple_format(@assignment.instructions) %>
+            </div>
+          <% end %>
+
+          <div id="questions-container">
+            <% @assignment.assignment_questions.ordered.each_with_index do |question, index| %>
+              <div class="question-block mb-5 p-4 border rounded">
+                <div class="question-header mb-3">
+                  <h5>
+                    Question <%= index + 1 %> 
+                    <span class="badge bg-info"><%= question.points %> point<%= 's' if question.points != 1 %></span>
+                  </h5>
+                </div>
+
+                <div class="question-text mb-4">
+                  <%= simple_format(question.question_text) %>
+                </div>
+
+                <div class="answer-section">
+                  <% existing_answer = @answers[question.id] %>
+                  
+                  <% if question.multiple_choice? %>
+                    <div class="multiple-choice-options">
+                      <% question.option_labels.each_with_index do |option, option_index| %>
+                        <div class="form-check mb-2">
+                          <%= radio_button_tag "answers[#{question.id}]", 
+                                               option_index.to_s, 
+                                               existing_answer&.answer_text == option_index.to_s,
+                                               class: "form-check-input" %>
+                          <%= label_tag "answers_#{question.id}_#{option_index}", 
+                                        option, 
+                                        class: "form-check-label" %>
+                        </div>
+                      <% end %>
+                    </div>
+
+                  <% elsif question.true_false? %>
+                    <div class="true-false-options">
+                      <div class="form-check mb-2">
+                        <%= radio_button_tag "answers[#{question.id}]", 
+                                             "1", 
+                                             existing_answer&.answer_text == "1",
+                                             class: "form-check-input" %>
+                        <%= label_tag "answers_#{question.id}_1", "True", class: "form-check-label" %>
+                      </div>
+                      <div class="form-check mb-2">
+                        <%= radio_button_tag "answers[#{question.id}]", 
+                                             "0", 
+                                             existing_answer&.answer_text == "0",
+                                             class: "form-check-input" %>
+                        <%= label_tag "answers_#{question.id}_0", "False", class: "form-check-label" %>
+                      </div>
+                    </div>
+
+                  <% elsif question.coding? || question.essay? %>
+                    <div class="text-answer">
+                      <%= text_area_tag "answers[#{question.id}]", 
+                                        existing_answer&.answer_text,
+                                        class: "form-control",
+                                        rows: question.coding? ? 8 : 6,
+                                        placeholder: question.coding? ? "Enter your code here..." : "Write your answer here..." %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+
+          <div class="assignment-actions mt-4 pt-4 border-top">
+            <div class="row">
+              <div class="col-md-6">
+                <button type="button" id="save-draft-btn" class="btn btn-outline-primary">
+                  <i class="fas fa-save"></i> Save Draft
+                </button>
+              </div>
+              <div class="col-md-6 text-end">
+                <button type="button" id="submit-assignment-btn" class="btn btn-success btn-lg">
+                  <i class="fas fa-check"></i> Submit Assignment
+                </button>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-3">
+    <div class="card">
+      <div class="card-header">
+        <h6>Assignment Info</h6>
+      </div>
+      <div class="card-body">
+        <div class="info-item mb-2">
+          <i class="fas fa-question text-primary"></i>
+          <small>Questions: <%= @assignment.assignment_questions.count %></small>
+        </div>
+        <div class="info-item mb-2">
+          <i class="fas fa-star text-warning"></i>
+          <small>Points: <%= @assignment.max_score %></small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Assignment form handler - works with both page load and Turbo navigation
+function initializeAssignmentForm() {
+  const form = document.getElementById('assignment-form');
+  const saveDraftBtn = document.getElementById('save-draft-btn');
+  const submitBtn = document.getElementById('submit-assignment-btn');
+  
+  // Skip if elements don't exist or already initialized
+  if (!form || !saveDraftBtn || !submitBtn || saveDraftBtn.dataset.initialized) {
+    return;
+  }
+  
+  // Mark as initialized to prevent double binding
+  saveDraftBtn.dataset.initialized = 'true';
+  submitBtn.dataset.initialized = 'true';
+  
+  console.log('Initializing assignment form handlers');
+  
+  // Get fresh CSRF token
+  function getCSRFToken() {
+    const metaTag = document.querySelector('meta[name="csrf-token"]');
+    const formToken = form.querySelector('input[name="authenticity_token"]');
+    
+    // Prefer meta tag token, fallback to form token
+    return metaTag?.getAttribute('content') || formToken?.value || '';
+  }
+  
+  // Save draft function
+  saveDraftBtn.addEventListener('click', async function() {
+    const originalText = this.innerHTML;
+    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+    this.disabled = true;
+    
+    try {
+      const formData = new FormData(form);
+      formData.append('save_draft', 'true');
+      
+      // Get fresh CSRF token for request
+      const csrfToken = getCSRFToken();
+      console.log('Using CSRF token for save:', csrfToken ? csrfToken.substring(0, 10) + '...' : 'none');
+      
+      const headers = {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Accept': 'application/json'
+      };
+      
+      if (csrfToken) {
+        headers['X-CSRF-Token'] = csrfToken;
+      }
+      
+      const response = await fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: headers,
+        credentials: 'same-origin'
+      });
+      
+      if (response.redirected) {
+        window.location.href = response.url;
+        return;
+      }
+      
+      if (response.status === 422) {
+        // CSRF token expired - refresh page to get new token
+        alert('Security token expired. Page will refresh to get a new token.');
+        window.location.reload();
+        return;
+      }
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        // Show success message briefly
+        this.innerHTML = '<i class="fas fa-check text-success"></i> Saved!';
+        setTimeout(() => {
+          this.innerHTML = originalText;
+        }, 2000);
+      } else {
+        alert('Error: ' + (data.message || 'Unknown error'));
+      }
+      
+    } catch (error) {
+      console.error('Save draft error:', error);
+      alert('Error saving draft: ' + error.message);
+    } finally {
+      this.disabled = false;
+      if (this.innerHTML.includes('Saving...')) {
+        this.innerHTML = originalText;
+      }
+    }
+  });
+
+  // Submit function
+  submitBtn.addEventListener('click', function() {
+    if (confirm('Submit assignment? You cannot change answers after submission.')) {
+      // Add hidden field for final submission
+      let finalSubmitInput = form.querySelector('input[name="final_submit"]');
+      if (!finalSubmitInput) {
+        finalSubmitInput = document.createElement('input');
+        finalSubmitInput.type = 'hidden';
+        finalSubmitInput.name = 'final_submit';
+        finalSubmitInput.value = 'true';
+        form.appendChild(finalSubmitInput);
+      }
+      
+      // Ensure fresh CSRF token in form
+      const csrfToken = getCSRFToken();
+      let formTokenInput = form.querySelector('input[name="authenticity_token"]');
+      if (formTokenInput && csrfToken) {
+        formTokenInput.value = csrfToken;
+        console.log('Updated form CSRF token for submit:', csrfToken.substring(0, 10) + '...');
+      }
+      
+      // Disable button to prevent double submission
+      this.disabled = true;
+      this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+      
+      // Submit the form normally (not AJAX)
+      form.submit();
+    }
+  });
+  
+  // Auto-save draft every 2 minutes
+  if (!window.assignmentAutoSaveInterval) {
+    window.assignmentAutoSaveInterval = setInterval(function() {
+      if (form && saveDraftBtn && !saveDraftBtn.disabled) {
+        console.log('Auto-saving draft...');
+        saveDraftBtn.click();
+      }
+    }, 120000);
+  }
+}
+
+// Initialize on both page load and Turbo navigation
+document.addEventListener('DOMContentLoaded', initializeAssignmentForm);
+document.addEventListener('turbo:load', initializeAssignmentForm);
+document.addEventListener('turbo:render', initializeAssignmentForm);
+
+// Clean up intervals when navigating away
+document.addEventListener('turbo:before-visit', function() {
+  if (window.assignmentAutoSaveInterval) {
+    clearInterval(window.assignmentAutoSaveInterval);
+    window.assignmentAutoSaveInterval = null;
+  }
+});
+</script>
+
+<style>
+.question-block {
+  background-color: #f8f9fa;
+}
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+</style>

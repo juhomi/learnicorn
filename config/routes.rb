@@ -57,6 +57,20 @@ Rails.application.routes.draw do
             patch :reorder
           end
         end
+        resources :assignments do
+          member do
+            patch :publish
+            get :submissions
+          end
+          resources :assignment_questions do
+            member do
+              patch :move
+            end
+            collection do
+              patch :reorder
+            end
+          end
+        end
       end
     end
     resources :enrollments, only: [ :index, :show ]
@@ -66,7 +80,14 @@ Rails.application.routes.draw do
   namespace :student do
     get "/", to: "dashboard#index"
     resources :courses, only: [ :index, :show ] do
-      resources :lessons, only: [ :show ]
+      resources :lessons, only: [ :show ] do
+        resources :assignments, only: [ :index, :show ] do
+          member do
+            get :take
+            post :submit
+          end
+        end
+      end
     end
     resources :enrollments, only: [ :index, :show ]
   end

@@ -1,0 +1,172 @@
+<% content_for :title, "Create Assignment" %>
+
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Courses", instructor_courses_path %></li>
+        <li class="breadcrumb-item"><%= link_to @course.title, instructor_course_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to "Lessons", instructor_course_lessons_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to @lesson.title, instructor_course_lesson_path(@course, @lesson) %></li>
+        <li class="breadcrumb-item active" aria-current="page">New Assignment</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h4>Create New Assignment for "<%= @lesson.title %>"</h4>
+      </div>
+      <div class="card-body">
+        <%= form_with model: [@course, @lesson, @assignment], 
+                      url: instructor_course_lesson_assignments_path(@course, @lesson), 
+                      local: true do |form| %>
+          
+          <% if @assignment.errors.any? %>
+            <div class="alert alert-danger alert-dismissible fade show">
+              <i class="fas fa-exclamation-triangle"></i>
+              <strong>Please fix the following errors:</strong>
+              <ul class="mb-0 mt-2">
+                <% @assignment.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% end %>
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="mb-3">
+                <%= form.label :title, "Assignment Title", class: "form-label" %>
+                <%= form.text_field :title, class: "form-control", required: true, 
+                                    placeholder: "e.g., Ruby Basics Quiz" %>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <%= form.label :assignment_type, "Assignment Type", class: "form-label" %>
+                <%= form.select :assignment_type, 
+                                options_for_select([
+                                  ['Quiz (Auto-graded)', 'quiz'],
+                                  ['Coding Exercise', 'coding'],
+                                  ['Essay Question', 'essay'],
+                                  ['Mixed Questions', 'mixed']
+                                ], @assignment.assignment_type), 
+                                {}, 
+                                { class: "form-select" } %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :description, "Description", class: "form-label" %>
+            <%= form.text_area :description, class: "form-control", rows: 3,
+                               placeholder: "Brief description of what this assignment covers..." %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :instructions, "Instructions for Students", class: "form-label" %>
+            <%= form.text_area :instructions, class: "form-control", rows: 4,
+                               placeholder: "Detailed instructions on how to complete this assignment..." %>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <%= form.label :max_score, "Maximum Score", class: "form-label" %>
+                <%= form.number_field :max_score, class: "form-control", min: 1, value: 100 %>
+                <div class="form-text">Points will be calculated from questions</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <%= form.label :due_date, "Due Date (Optional)", class: "form-label" %>
+                <%= form.datetime_local_field :due_date, class: "form-control" %>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <%= form.label :position, "Position in Lesson", class: "form-label" %>
+                <%= form.number_field :position, class: "form-control", min: 1, 
+                                      value: (@lesson.assignments.count + 1) %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="form-check">
+              <%= form.check_box :published, class: "form-check-input" %>
+              <%= form.label :published, "Publish immediately (students can see and take)", 
+                             class: "form-check-label" %>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <%= link_to "Cancel", instructor_course_lesson_path(@course, @lesson), 
+                        class: "btn btn-secondary" %>
+            <%= form.submit "Create Assignment", class: "btn btn-primary",
+                            data: { disable_with: "<i class='fas fa-spinner fa-spin'></i> Creating..." } %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Assignment Types</h6>
+      </div>
+      <div class="card-body">
+        <div class="assignment-type-info">
+          <div class="mb-3">
+            <strong>Quiz</strong>
+            <p class="small text-muted">Multiple choice, true/false questions with automatic grading</p>
+          </div>
+          <div class="mb-3">
+            <strong>Coding Exercise</strong>
+            <p class="small text-muted">Programming questions with basic automated evaluation</p>
+          </div>
+          <div class="mb-3">
+            <strong>Essay Question</strong>
+            <p class="small text-muted">Open-ended questions requiring manual grading</p>
+          </div>
+          <div class="mb-3">
+            <strong>Mixed Questions</strong>
+            <p class="small text-muted">Combination of different question types</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Next Steps</h6>
+      </div>
+      <div class="card-body">
+        <ol class="list-unstyled">
+          <li class="mb-2">
+            <i class="fas fa-check-circle text-muted"></i>
+            <span class="ms-2">Create assignment</span>
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-question-circle text-primary"></i>
+            <span class="ms-2">Add questions</span>
+          </li>
+          <li class="mb-2">
+            <i class="fas fa-eye text-muted"></i>
+            <span class="ms-2">Preview & test</span>
+          </li>
+          <li>
+            <i class="fas fa-share text-muted"></i>
+            <span class="ms-2">Publish to students</span>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</div>

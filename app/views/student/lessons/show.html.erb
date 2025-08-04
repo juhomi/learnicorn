@@ -31,6 +31,98 @@
       </div>
     </div>
 
+    <!-- Assignments Section -->
+    <% if @lesson.has_assignments? %>
+      <div class="card mt-4">
+        <div class="card-header">
+          <div class="d-flex justify-content-between align-items-center">
+            <h5>
+              <i class="fas fa-clipboard-list"></i> Assignments
+            </h5>
+            <%= link_to "View All Assignments", 
+                        student_course_lesson_assignments_path(@course, @lesson), 
+                        class: "btn btn-primary btn-sm" %>
+          </div>
+        </div>
+        <div class="card-body">
+          <% @lesson.published_assignments.limit(3).each do |assignment| %>
+            <% user_submission = assignment.assignment_submissions.find_by(user: current_user) %>
+            <div class="assignment-item mb-3 p-3 border rounded">
+              <div class="d-flex justify-content-between align-items-start">
+                <div class="flex-grow-1">
+                  <h6 class="mb-1">
+                    <i class="fas fa-<%= assignment.quiz? ? 'question-circle text-primary' : assignment.coding? ? 'code text-success' : assignment.essay? ? 'edit text-warning' : 'tasks text-info' %>"></i>
+                    <%= assignment.title %>
+                  </h6>
+                  <% if assignment.description.present? %>
+                    <p class="text-muted small mb-2"><%= truncate(assignment.description, length: 100) %></p>
+                  <% end %>
+                  <div class="assignment-meta">
+                    <small class="text-muted me-3">
+                      <i class="fas fa-star"></i> <%= assignment.max_score %> points
+                    </small>
+                    <small class="text-muted me-3">
+                      <i class="fas fa-question"></i> <%= assignment.total_questions %> questions
+                    </small>
+                    <% if assignment.due_date.present? %>
+                      <small class="text-muted">
+                        <i class="fas fa-clock"></i> Due <%= assignment.due_date.strftime("%b %d") %>
+                      </small>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="assignment-actions">
+                  <% if user_submission&.submitted? %>
+                    <div class="text-end">
+                      <span class="badge bg-success mb-1">
+                        <i class="fas fa-check"></i> Completed
+                      </span>
+                      <br>
+                      <% if user_submission.score.present? %>
+                        <small class="text-success">
+                          <%= user_submission.score %>/<%= assignment.max_score %>
+                        </small>
+                      <% end %>
+                    </div>
+                  <% elsif user_submission&.draft? %>
+                    <div class="text-end">
+                      <span class="badge bg-warning mb-1">
+                        <i class="fas fa-clock"></i> In Progress
+                      </span>
+                      <br>
+                      <%= link_to "Continue", 
+                                  take_student_course_lesson_assignment_path(@course, @lesson, assignment), 
+                                  class: "btn btn-warning btn-sm" %>
+                    </div>
+                  <% elsif assignment.due_date.present? && assignment.due_date < Time.current %>
+                    <div class="text-end">
+                      <span class="badge bg-danger mb-1">
+                        <i class="fas fa-exclamation-triangle"></i> Overdue
+                      </span>
+                    </div>
+                  <% else %>
+                    <div class="text-end">
+                      <%= link_to "Start Assignment", 
+                                  take_student_course_lesson_assignment_path(@course, @lesson, assignment), 
+                                  class: "btn btn-primary btn-sm" %>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+
+          <% if @lesson.published_assignments.count > 3 %>
+            <div class="text-center">
+              <%= link_to "View All #{@lesson.published_assignments.count} Assignments", 
+                          student_course_lesson_assignments_path(@course, @lesson), 
+                          class: "btn btn-outline-primary btn-sm" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
     <div class="card mt-3">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">

@@ -1,0 +1,91 @@
+<%= turbo_stream.update "questions-container" do %>
+  <% @assignment.assignment_questions.ordered.each_with_index do |question, index| %>
+    <div class="question-item mb-4 p-3 border rounded <%= 'newly-created' if question.id == @question.id %>">
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">
+          <div class="question-header mb-2">
+            <strong>Question <%= index + 1 %></strong>
+            <span class="badge bg-light text-dark ms-2">
+              <%= question.question_type.titleize %>
+            </span>
+            <span class="badge bg-info ms-2">
+              <%= question.points %> points
+            </span>
+          </div>
+          <div class="question-text mb-3">
+            <%= simple_format(question.question_text) %>
+          </div>
+          
+          <% if question.multiple_choice? && question.options.present? %>
+            <div class="question-options">
+              <small class="text-muted">Answer Choices:</small>
+              <ul class="list-unstyled ms-3">
+                <% question.option_labels.each do |option| %>
+                  <li class="<%= option.starts_with?(question.correct_option_label&.first) ? 'text-success fw-bold' : '' %>">
+                    <%= option %>
+                    <% if option.starts_with?(question.correct_option_label&.first) %>
+                      <i class="fas fa-check text-success ms-1"></i>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% elsif question.true_false? %>
+            <div class="question-options">
+              <small class="text-muted">Correct Answer: 
+                <strong class="text-success">
+                  <%= question.correct_answer == "1" ? "True" : "False" %>
+                </strong>
+              </small>
+            </div>
+          <% elsif question.coding? && question.correct_answer.present? %>
+            <div class="question-options">
+              <small class="text-muted">Expected Code/Keywords:</small>
+              <pre class="bg-light p-2 mt-1 small"><%= question.correct_answer %></pre>
+            </div>
+          <% end %>
+        </div>
+        <div class="question-actions">
+          <%= link_to edit_instructor_course_lesson_assignment_assignment_question_path(@course, @lesson, @assignment, question), 
+                      class: "btn btn-sm btn-outline-primary" do %>
+            <i class="fas fa-edit"></i>
+          <% end %>
+          <%= link_to instructor_course_lesson_assignment_assignment_question_path(@course, @lesson, @assignment, question), 
+                      method: :delete, 
+                      confirm: "Are you sure you want to delete this question?",
+                      class: "btn btn-sm btn-outline-danger ms-1" do %>
+            <i class="fas fa-trash"></i>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>
+
+<%= turbo_stream.prepend "flash-messages" do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i>
+    <strong>Success!</strong> Question added successfully!
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<script>
+  // Add animation to newly created question
+  setTimeout(() => {
+    const newQuestion = document.querySelector('.newly-created');
+    if (newQuestion) {
+      newQuestion.style.border = '2px solid #28a745';
+      newQuestion.style.borderRadius = '8px';
+      newQuestion.style.backgroundColor = '#f8fff8';
+      newQuestion.style.transition = 'all 0.3s ease';
+      
+      // Remove the highlight after 3 seconds
+      setTimeout(() => {
+        newQuestion.style.border = '1px solid #dee2e6';
+        newQuestion.style.backgroundColor = 'transparent';
+        newQuestion.classList.remove('newly-created');
+      }, 3000);
+    }
+  }, 100);
+</script>

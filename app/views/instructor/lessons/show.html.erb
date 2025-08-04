@@ -53,6 +53,83 @@
 
       </div>
     </div>
+
+    <!-- Assignments Section -->
+    <div class="card mt-4">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h5>Assignments</h5>
+          <div class="dropdown">
+            <button class="btn btn-success btn-sm dropdown-toggle" type="button" data-bs-toggle="dropdown">
+              <i class="fas fa-plus"></i> Add Assignment
+            </button>
+            <ul class="dropdown-menu">
+              <li><%= link_to new_instructor_course_lesson_assignment_path(@course, @lesson, type: 'quiz'), 
+                              class: "dropdown-item" do %>
+                      <i class="fas fa-question-circle text-primary"></i> Quiz
+                  <% end %></li>
+              <li><%= link_to new_instructor_course_lesson_assignment_path(@course, @lesson, type: 'coding'), 
+                              class: "dropdown-item" do %>
+                      <i class="fas fa-code text-success"></i> Coding Exercise
+                  <% end %></li>
+              <li><%= link_to new_instructor_course_lesson_assignment_path(@course, @lesson, type: 'essay'), 
+                              class: "dropdown-item" do %>
+                      <i class="fas fa-edit text-warning"></i> Essay Question
+                  <% end %></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div id="assignments-list">
+        <% if @lesson.has_assignments? %>
+          <% @lesson.assignments.ordered.each do |assignment| %>
+            <div class="assignment-item mb-3 p-3 border rounded">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h6 class="mb-1">
+                    <%= link_to assignment.title, 
+                                instructor_course_lesson_assignment_path(@course, @lesson, assignment), 
+                                class: "text-decoration-none" %>
+                    <span class="badge bg-<%= assignment.published? ? 'success' : 'secondary' %> ms-2">
+                      <%= assignment.published? ? 'Published' : 'Draft' %>
+                    </span>
+                  </h6>
+                  <p class="text-muted small mb-2"><%= assignment.description %></p>
+                  <div class="assignment-meta">
+                    <span class="badge bg-light text-dark me-2">
+                      <i class="fas fa-<%= assignment.quiz? ? 'question-circle' : assignment.coding? ? 'code' : 'edit' %>"></i>
+                      <%= assignment.assignment_type.titleize %>
+                    </span>
+                    <span class="text-muted small">
+                      <i class="fas fa-star"></i> <%= assignment.max_score %> points
+                    </span>
+                    <% if assignment.due_date.present? %>
+                      <span class="text-muted small ms-2">
+                        <i class="fas fa-clock"></i> Due <%= assignment.due_date.strftime("%b %d, %Y") %>
+                      </span>
+                    <% end %>
+                  </div>
+                </div>
+                <div class="assignment-actions">
+                  <%= link_to instructor_course_lesson_assignment_path(@course, @lesson, assignment), 
+                              class: "btn btn-sm btn-outline-primary" do %>
+                    <i class="fas fa-eye"></i> View
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="text-center py-4 text-muted">
+            <i class="fas fa-clipboard-list fa-2x mb-3"></i>
+            <p>No assignments created yet.</p>
+            <p>Add assignments to test your students' understanding.</p>
+          </div>
+        <% end %>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="col-md-4">

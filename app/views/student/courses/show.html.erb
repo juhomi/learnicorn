@@ -39,7 +39,19 @@
                 <h6 class="mb-1">
                   <%= link_to lesson.title, student_course_lesson_path(@course, lesson), class: "text-decoration-none" %>
                 </h6>
-                <small class="text-muted">Lesson <%= lesson.position %></small>
+                <div class="d-flex align-items-center">
+                  <small class="text-muted me-3">Lesson <%= lesson.position %></small>
+                  <% if lesson.has_assignments? %>
+                    <% assignment_count = lesson.published_assignments.count %>
+                    <% completed_assignments = lesson.published_assignments.joins(:assignment_submissions)
+                                                     .where(assignment_submissions: { user: current_user })
+                                                     .where.not(assignment_submissions: { submitted_at: nil }).count %>
+                    <small class="text-info">
+                      <i class="fas fa-clipboard-list"></i>
+                      <%= completed_assignments %>/<%= assignment_count %> assignments
+                    </small>
+                  <% end %>
+                </div>
               </div>
               <div>
                 <% if @completed_lessons.include?(lesson.id) %>

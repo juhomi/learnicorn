@@ -1,0 +1,78 @@
+<%= turbo_stream.replace "assignment-form-container" do %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="fas fa-check-circle"></i>
+    <strong>Success!</strong> Assignment "<%= @assignment.title %>" has been created!
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<%= turbo_stream.update "assignments-list" do %>
+  <% if @lesson.has_assignments? %>
+    <% @lesson.assignments.ordered.each do |assignment| %>
+      <div class="assignment-item mb-3 p-3 border rounded <%= 'newly-created' if assignment.id == @assignment.id %>">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-1">
+              <%= link_to assignment.title, 
+                          instructor_course_lesson_assignment_path(@course, @lesson, assignment), 
+                          class: "text-decoration-none" %>
+              <span class="badge bg-<%= assignment.published? ? 'success' : 'secondary' %> ms-2">
+                <%= assignment.published? ? 'Published' : 'Draft' %>
+              </span>
+            </h6>
+            <p class="text-muted small mb-2"><%= assignment.description %></p>
+            <div class="assignment-meta">
+              <span class="badge bg-light text-dark me-2">
+                <i class="fas fa-<%= assignment.quiz? ? 'question-circle' : assignment.coding? ? 'code' : 'edit' %>"></i>
+                <%= assignment.assignment_type.titleize %>
+              </span>
+              <span class="text-muted small">
+                <i class="fas fa-star"></i> <%= assignment.max_score %> points
+              </span>
+              <% if assignment.due_date.present? %>
+                <span class="text-muted small ms-2">
+                  <i class="fas fa-clock"></i> Due <%= assignment.due_date.strftime("%b %d, %Y") %>
+                </span>
+              <% end %>
+            </div>
+          </div>
+          <div class="assignment-actions">
+            <%= link_to instructor_course_lesson_assignment_path(@course, @lesson, assignment), 
+                        class: "btn btn-sm btn-outline-primary" do %>
+              <i class="fas fa-eye"></i> View
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="text-center py-4 text-muted">
+      <i class="fas fa-clipboard-list fa-2x mb-3"></i>
+      <p>No assignments created yet.</p>
+      <p>Add assignments to test your students' understanding.</p>
+    </div>
+  <% end %>
+<% end %>
+
+<script>
+  // Add animation to newly created assignment
+  setTimeout(() => {
+    const newAssignment = document.querySelector('.newly-created');
+    if (newAssignment) {
+      newAssignment.style.border = '2px solid #28a745';
+      newAssignment.style.borderRadius = '8px';
+      newAssignment.style.backgroundColor = '#f8fff8';
+      newAssignment.style.transition = 'all 0.3s ease';
+      
+      // Remove the highlight after 3 seconds and redirect
+      setTimeout(() => {
+        newAssignment.style.border = 'none';
+        newAssignment.style.backgroundColor = 'transparent';
+        newAssignment.classList.remove('newly-created');
+        
+        // Redirect to the assignment page to add questions
+        window.location.href = '<%= instructor_course_lesson_assignment_path(@course, @lesson, @assignment) %>';
+      }, 2000);
+    }
+  }, 100);
+</script>

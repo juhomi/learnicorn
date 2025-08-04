@@ -1,0 +1,277 @@
+<% content_for :title, "Assignments - #{@lesson.title}" %>
+
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Courses", student_courses_path %></li>
+        <li class="breadcrumb-item"><%= link_to @course.title, student_course_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to @lesson.title, student_course_lesson_path(@course, @lesson) %></li>
+        <li class="breadcrumb-item active" aria-current="page">Assignments</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h2>Assignments for "<%= @lesson.title %>"</h2>
+        <p class="text-muted">Complete these assignments to test your understanding of the lesson material.</p>
+      </div>
+      <div>
+        <%= link_to "Back to Lesson", student_course_lesson_path(@course, @lesson), 
+                    class: "btn btn-outline-secondary" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <% if @assignments.any? %>
+      <% @assignments.each_with_index do |assignment, index| %>
+        <div class="card mb-4 assignment-card">
+          <div class="card-header">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="mb-1">
+                  <i class="fas fa-<%= assignment.quiz? ? 'question-circle text-primary' : assignment.coding? ? 'code text-success' : assignment.essay? ? 'edit text-warning' : 'tasks text-info' %>"></i>
+                  <%= assignment.title %>
+                </h5>
+                <small class="text-muted">
+                  <%= assignment.assignment_type.titleize %> Assignment
+                </small>
+              </div>
+              <div class="assignment-status">
+                <% user_submission = assignment.assignment_submissions.find_by(user: current_user) %>
+                <% if user_submission&.submitted? %>
+                  <span class="badge bg-success">
+                    <i class="fas fa-check"></i> Completed
+                  </span>
+                <% elsif user_submission&.draft? %>
+                  <span class="badge bg-warning">
+                    <i class="fas fa-clock"></i> In Progress
+                  </span>
+                <% else %>
+                  <span class="badge bg-secondary">
+                    <i class="fas fa-play"></i> Not Started
+                  </span>
+                <% end %>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <% if assignment.description.present? %>
+              <p class="card-text"><%= assignment.description %></p>
+            <% end %>
+            
+            <div class="assignment-details mb-3">
+              <div class="row">
+                <div class="col-md-4">
+                  <small class="text-muted">
+                    <i class="fas fa-star"></i> Points: <strong><%= assignment.max_score %></strong>
+                  </small>
+                </div>
+                <div class="col-md-4">
+                  <small class="text-muted">
+                    <i class="fas fa-question"></i> Questions: <strong><%= assignment.total_questions %></strong>
+                  </small>
+                </div>
+                <div class="col-md-4">
+                  <% if assignment.due_date.present? %>
+                    <small class="text-muted">
+                      <i class="fas fa-clock"></i> 
+                      Due: <strong><%= assignment.due_date.strftime("%b %d, %Y") %></strong>
+                    </small>
+                  <% else %>
+                    <small class="text-muted">
+                      <i class="fas fa-infinity"></i> No due date
+                    </small>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+            <% if user_submission&.submitted? %>
+              <!-- Show results for completed assignments -->
+              <div class="alert alert-success">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="fas fa-check-circle"></i>
+                    <strong>Assignment Completed!</strong>
+                    <br>
+                    <small>
+                      Submitted: <%= user_submission.submitted_at.strftime("%B %d, %Y at %I:%M %p") %>
+                      <% if user_submission.score.present? %>
+                        | Score: <%= user_submission.score %>/<%= assignment.max_score %> 
+                        (<%= ((user_submission.score.to_f / assignment.max_score) * 100).round(1) %>%)
+                      <% end %>
+                    </small>
+                  </div>
+                  <div>
+                    <%= link_to "View Results", 
+                                student_course_lesson_assignment_path(@course, @lesson, assignment), 
+                                class: "btn btn-success btn-sm" %>
+                  </div>
+                </div>
+              </div>
+            <% elsif assignment.due_date.present? && assignment.due_date < Time.current %>
+              <!-- Overdue assignment -->
+              <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Assignment Overdue</strong>
+                <p class="mb-0">This assignment was due on <%= assignment.due_date.strftime("%B %d, %Y") %>.</p>
+              </div>
+            <% else %>
+              <!-- Available to take -->
+              <div class="d-flex justify-content-between align-items-center">
+                <div>
+                  <% if user_submission&.draft? %>
+                    <small class="text-warning">
+                      <i class="fas fa-clock"></i> You have a draft saved
+                    </small>
+                  <% else %>
+                    <small class="text-muted">
+                      <i class="fas fa-info-circle"></i> Ready to start
+                    </small>
+                  <% end %>
+                </div>
+                <div>
+                  <%= link_to user_submission&.draft? ? "Continue Assignment" : "Start Assignment", 
+                              take_student_course_lesson_assignment_path(@course, @lesson, assignment), 
+                              class: "btn btn-primary" %>
+                  <%= link_to "Preview", 
+                              student_course_lesson_assignment_path(@course, @lesson, assignment), 
+                              class: "btn btn-outline-info btn-sm" %>
+                </div>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="text-center py-5">
+        <i class="fas fa-clipboard-list fa-3x text-muted mb-3"></i>
+        <h4>No Assignments Available</h4>
+        <p class="text-muted">Your instructor hasn't published any assignments for this lesson yet.</p>
+        <%= link_to "Back to Lesson", student_course_lesson_path(@course, @lesson), 
+                    class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Assignment Progress</h6>
+      </div>
+      <div class="card-body">
+        <% if @assignments.any? %>
+          <% completed_count = @assignments.joins(:assignment_submissions)
+                                          .where(assignment_submissions: { user: current_user })
+                                          .where.not(assignment_submissions: { submitted_at: nil }).count %>
+          <% total_count = @assignments.count %>
+          
+          <div class="progress mb-3">
+            <div class="progress-bar bg-success" role="progressbar" 
+                 style="width: <%= total_count > 0 ? (completed_count.to_f / total_count * 100).round(1) : 0 %>%">
+              <%= total_count > 0 ? (completed_count.to_f / total_count * 100).round(1) : 0 %>%
+            </div>
+          </div>
+          
+          <div class="d-flex justify-content-between text-sm">
+            <span>Completed: <%= completed_count %></span>
+            <span>Total: <%= total_count %></span>
+          </div>
+          
+          <hr>
+          
+          <div class="assignment-stats">
+            <div class="stat-row d-flex justify-content-between mb-2">
+              <span class="text-muted">
+                <i class="fas fa-check-circle text-success"></i> Completed
+              </span>
+              <span><%= completed_count %></span>
+            </div>
+            <div class="stat-row d-flex justify-content-between mb-2">
+              <span class="text-muted">
+                <i class="fas fa-clock text-warning"></i> In Progress
+              </span>
+              <span>
+                <%= @assignments.joins(:assignment_submissions)
+                               .where(assignment_submissions: { user: current_user, submitted_at: nil }).count %>
+              </span>
+            </div>
+            <div class="stat-row d-flex justify-content-between">
+              <span class="text-muted">
+                <i class="fas fa-play text-secondary"></i> Not Started
+              </span>
+              <span>
+                <%= @assignments.left_joins(:assignment_submissions)
+                               .where(assignment_submissions: { user: nil })
+                               .or(@assignments.left_joins(:assignment_submissions)
+                                             .where.not(assignment_submissions: { user: current_user })).count %>
+              </span>
+            </div>
+          </div>
+        <% else %>
+          <p class="text-muted text-center">No assignments to track</p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Assignment Types</h6>
+      </div>
+      <div class="card-body">
+        <div class="assignment-type-legend">
+          <div class="d-flex align-items-center mb-2">
+            <i class="fas fa-question-circle text-primary me-2"></i>
+            <small>Quiz - Multiple choice and true/false questions</small>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <i class="fas fa-code text-success me-2"></i>
+            <small>Coding - Programming exercises and challenges</small>
+          </div>
+          <div class="d-flex align-items-center mb-2">
+            <i class="fas fa-edit text-warning me-2"></i>
+            <small>Essay - Written response questions</small>
+          </div>
+          <div class="d-flex align-items-center">
+            <i class="fas fa-tasks text-info me-2"></i>
+            <small>Mixed - Combination of question types</small>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.assignment-card {
+  transition: transform 0.2s ease-in-out;
+}
+
+.assignment-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.assignment-status .badge {
+  font-size: 0.8em;
+}
+
+.assignment-details {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.stat-row {
+  font-size: 0.9em;
+}
+</style>

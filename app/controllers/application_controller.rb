@@ -2,7 +2,10 @@ class ApplicationController < ActionController::Base
   # Only allow modern browsers supporting webp images, web push, badges, import maps, CSS nesting, and CSS :has.
   allow_browser versions: :modern
 
+  protect_from_forgery with: :exception, prepend: true
+
   before_action :authenticate_user!
+  before_action :validate_session
 
   rescue_from ActiveRecord::RecordNotFound, with: :record_not_found
   rescue_from ActionController::ParameterMissing, with: :parameter_missing
@@ -20,7 +23,18 @@ class ApplicationController < ActionController::Base
   end
 
   def current_user
-    @current_user ||= User.find(session[:user_id]) if session[:user_id]
+    return @current_user if defined?(@current_user)
+    
+    @current_user = if session[:user_id]
+      begin
+        User.find(session[:user_id])
+      rescue ActiveRecord::RecordNotFound
+        session.delete(:user_id)
+        nil
+      end
+    else
+      nil
+    end
   end
 
   def require_admin!
@@ -52,4 +66,12 @@ class ApplicationController < ActionController::Base
   def parameter_missing
     redirect_to root_path, alert: "Required parameters are missing."
   end
+  
+  def validate_session
+    if session[:user_id] && !current_user
+      session.clear
+      redirect_to login_path, alert: "Your session has expired. Please log in again."
+    end
+  end
+  
 end

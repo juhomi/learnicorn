@@ -1,0 +1,323 @@
+<% content_for :title, @assignment.title %>
+
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Courses", student_courses_path %></li>
+        <li class="breadcrumb-item"><%= link_to @course.title, student_course_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to @lesson.title, student_course_lesson_path(@course, @lesson) %></li>
+        <li class="breadcrumb-item"><%= link_to "Assignments", student_course_lesson_assignments_path(@course, @lesson) %></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= @assignment.title %></li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h3>
+              <i class="fas fa-<%= @assignment.quiz? ? 'question-circle text-primary' : @assignment.coding? ? 'code text-success' : @assignment.essay? ? 'edit text-warning' : 'tasks text-info' %>"></i>
+              <%= @assignment.title %>
+            </h3>
+            <span class="badge bg-<%= @assignment.quiz? ? 'primary' : @assignment.coding? ? 'success' : @assignment.essay? ? 'warning' : 'info' %>">
+              <%= @assignment.assignment_type.titleize %>
+            </span>
+          </div>
+          <div>
+            <% user_submission = @assignment.assignment_submissions.find_by(user: current_user) %>
+            <% if user_submission&.submitted? %>
+              <span class="badge bg-success fs-6">
+                <i class="fas fa-check"></i> Completed
+              </span>
+            <% elsif user_submission&.draft? %>
+              <span class="badge bg-warning fs-6">
+                <i class="fas fa-clock"></i> In Progress
+              </span>
+            <% else %>
+              <span class="badge bg-secondary fs-6">
+                <i class="fas fa-play"></i> Not Started
+              </span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <% if @assignment.description.present? %>
+          <div class="assignment-description mb-4">
+            <h5>Description</h5>
+            <p><%= simple_format(@assignment.description) %></p>
+          </div>
+        <% end %>
+
+        <% if @assignment.instructions.present? %>
+          <div class="assignment-instructions mb-4">
+            <h5>Instructions</h5>
+            <div class="alert alert-info">
+              <i class="fas fa-info-circle"></i>
+              <%= simple_format(@assignment.instructions) %>
+            </div>
+          </div>
+        <% end %>
+
+        <div class="assignment-details mb-4">
+          <h5>Assignment Details</h5>
+          <div class="row">
+            <div class="col-md-3">
+              <div class="detail-item">
+                <i class="fas fa-star text-warning"></i>
+                <strong>Points:</strong> <%= @assignment.max_score %>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="detail-item">
+                <i class="fas fa-question text-primary"></i>
+                <strong>Questions:</strong> <%= @assignment.total_questions %>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="detail-item">
+                <i class="fas fa-list text-info"></i>
+                <strong>Type:</strong> <%= @assignment.assignment_type.titleize %>
+              </div>
+            </div>
+            <div class="col-md-3">
+              <div class="detail-item">
+                <% if @assignment.due_date.present? %>
+                  <i class="fas fa-clock text-danger"></i>
+                  <strong>Due:</strong> <%= @assignment.due_date.strftime("%b %d") %>
+                <% else %>
+                  <i class="fas fa-infinity text-success"></i>
+                  <strong>No due date</strong>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Preview -->
+        <% if @assignment.assignment_questions.any? %>
+          <div class="questions-preview mb-4">
+            <h5>Questions Preview</h5>
+            <div class="alert alert-light">
+              <p class="mb-2">
+                <i class="fas fa-eye"></i>
+                This assignment contains <%= @assignment.total_questions %> questions:
+              </p>
+              <ul class="mb-0">
+                <% question_counts = @assignment.assignment_questions.group(:question_type).count %>
+                <% question_counts.each do |type, count| %>
+                  <li>
+                    <i class="fas fa-<%= type == 'multiple_choice' ? 'list' : type == 'true_false' ? 'check-circle' : type == 'coding' ? 'code' : 'edit' %>"></i>
+                    <%= count %> <%= type.humanize.downcase %> question<%= 's' if count > 1 %>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- User Submission Status -->
+        <% user_submission = @assignment.assignment_submissions.find_by(user: current_user) %>
+        <% if user_submission&.submitted? %>
+          <!-- Completed Assignment -->
+          <div class="submission-results">
+            <h5>Your Results</h5>
+            <div class="alert alert-success">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <h6 class="mb-1">
+                    <i class="fas fa-check-circle"></i> Assignment Completed!
+                  </h6>
+                  <p class="mb-1">
+                    Submitted: <%= user_submission.submitted_at.strftime("%B %d, %Y at %I:%M %p") %>
+                  </p>
+                  <% if user_submission.score.present? %>
+                    <p class="mb-0">
+                      <strong>Score: <%= user_submission.score %>/<%= @assignment.max_score %> 
+                      (<%= ((user_submission.score.to_f / @assignment.max_score) * 100).round(1) %>%)</strong>
+                    </p>
+                  <% else %>
+                    <p class="mb-0">
+                      <em>Score pending instructor review</em>
+                    </p>
+                  <% end %>
+                </div>
+                <div class="col-md-4 text-end">
+                  <% if user_submission.score.present? %>
+                    <% percentage = (user_submission.score.to_f / @assignment.max_score) * 100 %>
+                    <div class="score-circle">
+                      <span class="score-text">
+                        <%= percentage.round(1) %>%
+                      </span>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Show individual question results if available -->
+            <% if user_submission.assignment_answers.any? %>
+              <div class="question-results mt-3">
+                <h6>Question Breakdown</h6>
+                <% user_submission.assignment_answers.joins(:assignment_question).order('assignment_questions.position').each_with_index do |answer, index| %>
+                  <div class="question-result-item mb-2 p-2 border rounded">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span>
+                        <strong>Question <%= index + 1 %>:</strong>
+                        <%= truncate(answer.assignment_question.question_text, length: 80) %>
+                      </span>
+                      <span>
+                        <% if answer.points_earned.present? %>
+                          <span class="badge bg-<%= answer.points_earned == answer.assignment_question.points ? 'success' : answer.points_earned > 0 ? 'warning' : 'danger' %>">
+                            <%= answer.points_earned %>/<%= answer.assignment_question.points %>
+                          </span>
+                        <% else %>
+                          <span class="badge bg-secondary">Pending</span>
+                        <% end %>
+                      </span>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        <% elsif @assignment.due_date.present? && @assignment.due_date < Time.current %>
+          <!-- Overdue Assignment -->
+          <div class="alert alert-danger">
+            <h5><i class="fas fa-exclamation-triangle"></i> Assignment Overdue</h5>
+            <p class="mb-0">
+              This assignment was due on <%= @assignment.due_date.strftime("%B %d, %Y at %I:%M %p") %>.
+              Please contact your instructor if you need an extension.
+            </p>
+          </div>
+        <% else %>
+          <!-- Available to Take -->
+          <div class="assignment-actions">
+            <% if user_submission&.draft? %>
+              <div class="alert alert-warning">
+                <h6><i class="fas fa-clock"></i> Assignment In Progress</h6>
+                <p class="mb-0">You have a draft saved. You can continue where you left off.</p>
+              </div>
+            <% end %>
+            
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+              <%= link_to "Back to Assignments", 
+                          student_course_lesson_assignments_path(@course, @lesson), 
+                          class: "btn btn-outline-secondary" %>
+              <%= link_to user_submission&.draft? ? "Continue Assignment" : "Start Assignment", 
+                          take_student_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                          class: "btn btn-primary btn-lg" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Assignment Info</h6>
+      </div>
+      <div class="card-body">
+        <div class="info-item mb-3">
+          <i class="fas fa-book text-primary"></i>
+          <strong>Lesson:</strong> <%= @lesson.title %>
+        </div>
+        <div class="info-item mb-3">
+          <i class="fas fa-graduation-cap text-success"></i>
+          <strong>Course:</strong> <%= @course.title %>
+        </div>
+        <div class="info-item mb-3">
+          <i class="fas fa-star text-warning"></i>
+          <strong>Max Score:</strong> <%= @assignment.max_score %> points
+        </div>
+        <div class="info-item mb-3">
+          <i class="fas fa-question text-info"></i>
+          <strong>Questions:</strong> <%= @assignment.total_questions %>
+        </div>
+        <% if @assignment.due_date.present? %>
+          <div class="info-item mb-3">
+            <i class="fas fa-clock text-danger"></i>
+            <strong>Due Date:</strong><br>
+            <small><%= @assignment.due_date.strftime("%B %d, %Y at %I:%M %p") %></small>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Help & Support</h6>
+      </div>
+      <div class="card-body">
+        <div class="help-item mb-3">
+          <i class="fas fa-lightbulb text-warning"></i>
+          <strong>Tips:</strong>
+          <ul class="small mt-1">
+            <li>Read questions carefully</li>
+            <li>Save your progress frequently</li>
+            <li>Review before submitting</li>
+          </ul>
+        </div>
+        <div class="help-item">
+          <i class="fas fa-question-circle text-info"></i>
+          <strong>Need Help?</strong>
+          <p class="small mt-1 mb-0">
+            If you have questions about this assignment, please contact your instructor.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.detail-item {
+  margin-bottom: 10px;
+}
+
+.detail-item i {
+  margin-right: 5px;
+}
+
+.score-circle {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color: #28a745;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+}
+
+.question-result-item {
+  background-color: #f8f9fa;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.info-item i {
+  margin-top: 2px;
+}
+
+.help-item {
+  margin-bottom: 15px;
+}
+
+.help-item:last-child {
+  margin-bottom: 0;
+}
+</style>
