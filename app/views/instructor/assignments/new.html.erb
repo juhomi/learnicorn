@@ -51,10 +51,7 @@
                 <%= form.label :assignment_type, "Assignment Type", class: "form-label" %>
                 <%= form.select :assignment_type, 
                                 options_for_select([
-                                  ['Quiz (Auto-graded)', 'quiz'],
-                                  ['Coding Exercise', 'coding'],
-                                  ['Essay Question', 'essay'],
-                                  ['Mixed Questions', 'mixed']
+                                  ['Quiz (Auto-graded)', 'quiz']
                                 ], @assignment.assignment_type), 
                                 {}, 
                                 { class: "form-select" } %>
@@ -127,17 +124,9 @@
             <strong>Quiz</strong>
             <p class="small text-muted">Multiple choice, true/false questions with automatic grading</p>
           </div>
-          <div class="mb-3">
-            <strong>Coding Exercise</strong>
-            <p class="small text-muted">Programming questions with basic automated evaluation</p>
-          </div>
-          <div class="mb-3">
-            <strong>Essay Question</strong>
-            <p class="small text-muted">Open-ended questions requiring manual grading</p>
-          </div>
-          <div class="mb-3">
-            <strong>Mixed Questions</strong>
-            <p class="small text-muted">Combination of different question types</p>
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <small>Currently supporting Quiz assignments only. Other assignment types will be available in future updates.</small>
           </div>
         </div>
       </div>

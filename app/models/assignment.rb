@@ -67,6 +67,29 @@ class Assignment < ApplicationRecord
     ((due_date - Time.current) / 1.hour).round(2)
   end
 
+  def auto_gradeable?
+    quiz? && assignment_questions.all?(&:auto_gradeable?)
+  end
+
+  def can_accept_question_type?(question_type)
+    case assignment_type
+    when "quiz"
+      %w[multiple_choice true_false].include?(question_type)
+    when "coding"
+      %w[coding short_answer].include?(question_type)
+    when "essay"
+      %w[essay short_answer].include?(question_type)
+    when "mixed"
+      true
+    else
+      false
+    end
+  end
+
+  def published_assignments
+    where(published: true)
+  end
+
   private
 
   def set_default_position

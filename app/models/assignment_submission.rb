@@ -47,35 +47,48 @@ class AssignmentSubmission < ApplicationRecord
 
   def auto_grade!
     return unless can_auto_grade?
+    
+    raise "Assignment must have questions to grade" if assignment.assignment_questions.empty?
 
     total_score = 0
-    assignment_answers.includes(:assignment_question).each do |answer|
-      question = answer.assignment_question
+    graded_questions = 0
+    
+    transaction do
+      assignment_answers.includes(:assignment_question).each do |answer|
+        question = answer.assignment_question
+        next unless question.auto_gradeable?
 
-      case question.question_type
-      when "multiple_choice", "true_false"
-        if question.correct_answer.present? && answer.answer_text.strip == question.correct_answer.strip
-          answer.update!(is_correct: true, points_earned: question.points)
-          total_score += question.points
+        case question.question_type
+        when "multiple_choice"
+          points_earned = grade_multiple_choice_answer(answer, question)
+        when "true_false"
+          points_earned = grade_true_false_answer(answer, question)
+        when "coding"
+          points_earned = evaluate_code_answer(answer, question)
         else
-          answer.update!(is_correct: false, points_earned: 0)
+          next # Skip non-auto-gradeable questions
         end
-      when "coding"
-        points_earned = evaluate_code_answer(answer, question)
+
         answer.update!(
           is_correct: points_earned > 0,
           points_earned: points_earned
         )
+        
         total_score += points_earned
+        graded_questions += 1
       end
+
+      raise "No auto-gradeable questions found" if graded_questions == 0
+
+      update!(
+        score: total_score,
+        auto_graded: true,
+        graded_at: Time.current,
+        status: :graded
+      )
     end
 
-    update!(
-      score: total_score,
-      auto_graded: true,
-      graded_at: Time.current,
-      status: :graded
-    )
+    Rails.logger.info "Auto-graded submission #{id}: #{total_score}/#{max_score} (#{graded_questions} questions)"
   end
 
   def percentage_score
@@ -131,17 +144,52 @@ class AssignmentSubmission < ApplicationRecord
   end
 
   def can_auto_grade?
-    assignment.quiz? || assignment.coding?
+    assignment.auto_gradeable?
+  end
+
+  def grade_multiple_choice_answer(answer, question)
+    return 0 if answer.answer_text.blank? || question.correct_answer.blank?
+
+    student_answer = answer.answer_text.strip
+    correct_answer = question.correct_answer.strip
+
+    student_answer == correct_answer ? question.points : 0
+  end
+
+  def grade_true_false_answer(answer, question)
+    return 0 if answer.answer_text.blank? || question.correct_answer.blank?
+
+    student_answer = answer.answer_text.strip
+    correct_answer = question.correct_answer.strip
+
+    # Handle both numeric (0/1) and string (true/false) formats
+    normalized_student = normalize_boolean_answer(student_answer)
+    normalized_correct = normalize_boolean_answer(correct_answer)
+
+    normalized_student == normalized_correct ? question.points : 0
+  end
+
+  def normalize_boolean_answer(answer)
+    case answer.downcase
+    when "1", "true" then "1"
+    when "0", "false" then "0"
+    else answer
+    end
   end
 
   def evaluate_code_answer(answer, question)
-    # Basic code evaluation - can be enhanced with actual code execution
-    code = answer.answer_text.strip
-    expected = question.correct_answer.strip
+    return 0 if answer.answer_text.blank?
 
-    # Simple string matching for now - replace with actual code execution/testing
-    if code.include?(expected) || code.length > 10
+    code = answer.answer_text.strip
+    expected = question.correct_answer.to_s.strip
+
+    # Simple evaluation logic - replace with actual code testing framework
+    if expected.present? && code.include?(expected)
       question.points
+    elsif code.length >= 20 && code.include?("def") # Basic Ruby function check
+      (question.points * 0.7).to_i
+    elsif code.length >= 10
+      (question.points * 0.5).to_i
     else
       0
     end

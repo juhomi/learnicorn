@@ -15,7 +15,11 @@ class Instructor::AssignmentQuestionsController < ApplicationController
 
   def new
     @question = @assignment.assignment_questions.build
-    @question.question_type = params[:type] || "multiple_choice"
+    setup_allowed_question_types
+    
+    # Set default question type based on what's allowed
+    requested_type = params[:type] || @allowed_question_types.first
+    @question.question_type = @allowed_question_types.include?(requested_type) ? requested_type : @allowed_question_types.first
     @question.points = 10
   end
 
@@ -23,17 +27,24 @@ class Instructor::AssignmentQuestionsController < ApplicationController
     @question = @assignment.assignment_questions.build(question_params)
 
     if @question.save
-      respond_to do |format|
-        format.html { redirect_to instructor_course_lesson_assignment_path(@course, @lesson, @assignment),
-                     notice: "Question added successfully!" }
-        format.turbo_stream { render :create }
+      if params[:commit] == "Add & Create Another"
+        # Redirect back to new question form with success message
+        redirect_to new_instructor_course_lesson_assignment_assignment_question_path(@course, @lesson, @assignment, type: @question.question_type),
+                    notice: "✅ Question #{@question.position} added! Add another question below."
+      else
+        # Regular redirect to assignment page with success message
+        redirect_to instructor_course_lesson_assignment_path(@course, @lesson, @assignment, added_question: @question.id),
+                    notice: "✅ Question #{@question.position} added successfully! Assignment now has #{@assignment.assignment_questions.count} question#{'s' if @assignment.assignment_questions.count != 1}."
       end
     else
+      # Set up variables needed for the new template
+      setup_allowed_question_types
       render :new, status: :unprocessable_entity
     end
   end
 
   def edit
+    setup_allowed_question_types
   end
 
   def update
@@ -44,6 +55,8 @@ class Instructor::AssignmentQuestionsController < ApplicationController
         format.turbo_stream { render :update }
       end
     else
+      # Set up variables needed for the edit template
+      setup_allowed_question_types
       render :edit, status: :unprocessable_entity
     end
   end
@@ -109,6 +122,17 @@ class Instructor::AssignmentQuestionsController < ApplicationController
     end
 
     permitted
+  end
+
+  def setup_allowed_question_types
+    # Currently only supporting quiz assignments
+    @allowed_question_types = case @assignment.assignment_type
+    when "quiz"
+      %w[multiple_choice true_false]
+    else
+      # For now, all other types default to quiz behavior
+      %w[multiple_choice true_false]
+    end
   end
 
   def ensure_course_ownership

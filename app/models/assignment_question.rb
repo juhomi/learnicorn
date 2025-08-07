@@ -6,6 +6,9 @@ class AssignmentQuestion < ApplicationRecord
   validates :points, presence: true, numericality: { greater_than: 0 }
   validates :position, presence: true, numericality: { greater_than: 0 }
   validates :question_type, presence: true
+  validate :validate_question_type_for_assignment
+  validate :validate_multiple_choice_options, if: :multiple_choice?
+  validate :validate_correct_answer
 
   enum :question_type, {
     multiple_choice: 0,
@@ -91,5 +94,51 @@ class AssignmentQuestion < ApplicationRecord
 
     new_max_score = assignment.assignment_questions.sum(:points)
     assignment.update_column(:max_score, new_max_score)
+  end
+
+  def validate_question_type_for_assignment
+    return unless assignment.present? && question_type.present?
+
+    unless assignment.can_accept_question_type?(question_type)
+      errors.add(:question_type, "#{question_type.titleize} questions are not allowed for #{assignment.assignment_type} assignments")
+    end
+  end
+
+  def validate_multiple_choice_options
+    return unless options.present?
+
+    choices = options.fetch("choices", []).compact_blank
+    
+    if choices.length < 2
+      errors.add(:options, "must have at least 2 answer choices")
+    elsif choices.length > 6
+      errors.add(:options, "cannot have more than 6 answer choices")
+    end
+
+    if choices.uniq.length != choices.length
+      errors.add(:options, "cannot have duplicate answer choices")
+    end
+  end
+
+  def validate_correct_answer
+    return unless auto_gradeable?
+
+    case question_type
+    when "multiple_choice"
+      if correct_answer.blank?
+        errors.add(:correct_answer, "must be specified for multiple choice questions")
+      elsif options.present?
+        choices = options.fetch("choices", [])
+        correct_index = correct_answer.to_i
+        
+        if correct_index < 0 || correct_index >= choices.length
+          errors.add(:correct_answer, "must be a valid choice index")
+        end
+      end
+    when "true_false"
+      unless %w[0 1].include?(correct_answer.to_s)
+        errors.add(:correct_answer, "must be either 0 (False) or 1 (True)")
+      end
+    end
   end
 end

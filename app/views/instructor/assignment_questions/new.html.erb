@@ -19,16 +19,41 @@
   <div class="col-md-8">
     <div class="card">
       <div class="card-header">
-        <h4>Add New Question</h4>
-        <p class="text-muted mb-0">
-          <i class="fas fa-<%= @question.multiple_choice? ? 'list' : @question.true_false? ? 'check-circle' : @question.coding? ? 'code' : 'edit' %>"></i>
-          <%= @question.question_type.titleize %>
-        </p>
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h4>Add New Question</h4>
+            <p class="text-muted mb-0">
+              <i class="fas fa-<%= @question.multiple_choice? ? 'list' : @question.true_false? ? 'check-circle' : @question.coding? ? 'code' : 'edit' %>"></i>
+              <%= @question.question_type.titleize %>
+              <% if @assignment.quiz? %>
+                <span class="badge bg-success ms-2">Auto-Graded</span>
+              <% end %>
+            </p>
+          </div>
+          <div class="text-end">
+            <small class="text-muted">
+              <strong><%= @assignment.title %></strong><br>
+              Current Questions: <%= @assignment.assignment_questions.count %>
+            </small>
+          </div>
+        </div>
       </div>
       <div class="card-body">
+        <!-- Success Message -->
+        <% if notice %>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fas fa-check-circle"></i>
+            <%= notice %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        <% end %>
+
         <%= form_with model: [@course, @lesson, @assignment, @question], 
                       url: instructor_course_lesson_assignment_assignment_questions_path(@course, @lesson, @assignment), 
-                      local: true do |form| %>
+                      local: true,
+                      id: "new_assignment_question",
+                      class: "needs-validation",
+                      novalidate: true do |form| %>
           
           <% if @question.errors.any? %>
             <div class="alert alert-danger alert-dismissible fade show">
@@ -43,7 +68,28 @@
             </div>
           <% end %>
 
-          <%= form.hidden_field :question_type, value: @question.question_type %>
+          <% if @allowed_question_types.length > 1 %>
+            <div class="mb-3">
+              <%= form.label :question_type, "Question Type", class: "form-label" %>
+              <%= form.select :question_type, 
+                              options_for_select(
+                                @allowed_question_types.map { |type| [type.titleize, type] },
+                                @question.question_type
+                              ),
+                              {},
+                              { class: "form-select", onchange: "location.href = this.form.action + '/new?type=' + this.value" } %>
+              <% if @assignment.quiz? %>
+                <small class="form-text text-success">
+                  <i class="fas fa-check-circle"></i> These question types support automatic grading
+                </small>
+              <% end %>
+            </div>
+          <% else %>
+            <%= form.hidden_field :question_type, value: @question.question_type %>
+          <% end %>
+
+          <!-- Hidden field for correct answer (will be set by JavaScript for multiple choice) -->
+          <%= form.hidden_field :correct_answer, value: (@question.correct_answer || "0") %>
 
           <div class="mb-3">
             <%= form.label :question_text, "Question", class: "form-label" %>
@@ -89,7 +135,8 @@
               </div>
               <small class="form-text text-muted">
                 <i class="fas fa-info-circle"></i>
-                Select the radio button to mark the correct answer. At least 2 choices required.
+                <strong>Click the radio button (○)</strong> next to the correct answer choice. 
+                Fill in at least 2 answer choices. The first option (A) is selected as correct by default.
               </small>
             </div>
           <% end %>
@@ -136,11 +183,23 @@
             </small>
           </div>
 
-          <div class="d-flex justify-content-between">
-            <%= link_to "Cancel", instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
-                        class: "btn btn-secondary" %>
-            <%= form.submit "Add Question", class: "btn btn-primary",
-                            data: { disable_with: "<i class='fas fa-spinner fa-spin'></i> Adding..." } %>
+          <div class="d-flex justify-content-between align-items-center">
+            <%= link_to "← Back to Assignment", instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                        class: "btn btn-outline-secondary" %>
+            <div class="btn-group" role="group">
+              <%= form.submit "Add Question", 
+                              name: "commit", 
+                              value: "Add Question",
+                              class: "btn btn-primary",
+                              title: "Add question and return to assignment page",
+                              data: { disable_with: "<i class='fas fa-spinner fa-spin'></i> Adding..." } %>
+              <%= form.submit "Add & Create Another", 
+                              name: "commit", 
+                              value: "Add & Create Another",
+                              class: "btn btn-success",
+                              title: "Add question and create another one",
+                              data: { disable_with: "<i class='fas fa-spinner fa-spin'></i> Adding..." } %>
+            </div>
           </div>
         <% end %>
       </div>
@@ -200,6 +259,53 @@
 
     <div class="card mt-3">
       <div class="card-header">
+        <h6>Current Questions</h6>
+      </div>
+      <div class="card-body">
+        <% if @assignment.assignment_questions.any? %>
+          <div class="list-group list-group-flush">
+            <% @assignment.assignment_questions.ordered.each_with_index do |existing_question, index| %>
+              <div class="list-group-item p-2">
+                <div class="d-flex justify-content-between align-items-center">
+                  <div>
+                    <small class="fw-bold">Q<%= index + 1 %></small>
+                    <span class="badge bg-light text-dark ms-1">
+                      <%= existing_question.question_type.titleize %>
+                    </span>
+                    <span class="badge bg-info ms-1"><%= existing_question.points %>pts</span>
+                  </div>
+                  <small class="text-muted">
+                    <%= link_to edit_instructor_course_lesson_assignment_assignment_question_path(@course, @lesson, @assignment, existing_question), 
+                                class: "text-decoration-none" do %>
+                      <i class="fas fa-edit"></i>
+                    <% end %>
+                  </small>
+                </div>
+                <div class="mt-1">
+                  <small class="text-muted">
+                    <%= truncate(existing_question.question_text, length: 50) %>
+                  </small>
+                </div>
+              </div>
+            <% end %>
+          </div>
+          <div class="mt-3 text-center">
+            <small class="text-muted">
+              <strong><%= @assignment.assignment_questions.count %></strong> question<%= 's' if @assignment.assignment_questions.count != 1 %> 
+              (<strong><%= @assignment.max_score %></strong> points total)
+            </small>
+          </div>
+        <% else %>
+          <p class="text-muted text-center">
+            <i class="fas fa-info-circle"></i><br>
+            This will be your first question!
+          </p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
         <h6>Assignment Progress</h6>
       </div>
       <div class="card-body">
@@ -208,15 +314,15 @@
           <span class="ms-2">Assignment created</span>
         </div>
         <div class="progress-step mb-2">
-          <i class="fas fa-clock text-primary"></i>
+          <i class="fas fa-<%= @assignment.assignment_questions.any? ? 'check-circle text-success' : 'clock text-primary' %>"></i>
           <span class="ms-2">Adding questions (<%= @assignment.total_questions %>)</span>
         </div>
         <div class="progress-step mb-2">
-          <i class="fas fa-eye text-muted"></i>
+          <i class="fas fa-<%= @assignment.assignment_questions.any? ? 'eye text-primary' : 'circle text-muted' %>"></i>
           <span class="ms-2">Preview & test</span>
         </div>
         <div class="progress-step">
-          <i class="fas fa-share text-muted"></i>
+          <i class="fas fa-<%= @assignment.published? ? 'check-circle text-success' : 'circle text-muted' %>"></i>
           <span class="ms-2">Publish to students</span>
         </div>
       </div>
@@ -225,24 +331,117 @@
 </div>
 
 <script>
-// Handle multiple choice correct answer selection
-document.addEventListener('DOMContentLoaded', function() {
-  const correctRadios = document.querySelectorAll('input[name="correct_choice"]');
-  const form = document.querySelector('form');
+// Question form initialization - handles both page load and Turbo navigation
+function initializeQuestionForm() {
+  console.log('Initializing question form...');
   
-  if (correctRadios.length > 0) {
-    // Add hidden field for correct answer
-    const correctAnswerField = document.createElement('input');
-    correctAnswerField.type = 'hidden';
-    correctAnswerField.name = 'assignment_question[correct_answer]';
-    correctAnswerField.value = '0'; // Default to first choice
-    form.appendChild(correctAnswerField);
+  // Initialize correct answer selection for multiple choice
+  initializeCorrectAnswerSelection();
+  
+  // Initialize form submission handling
+  initializeFormSubmission();
+}
+
+function initializeCorrectAnswerSelection() {
+  const correctRadios = document.querySelectorAll('input[name="correct_choice"]');
+  const correctAnswerField = document.querySelector('input[name="assignment_question[correct_answer]"]');
+  
+  if (correctRadios.length > 0 && correctAnswerField) {
+    console.log('Setting up correct answer selection for', correctRadios.length, 'radio buttons');
     
+    // Remove existing event listeners to prevent duplicates
     correctRadios.forEach((radio, index) => {
-      radio.addEventListener('change', function() {
-        correctAnswerField.value = index.toString();
+      // Clone the radio to remove all event listeners
+      const newRadio = radio.cloneNode(true);
+      radio.parentNode.replaceChild(newRadio, radio);
+      
+      // Add fresh event listener
+      newRadio.addEventListener('change', function() {
+        if (this.checked) {
+          correctAnswerField.value = index.toString();
+          console.log('Correct answer set to choice', index);
+        }
       });
     });
+    
+    // Set initial value based on checked radio button
+    const checkedRadio = document.querySelector('input[name="correct_choice"]:checked');
+    if (checkedRadio) {
+      correctAnswerField.value = checkedRadio.value;
+    }
+    
+    console.log('✓ Correct answer selection initialized. Current value:', correctAnswerField.value);
   }
+}
+
+function initializeFormSubmission() {
+  const form = document.querySelector('#new_assignment_question, form[action*="assignment_questions"]');
+  const submitButtons = document.querySelectorAll('input[type="submit"], button[type="submit"]');
+  
+  if (form) {
+    console.log('✓ Form found:', form.id || 'unnamed form');
+    console.log('✓ Submit buttons found:', submitButtons.length);
+    
+    // Ensure form can be submitted
+    form.addEventListener('submit', function(e) {
+      console.log('Form submit event triggered');
+      
+      // Disable submit buttons to prevent double submission
+      submitButtons.forEach(button => {
+        button.disabled = true;
+        const originalText = button.value || button.textContent;
+        if (button.dataset.disableWith) {
+          button.innerHTML = button.dataset.disableWith;
+        }
+        
+        // Re-enable after a delay in case of validation errors
+        setTimeout(() => {
+          if (button.disabled) {
+            button.disabled = false;
+            button.innerHTML = originalText;
+          }
+        }, 5000);
+      });
+    });
+    
+    // Add click handlers for submit buttons
+    submitButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        console.log('Submit button clicked:', this.value || this.textContent);
+        
+        // Validate form if it's a multiple choice question
+        const questionType = document.querySelector('input[name="assignment_question[question_type]"]')?.value;
+        if (questionType === 'multiple_choice') {
+          const questionText = document.querySelector('input[name="assignment_question[question_text]"], textarea[name="assignment_question[question_text]"]')?.value;
+          const choices = document.querySelectorAll('input[name="assignment_question[choices][]"]');
+          const filledChoices = Array.from(choices).filter(choice => choice.value.trim() !== '');
+          
+          if (!questionText || questionText.trim().length < 10) {
+            alert('Please enter a question with at least 10 characters.');
+            e.preventDefault();
+            return false;
+          }
+          
+          if (filledChoices.length < 2) {
+            alert('Please provide at least 2 answer choices.');
+            e.preventDefault();
+            return false;
+          }
+        }
+      });
+    });
+  } else {
+    console.warn('⚠ Form not found - buttons may not work');
+  }
+}
+
+// Initialize on both DOMContentLoaded and Turbo events
+document.addEventListener('DOMContentLoaded', initializeQuestionForm);
+document.addEventListener('turbo:load', initializeQuestionForm);
+document.addEventListener('turbo:render', initializeQuestionForm);
+
+// Clean up on navigation
+document.addEventListener('turbo:before-visit', function() {
+  console.log('Turbo navigation starting - cleaning up...');
 });
 </script>
