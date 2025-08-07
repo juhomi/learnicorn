@@ -1,0 +1,228 @@
+<% content_for :title, "Edit Assignment" %>
+
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Courses", instructor_courses_path %></li>
+        <li class="breadcrumb-item"><%= link_to @course.title, instructor_course_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to "Lessons", instructor_course_lessons_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to @lesson.title, instructor_course_lesson_path(@course, @lesson) %></li>
+        <li class="breadcrumb-item"><%= link_to @assignment.title, instructor_course_lesson_assignment_path(@course, @lesson, @assignment) %></li>
+        <li class="breadcrumb-item active" aria-current="page">Edit Assignment</li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<!-- Assignment Status Alert -->
+<div class="row mb-3">
+  <div class="col-12">
+    <% if @assignment.published? %>
+      <div class="alert alert-info border-info">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-info-circle text-info me-3 fa-lg"></i>
+          <div>
+            <strong>Note:</strong> This assignment is currently published and visible to students. 
+            Any changes you make will be immediately reflected for all students.
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="alert alert-warning border-warning">
+        <div class="d-flex align-items-center">
+          <i class="fas fa-eye-slash text-warning me-3 fa-lg"></i>
+          <div>
+            <strong>Draft Mode:</strong> This assignment is currently hidden from students. 
+            <% if @assignment.assignment_questions.any? %>
+              You can publish it after making your changes.
+            <% else %>
+              Add questions first, then publish when ready.
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header">
+        <h4>Edit Assignment: "<%= @assignment.title %>"</h4>
+      </div>
+      <div class="card-body">
+        <%= form_with model: [@course, @lesson, @assignment], 
+                      url: instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                      method: :patch,
+                      local: true do |form| %>
+          
+          <% if @assignment.errors.any? %>
+            <div class="alert alert-danger alert-dismissible fade show">
+              <i class="fas fa-exclamation-triangle"></i>
+              <strong>Please fix the following errors:</strong>
+              <ul class="mb-0 mt-2">
+                <% @assignment.errors.full_messages.each do |message| %>
+                  <li><%= message %></li>
+                <% end %>
+              </ul>
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          <% end %>
+
+          <div class="row">
+            <div class="col-md-8">
+              <div class="mb-3">
+                <%= form.label :title, "Assignment Title", class: "form-label" %>
+                <%= form.text_field :title, class: "form-control", required: true, 
+                                    placeholder: "e.g., Ruby Basics Quiz" %>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <%= form.label :assignment_type, "Assignment Type", class: "form-label" %>
+                <%= form.select :assignment_type, 
+                                options_for_select([
+                                  ['Quiz (Auto-graded)', 'quiz']
+                                ], @assignment.assignment_type), 
+                                {}, 
+                                { class: "form-select" } %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :description, "Description", class: "form-label" %>
+            <%= form.text_area :description, class: "form-control", rows: 3,
+                               placeholder: "Brief description of what this assignment covers..." %>
+          </div>
+
+          <div class="mb-3">
+            <%= form.label :instructions, "Instructions for Students", class: "form-label" %>
+            <%= form.text_area :instructions, class: "form-control", rows: 4,
+                               placeholder: "Detailed instructions on how to complete this assignment..." %>
+          </div>
+
+          <div class="row">
+            <div class="col-md-4">
+              <div class="mb-3">
+                <%= form.label :max_score, "Maximum Score", class: "form-label" %>
+                <%= form.number_field :max_score, class: "form-control", min: 1 %>
+                <div class="form-text">Points will be calculated from questions</div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <%= form.label :due_date, "Due Date (Optional)", class: "form-label" %>
+                <%= form.datetime_local_field :due_date, class: "form-control" %>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="mb-3">
+                <%= form.label :position, "Position in Lesson", class: "form-label" %>
+                <%= form.number_field :position, class: "form-control", min: 1 %>
+              </div>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <div class="form-check">
+              <%= form.check_box :published, class: "form-check-input" %>
+              <%= form.label :published, "Published (students can see and take)", 
+                             class: "form-check-label" %>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-between align-items-center">
+            <%= link_to "Cancel", instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                        class: "btn btn-secondary" %>
+            <div class="btn-group" role="group">
+              <%= form.submit "Update Assignment", class: "btn btn-primary",
+                              data: { disable_with: "<i class='fas fa-spinner fa-spin'></i> Updating..." } %>
+              <% if !@assignment.published? && @assignment.assignment_questions.any? %>
+                <%= link_to "Update & Publish", 
+                            publish_instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                            method: :patch,
+                            class: "btn btn-success",
+                            data: { 
+                              confirm: "Update and publish this assignment? Students will be able to see and take it immediately.",
+                              disable_with: "<i class='fas fa-spinner fa-spin'></i> Publishing..." 
+                            },
+                            title: "Save changes and make assignment visible to students" %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header">
+        <h6>Assignment Information</h6>
+      </div>
+      <div class="card-body">
+        <div class="mb-3">
+          <strong>Current Status:</strong>
+          <span class="badge bg-<%= @assignment.published? ? 'success' : 'secondary' %> ms-2">
+            <%= @assignment.published? ? 'Published' : 'Draft' %>
+          </span>
+        </div>
+        <div class="mb-3">
+          <strong>Questions:</strong> <%= @assignment.assignment_questions.count %>
+        </div>
+        <div class="mb-3">
+          <strong>Total Points:</strong> <%= @assignment.assignment_questions.sum(:points) %>
+        </div>
+        <div class="mb-3">
+          <strong>Student Submissions:</strong> <%= @assignment.assignment_submissions.count %>
+        </div>
+        <div class="mb-3">
+          <strong>Created:</strong> <%= @assignment.created_at.strftime("%B %d, %Y") %>
+        </div>
+        <div>
+          <strong>Last Updated:</strong> <%= @assignment.updated_at.strftime("%B %d, %Y") %>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Assignment Type Info</h6>
+      </div>
+      <div class="card-body">
+        <div class="assignment-type-info">
+          <div class="mb-3">
+            <strong>Quiz</strong>
+            <p class="small text-muted">Multiple choice, true/false questions with automatic grading</p>
+          </div>
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i>
+            <small>Currently supporting Quiz assignments only. Other assignment types will be available in future updates.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Quick Actions</h6>
+      </div>
+      <div class="card-body">
+        <%= link_to "View Assignment", 
+                    instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                    class: "btn btn-outline-primary w-100 mb-2" %>
+        <% if @assignment.assignment_questions.any? %>
+          <%= link_to "Add Questions", 
+                      new_instructor_course_lesson_assignment_assignment_question_path(@course, @lesson, @assignment, type: 'multiple_choice'), 
+                      class: "btn btn-outline-success w-100 mb-2" %>
+        <% end %>
+        <%= link_to "Back to Lesson", 
+                    instructor_course_lesson_path(@course, @lesson), 
+                    class: "btn btn-secondary w-100" %>
+      </div>
+    </div>
+  </div>
+</div>

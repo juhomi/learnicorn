@@ -45,6 +45,78 @@
   <% end %>
 </div>
 
+<!-- Publication Status Banner -->
+<div class="row mb-4">
+  <div class="col-12">
+    <% if @assignment.published? %>
+      <div class="alert alert-success border-success" style="border-left: 5px solid #198754;">
+        <div class="d-flex align-items-center">
+          <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+            <i class="fas fa-globe text-white fa-lg"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="alert-heading mb-1 text-success">
+              <i class="fas fa-check-circle"></i> Assignment Published
+            </h6>
+            <p class="mb-2">This assignment is <strong>live and visible to students</strong>. Students can now access and submit their responses.</p>
+            <div class="small text-muted">
+              <i class="fas fa-users"></i> <%= @course.students.count %> students enrolled in this course
+              • <i class="fas fa-clipboard-check"></i> <%= @stats[:total_submissions] %> submissions received
+            </div>
+          </div>
+          <div>
+            <%= link_to "View as Student", 
+                        student_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                        class: "btn btn-outline-success btn-sm me-2",
+                        target: "_blank",
+                        title: "See how students view this assignment" %>
+          </div>
+        </div>
+      </div>
+    <% else %>
+      <div class="alert alert-warning border-warning" style="border-left: 5px solid #ffc107;">
+        <div class="d-flex align-items-center">
+          <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+            <i class="fas fa-eye-slash text-dark fa-lg"></i>
+          </div>
+          <div class="flex-grow-1">
+            <h6 class="alert-heading mb-1 text-warning">
+              <i class="fas fa-edit"></i> Assignment in Draft Mode
+            </h6>
+            <p class="mb-2">This assignment is currently <strong>hidden from students</strong>. Complete setup and publish when ready.</p>
+            <div class="small text-muted">
+              <% if @assignment.assignment_questions.empty? %>
+                <i class="fas fa-exclamation-triangle text-warning"></i> Add questions before publishing
+              <% else %>
+                <i class="fas fa-check text-success"></i> <%= @assignment.assignment_questions.count %> question<%= 's' if @assignment.assignment_questions.count != 1 %> ready
+                • <i class="fas fa-star text-info"></i> <%= @assignment.assignment_questions.sum(:points) %> total points
+              <% end %>
+            </div>
+          </div>
+          <div>
+            <% if @assignment.assignment_questions.any? %>
+              <%= link_to "Ready to Publish", 
+                          publish_instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                          method: :patch,
+                          class: "btn btn-success btn-sm",
+                          data: { 
+                            confirm: "Publish this assignment? Students will be able to see and take it immediately.",
+                            disable_with: "<i class='fas fa-spinner fa-spin'></i> Publishing..." 
+                          },
+                          title: "Make assignment visible to students" %>
+            <% else %>
+              <%= link_to "Add Questions First", 
+                          new_instructor_course_lesson_assignment_assignment_question_path(@course, @lesson, @assignment, type: 'multiple_choice'), 
+                          class: "btn btn-outline-primary btn-sm",
+                          title: "Add questions before publishing" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
 <!-- Quick Add Question Section (shown after adding a question) -->
 <% if params[:added_question].present? %>
   <div class="row mb-4">
@@ -117,10 +189,13 @@
                         edit_instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
                         class: "btn btn-outline-primary btn-sm" %>
             <%= link_to (@assignment.published? ? "Unpublish" : "Publish"), 
-                        instructor_course_lesson_assignment_path(@course, @lesson, @assignment, publish: true), 
+                        publish_instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
                         method: :patch,
                         class: "btn btn-#{@assignment.published? ? 'warning' : 'success'} btn-sm",
-                        data: { confirm: "Are you sure?" } %>
+                        data: { 
+                          confirm: (@assignment.published? ? "Are you sure you want to unpublish this assignment? Students will no longer be able to access it." : "Are you sure you want to publish this assignment? Students will be able to see and take it."),
+                          disable_with: "<i class='fas fa-spinner fa-spin'></i> #{@assignment.published? ? 'Unpublishing' : 'Publishing'}..." 
+                        } %>
           </div>
         </div>
       </div>

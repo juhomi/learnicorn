@@ -60,12 +60,29 @@ class Instructor::AssignmentsController < ApplicationController
   end
 
   def publish
+    # Check if assignment has questions before publishing
+    if !@assignment.published? && @assignment.assignment_questions.empty?
+      respond_to do |format|
+        format.html { redirect_to instructor_course_lesson_assignment_path(@course, @lesson, @assignment),
+                     alert: "⚠️ Cannot publish assignment without questions. Please add at least one question first." }
+        format.turbo_stream { render :publish_error }
+      end
+      return
+    end
+
     @assignment.update!(published: !@assignment.published?)
     status = @assignment.published? ? "published" : "unpublished"
+    
+    # Enhanced success message with more context
+    if @assignment.published?
+      success_message = "✅ Assignment published successfully! Students can now see and take this assignment."
+    else
+      success_message = "📝 Assignment unpublished successfully. Students can no longer access this assignment."
+    end
 
     respond_to do |format|
       format.html { redirect_to instructor_course_lesson_assignment_path(@course, @lesson, @assignment),
-                   notice: "Assignment #{status} successfully!" }
+                   notice: success_message }
       format.turbo_stream { render :publish }
     end
   end
