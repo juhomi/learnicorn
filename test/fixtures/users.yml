@@ -17,3 +17,9 @@ student:
   email: student@example.com
   password_digest: password
   role: student
+
+other_instructor:
+  name: Bob Teacher
+  email: other@example.com
+  password_digest: password
+  role: instructor

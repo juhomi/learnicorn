@@ -137,14 +137,17 @@
                   <p class="mb-1">
                     Submitted: <%= user_submission.submitted_at.strftime("%B %d, %Y at %I:%M %p") %>
                   </p>
-                  <% if user_submission.score.present? %>
+                  <% if user_submission.graded? %>
                     <p class="mb-0">
                       <strong>Score: <%= user_submission.score %>/<%= @assignment.max_score %> 
-                      (<%= ((user_submission.score.to_f / @assignment.max_score) * 100).round(1) %>%)</strong>
+                      (<%= user_submission.percentage_score %>%) - Grade: 
+                      <span class="badge bg-<%= grade_letter_color(user_submission.grade_letter) %>">
+                        <%= user_submission.grade_letter %>
+                      </span></strong>
                     </p>
-                  <% else %>
+                  <% elsif user_submission.submitted? %>
                     <p class="mb-0">
-                      <em>Score pending instructor review</em>
+                      <em>Awaiting instructor grading...</em>
                     </p>
                   <% end %>
                 </div>
@@ -160,6 +163,22 @@
                 </div>
               </div>
             </div>
+
+            <!-- Instructor Feedback -->
+            <% if user_submission.feedback.present? %>
+              <div class="instructor-feedback mt-3">
+                <h6><i class="fas fa-comment text-primary"></i> Instructor Feedback</h6>
+                <div class="alert alert-info">
+                  <%= simple_format(user_submission.feedback) %>
+                </div>
+                <% if user_submission.graded_at.present? %>
+                  <small class="text-muted">
+                    <i class="fas fa-clock"></i> 
+                    Graded on <%= user_submission.graded_at.strftime("%B %d, %Y at %I:%M %p") %>
+                  </small>
+                <% end %>
+              </div>
+            <% end %>
 
             <!-- Show individual question results if available -->
             <% if user_submission.assignment_answers.any? %>

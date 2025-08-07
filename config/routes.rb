@@ -62,6 +62,11 @@ Rails.application.routes.draw do
             patch :publish
             get :submissions
           end
+          resources :assignment_submissions, only: [:show, :update], path: :submissions do
+            member do
+              patch :grade
+            end
+          end
           resources :assignment_questions do
             member do
               patch :move

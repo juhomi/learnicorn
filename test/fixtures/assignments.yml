@@ -1,0 +1,40 @@
+quiz_assignment:
+  title: "Basic Math Quiz"
+  description: "Test your basic math skills"
+  instructions: "Answer all questions to the best of your ability"
+  assignment_type: quiz
+  max_score: 100
+  position: 1
+  published: true
+  lesson: ruby_intro
+  due_date: <%= 1.week.from_now %>
+
+essay_assignment:
+  title: "History Essay"
+  description: "Write about the Renaissance period"
+  instructions: "Write a 500-word essay about the Renaissance period"
+  assignment_type: essay
+  max_score: 50
+  position: 2
+  published: true
+  lesson: ruby_variables
+  due_date: <%= 2.weeks.from_now %>
+
+coding_assignment:
+  title: "Ruby Basics"
+  description: "Basic Ruby programming exercises"
+  instructions: "Complete the Ruby exercises"
+  assignment_type: coding
+  max_score: 80
+  position: 3
+  published: true
+  lesson: ruby_methods
+
+unpublished_assignment:
+  title: "Future Assignment"
+  description: "This will be published later"
+  assignment_type: quiz
+  max_score: 30
+  position: 4
+  published: false
+  lesson: ruby_intro

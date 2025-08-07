@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+      .header { background-color: #28a745; color: white; padding: 20px; text-align: center; }
+      .content { padding: 20px; }
+      .grade-section { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0; }
+      .feedback-section { background-color: #e3f2fd; padding: 15px; border-radius: 5px; margin: 15px 0; }
+      .footer { background-color: #6c757d; color: white; padding: 15px; text-align: center; font-size: 12px; }
+      .btn { display: inline-block; padding: 12px 24px; background-color: #007bff; color: white; text-decoration: none; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>🎉 Your Assignment Has Been Graded!</h1>
+    </div>
+
+    <div class="content">
+      <h2>Hi <%= @student.name %>,</h2>
+      
+      <p>Great news! Your instructor has finished grading your assignment.</p>
+
+      <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <h3 style="margin-top: 0;">Assignment Details</h3>
+        <p><strong>Assignment:</strong> <%= @assignment.title %></p>
+        <p><strong>Course:</strong> <%= @course.title %></p>
+        <p><strong>Lesson:</strong> <%= @lesson.title %></p>
+        <p><strong>Instructor:</strong> <%= @instructor.name %></p>
+      </div>
+
+      <div class="grade-section">
+        <h3 style="margin-top: 0;">Your Grade</h3>
+        <div style="text-align: center;">
+          <div style="font-size: 48px; font-weight: bold; color: #28a745; margin: 10px 0;">
+            <%= @submission.percentage_score %>%
+          </div>
+          <p style="font-size: 18px; margin: 5px 0;">
+            <strong><%= @submission.score %> out of <%= @submission.max_score %> points</strong>
+          </p>
+          <p style="font-size: 16px; margin: 5px 0;">
+            Grade: <span style="background-color: #28a745; color: white; padding: 4px 8px; border-radius: 4px;"><%= @submission.grade_letter %></span>
+          </p>
+        </div>
+      </div>
+
+      <% if @submission.feedback.present? %>
+        <div class="feedback-section">
+          <h3 style="margin-top: 0;">📝 Instructor Feedback</h3>
+          <div style="font-style: italic;">
+            <%= simple_format(@submission.feedback) %>
+          </div>
+        </div>
+      <% end %>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="<%= student_course_lesson_assignment_url(@course, @lesson, @assignment) %>" class="btn">
+          View Full Results
+        </a>
+      </div>
+
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #dee2e6;">
+
+      <p style="color: #6c757d; font-size: 14px;">
+        <strong>Next Steps:</strong>
+      </p>
+      <ul style="color: #6c757d; font-size: 14px;">
+        <li>Review your assignment results and feedback</li>
+        <li>Continue with the next lesson if this assignment is complete</li>
+        <li>Contact your instructor if you have any questions about your grade</li>
+      </ul>
+
+      <p>Keep up the great work!</p>
+      
+      <p>
+        Best regards,<br>
+        <%= @instructor.name %><br>
+        <em><%= @course.title %></em>
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>This email was sent automatically by the Learning Platform.</p>
+      <p>Please do not reply to this email. Contact your instructor directly for questions.</p>
+    </div>
+  </body>
+</html>

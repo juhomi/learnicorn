@@ -29,6 +29,11 @@ class AssignmentSubmission < ApplicationRecord
     if save
       # Try to auto-grade, but don't fail submission if it doesn't work
       auto_grade_safely
+      
+      # Send notification to instructor about new submission
+      # TODO: Enable email notifications later
+      # send_submission_notification
+      
       true
     else
       false
@@ -115,6 +120,24 @@ class AssignmentSubmission < ApplicationRecord
 
   private
 
+  def send_submission_notification
+    return unless assignment.assignment_questions.any?(&:requires_manual_grading?)
+    
+    begin
+      AssignmentMailer.new_submission_notification(self).deliver_later
+    rescue => e
+      Rails.logger.error "Failed to send submission notification: #{e.message}"
+    end
+  end
+
+  def send_grading_notification
+    begin
+      AssignmentMailer.graded_notification(self).deliver_later
+    rescue => e
+      Rails.logger.error "Failed to send grading notification: #{e.message}"
+    end
+  end
+
   def set_max_score
     self.max_score = assignment.max_score
   end
@@ -131,7 +154,7 @@ class AssignmentSubmission < ApplicationRecord
   end
 
   def can_auto_grade?
-    assignment.quiz? || assignment.coding?
+    assignment.assignment_questions.any?(&:auto_gradeable?)
   end
 
   def evaluate_code_answer(answer, question)

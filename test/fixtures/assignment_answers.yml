@@ -1,0 +1,27 @@
+student_essay_answer_1:
+  assignment_submission: student_submission
+  assignment_question: essay_question_1
+  answer_text: "Renaissance art was characterized by realism, perspective, and humanism. Artists like Leonardo da Vinci and Michelangelo created masterpieces that showed human emotion and natural beauty."
+  is_correct: false
+  points_earned: 0
+
+student_essay_answer_2:
+  assignment_submission: student_submission
+  assignment_question: essay_question_2
+  answer_text: "The Renaissance was caused by several factors including the rediscovery of classical texts, increased trade and wealth, and the rise of city-states in Italy."
+  is_correct: false
+  points_earned: 0
+
+student_math_answer_1:
+  assignment_submission: student_draft
+  assignment_question: math_question_1
+  answer_text: "0"
+  is_correct: true
+  points_earned: 10
+
+student_coding_answer:
+  assignment_submission: graded_submission
+  assignment_question: coding_question_1
+  answer_text: "def square(n)\n  n * n\nend"
+  is_correct: true
+  points_earned: 40

@@ -1,0 +1,39 @@
+math_question_1:
+  question_text: "What is 2 + 2?"
+  question_type: multiple_choice
+  points: 10
+  position: 1
+  correct_answer: "0"
+  options: 
+    choices: ["4", "3", "5", "2"]
+  assignment: quiz_assignment
+
+math_question_2:
+  question_text: "Is 7 a prime number?"
+  question_type: true_false
+  points: 10
+  position: 2
+  correct_answer: "1"
+  assignment: quiz_assignment
+
+essay_question_1:
+  question_text: "Describe the major characteristics of Renaissance art"
+  question_type: essay
+  points: 25
+  position: 1
+  assignment: essay_assignment
+
+essay_question_2:
+  question_text: "What were the main causes of the Renaissance?"
+  question_type: essay
+  points: 25
+  position: 2
+  assignment: essay_assignment
+
+coding_question_1:
+  question_text: "Write a Ruby method that returns the square of a number"
+  question_type: coding
+  points: 40
+  position: 1
+  correct_answer: "def square(n)\n  n * n\nend"
+  assignment: coding_assignment

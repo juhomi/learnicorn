@@ -1,0 +1,309 @@
+<% content_for :title, "Grade Submission: #{@submission.user.name}" %>
+
+<div class="row">
+  <div class="col-12">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><%= link_to "My Courses", instructor_courses_path %></li>
+        <li class="breadcrumb-item"><%= link_to @course.title, instructor_course_path(@course) %></li>
+        <li class="breadcrumb-item"><%= link_to @lesson.title, instructor_course_lesson_path(@course, @lesson) %></li>
+        <li class="breadcrumb-item"><%= link_to @assignment.title, instructor_course_lesson_assignment_path(@course, @lesson, @assignment) %></li>
+        <li class="breadcrumb-item"><%= link_to "Submissions", instructor_course_lesson_assignment_submissions_path(@course, @lesson, @assignment) %></li>
+        <li class="breadcrumb-item active" aria-current="page"><%= @submission.user.name %></li>
+      </ol>
+    </nav>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <!-- Student Submission Review -->
+    <div class="card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h5>Review Submission</h5>
+            <small class="text-muted">Student: <strong><%= @submission.user.name %></strong></small>
+          </div>
+          <div>
+            <span class="badge bg-<%= submission_status_color(@submission) %>">
+              <%= @submission.status.titleize %>
+              <% if @submission.auto_graded? %>
+                <i class="fas fa-robot ms-1" title="Auto-graded"></i>
+              <% end %>
+            </span>
+            <% if @submission.late_submission? %>
+              <span class="badge bg-warning ms-1">Late</span>
+            <% end %>
+          </div>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Submission Info -->
+        <div class="row mb-4">
+          <div class="col-md-3">
+            <strong>Submitted:</strong><br>
+            <% if @submission.submitted_at.present? %>
+              <%= @submission.submitted_at.strftime("%B %d, %Y at %I:%M %p") %>
+            <% else %>
+              <span class="text-muted">Draft</span>
+            <% end %>
+          </div>
+          <div class="col-md-3">
+            <strong>Current Score:</strong><br>
+            <% if @submission.graded? %>
+              <%= @submission.score %>/<%= @submission.max_score %> 
+              (<%= @submission.percentage_score %>%)
+            <% else %>
+              <span class="text-muted">Not graded</span>
+            <% end %>
+          </div>
+          <div class="col-md-3">
+            <strong>Grade:</strong><br>
+            <% if @submission.graded? %>
+              <span class="badge bg-<%= grade_letter_color(@submission.grade_letter) %>">
+                <%= @submission.grade_letter %>
+              </span>
+            <% else %>
+              <span class="text-muted">Not graded</span>
+            <% end %>
+          </div>
+          <div class="col-md-3">
+            <strong>Grading Method:</strong><br>
+            <% if @submission.graded? %>
+              <%= @submission.auto_graded? ? "Auto-graded" : "Manual" %>
+            <% else %>
+              <span class="text-muted">Pending</span>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Questions and Answers -->
+        <div class="questions-review">
+          <h6>Questions & Answers</h6>
+          <% @assignment_answers.each_with_index do |answer, index| %>
+            <% question = answer.assignment_question %>
+            <div class="question-review mb-4 p-3 border rounded">
+              <div class="question-header mb-3">
+                <div class="row">
+                  <div class="col-md-8">
+                    <strong>Question <%= index + 1 %></strong>
+                    <span class="badge bg-light text-dark ms-2">
+                      <%= question.question_type.titleize %>
+                    </span>
+                  </div>
+                  <div class="col-md-4 text-end">
+                    <span class="badge bg-info">
+                      <%= answer.points_earned || 0 %>/<%= question.points %> points
+                    </span>
+                    <% if answer.is_correct? %>
+                      <i class="fas fa-check-circle text-success ms-1"></i>
+                    <% elsif answer.is_answered? && !question.requires_manual_grading? %>
+                      <i class="fas fa-times-circle text-danger ms-1"></i>
+                    <% elsif question.requires_manual_grading? %>
+                      <i class="fas fa-clock text-warning ms-1" title="Requires manual grading"></i>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="question-text mb-3">
+                <strong>Question:</strong>
+                <p><%= simple_format(question.question_text) %></p>
+              </div>
+
+              <div class="student-answer mb-3">
+                <strong>Student Answer:</strong>
+                <% if answer.is_answered? %>
+                  <% if question.coding? %>
+                    <pre class="bg-light p-3 mt-2"><%= answer.answer_text %></pre>
+                  <% elsif question.essay? %>
+                    <div class="p-3 bg-light mt-2">
+                      <%= simple_format(answer.answer_text) %>
+                    </div>
+                  <% else %>
+                    <p class="mt-1"><%= answer.formatted_answer %></p>
+                  <% end %>
+                <% else %>
+                  <p class="text-muted mt-1">No answer provided</p>
+                <% end %>
+              </div>
+
+              <% if question.multiple_choice? || question.true_false? %>
+                <div class="correct-answer">
+                  <strong>Correct Answer:</strong>
+                  <p class="text-success">
+                    <% if question.multiple_choice? %>
+                      <%= question.correct_option_label.join(" ") %>
+                    <% else %>
+                      <%= question.correct_answer == "1" ? "True" : "False" %>
+                    <% end %>
+                  </p>
+                </div>
+              <% end %>
+
+              <!-- Manual grading controls for essay/coding questions -->
+              <% if question.requires_manual_grading? && @submission.submitted? %>
+                <div class="manual-grading mt-3 p-2 bg-light rounded">
+                  <%= form_with(model: [@course, @lesson, @assignment, @submission], 
+                                url: grade_instructor_course_lesson_assignment_submission_path(@course, @lesson, @assignment, @submission),
+                                method: :patch, 
+                                data: { turbo: false },
+                                class: "d-inline-block") do |form| %>
+                    <div class="row align-items-center">
+                      <div class="col-md-4">
+                        <label class="form-label small">Points for this question:</label>
+                        <%= text_field_tag "answer_scores[#{answer.id}]", 
+                                           answer.points_earned, 
+                                           class: "form-control form-control-sm", 
+                                           min: 0, 
+                                           max: question.points,
+                                           type: "number" %>
+                      </div>
+                      <div class="col-md-8">
+                        <small class="text-muted">Max points: <%= question.points %></small>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <!-- Grading Panel -->
+    <div class="card">
+      <div class="card-header">
+        <h6>Grading Panel</h6>
+      </div>
+      <div class="card-body">
+        <%= form_with(model: [@course, @lesson, @assignment, @submission], 
+                      url: grade_instructor_course_lesson_assignment_submission_path(@course, @lesson, @assignment, @submission),
+                      method: :patch, 
+                      data: { turbo: false }) do |form| %>
+          
+          <!-- Current/Override Score -->
+          <div class="mb-3">
+            <%= form.label :score, "Total Score (Override)", class: "form-label" %>
+            <div class="input-group">
+              <%= form.number_field :score, 
+                                   value: @grading_form[:score], 
+                                   class: "form-control", 
+                                   min: 0, 
+                                   max: @submission.max_score %>
+              <span class="input-group-text">/ <%= @submission.max_score %></span>
+            </div>
+            <small class="text-muted">
+              Leave blank to use sum of individual question scores
+            </small>
+          </div>
+
+          <!-- Feedback -->
+          <div class="mb-3">
+            <%= form.label :feedback, "Feedback for Student", class: "form-label" %>
+            <%= form.text_area :feedback, 
+                               value: @grading_form[:feedback],
+                               class: "form-control", 
+                               rows: 5,
+                               placeholder: "Provide constructive feedback to help the student improve..." %>
+          </div>
+
+          <!-- Hidden field for manual answer scores -->
+          <% @assignment_answers.each do |answer| %>
+            <% if answer.assignment_question.requires_manual_grading? %>
+              <%= hidden_field_tag "answer_scores[#{answer.id}]", answer.points_earned %>
+            <% end %>
+          <% end %>
+
+          <!-- Grade Actions -->
+          <% if @submission.submitted? %>
+            <%= form.submit "Grade Assignment", 
+                            class: "btn btn-success w-100 mb-2",
+                            data: { confirm: "Are you sure? This will notify the student." } %>
+          <% else %>
+            <div class="alert alert-warning">
+              <i class="fas fa-info-circle"></i>
+              This submission is still a draft. Students must submit it before you can grade it.
+            </div>
+          <% end %>
+        <% end %>
+
+        <% if @submission.graded? %>
+          <div class="alert alert-info mt-2">
+            <i class="fas fa-info-circle"></i>
+            <strong>Previously graded:</strong> 
+            <%= @submission.graded_at.strftime("%b %d, %Y at %I:%M %p") %>
+            <% if @submission.feedback.present? %>
+              <br><small>Feedback provided to student</small>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Student Info -->
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Student Information</h6>
+      </div>
+      <div class="card-body">
+        <p><strong><%= @submission.user.name %></strong></p>
+        <p class="text-muted"><%= @submission.user.email %></p>
+        <p><strong>Role:</strong> <%= @submission.user.role.titleize %></p>
+        
+        <% enrollment = @course.enrollments.find_by(user: @submission.user) %>
+        <% if enrollment %>
+          <p><strong>Enrolled:</strong> <%= enrollment.created_at.strftime("%b %d, %Y") %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="card mt-3">
+      <div class="card-header">
+        <h6>Navigation</h6>
+      </div>
+      <div class="card-body">
+        <%= link_to "Back to Submissions", 
+                    instructor_course_lesson_assignment_submissions_path(@course, @lesson, @assignment), 
+                    class: "btn btn-secondary w-100 mb-2" %>
+        <%= link_to "View Assignment", 
+                    instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                    class: "btn btn-outline-secondary w-100" %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Auto-calculate total from individual question scores
+document.addEventListener('DOMContentLoaded', function() {
+  const answerScoreInputs = document.querySelectorAll('input[name*="answer_scores"]');
+  const totalScoreInput = document.querySelector('input[name="assignment_submission[score]"]');
+  
+  if (answerScoreInputs.length > 0 && totalScoreInput) {
+    function updateTotal() {
+      let total = 0;
+      answerScoreInputs.forEach(input => {
+        total += parseInt(input.value) || 0;
+      });
+      
+      // Only auto-update if the total score field is empty
+      if (totalScoreInput.value === '' || totalScoreInput.value === '0') {
+        totalScoreInput.value = total;
+      }
+    }
+    
+    answerScoreInputs.forEach(input => {
+      input.addEventListener('input', updateTotal);
+    });
+    
+    // Initial calculation
+    updateTotal();
+  }
+});
+</script>

@@ -1,0 +1,42 @@
+🎉 Your Assignment Has Been Graded!
+
+Hi <%= @student.name %>,
+
+Great news! Your instructor has finished grading your assignment.
+
+ASSIGNMENT DETAILS
+==================
+Assignment: <%= @assignment.title %>
+Course: <%= @course.title %>
+Lesson: <%= @lesson.title %>
+Instructor: <%= @instructor.name %>
+
+YOUR GRADE
+==========
+Score: <%= @submission.score %> out of <%= @submission.max_score %> points
+Percentage: <%= @submission.percentage_score %>%
+Letter Grade: <%= @submission.grade_letter %>
+
+<% if @submission.feedback.present? %>
+INSTRUCTOR FEEDBACK
+===================
+<%= @submission.feedback %>
+
+<% end %>
+View your full results: <%= student_course_lesson_assignment_url(@course, @lesson, @assignment) %>
+
+NEXT STEPS
+==========
+- Review your assignment results and feedback
+- Continue with the next lesson if this assignment is complete
+- Contact your instructor if you have any questions about your grade
+
+Keep up the great work!
+
+Best regards,
+<%= @instructor.name %>
+<%= @course.title %>
+
+---
+This email was sent automatically by the Learning Platform.
+Please do not reply to this email. Contact your instructor directly for questions.

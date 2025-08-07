@@ -95,4 +95,25 @@ module ApplicationHelper
     gravatar_id = Digest::MD5.hexdigest(email.downcase)
     "https://secure.gravatar.com/avatar/#{gravatar_id}?s=#{size}&d=identicon"
   end
+
+  def submission_status_color(submission)
+    case submission.status
+    when "draft" then "secondary"
+    when "submitted" then "primary"
+    when "graded" then "success"
+    when "returned" then "info"
+    else "secondary"
+    end
+  end
+
+  def grade_letter_color(grade_letter)
+    case grade_letter
+    when "A" then "success"
+    when "B" then "primary"
+    when "C" then "warning"
+    when "D" then "danger"
+    when "F" then "danger"
+    else "secondary"
+    end
+  end
 end

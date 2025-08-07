@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+      .header { background-color: #007bff; color: white; padding: 20px; text-align: center; }
+      .content { padding: 20px; }
+      .submission-details { background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 15px 0; }
+      .footer { background-color: #6c757d; color: white; padding: 15px; text-align: center; font-size: 12px; }
+      .btn { display: inline-block; padding: 12px 24px; background-color: #28a745; color: white; text-decoration: none; border-radius: 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h1>📝 New Assignment Submission</h1>
+    </div>
+
+    <div class="content">
+      <h2>Hi <%= @instructor.name %>,</h2>
+      
+      <p>A student has submitted an assignment that requires your attention.</p>
+
+      <div class="submission-details">
+        <h3 style="margin-top: 0;">Submission Details</h3>
+        <p><strong>Student:</strong> <%= @student.name %> (<%= @student.email %>)</p>
+        <p><strong>Assignment:</strong> <%= @assignment.title %></p>
+        <p><strong>Course:</strong> <%= @course.title %></p>
+        <p><strong>Lesson:</strong> <%= @lesson.title %></p>
+        <p><strong>Submitted:</strong> <%= @submission.submitted_at.strftime("%B %d, %Y at %I:%M %p") %></p>
+        <% if @submission.late_submission? %>
+          <p style="color: #dc3545;"><strong>⚠️ This submission is late</strong></p>
+        <% end %>
+      </div>
+
+      <div style="background-color: #fff3cd; padding: 15px; border-radius: 5px; border-left: 4px solid #ffc107;">
+        <p style="margin: 0;"><strong>Action Required:</strong> This assignment contains questions that require manual grading.</p>
+      </div>
+
+      <div style="text-align: center; margin: 30px 0;">
+        <a href="<%= instructor_course_lesson_assignment_submission_url(@course, @lesson, @assignment, @submission) %>" class="btn">
+          Review & Grade Submission
+        </a>
+      </div>
+
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #dee2e6;">
+
+      <p style="color: #6c757d; font-size: 14px;">
+        <strong>Quick Stats:</strong>
+      </p>
+      <ul style="color: #6c757d; font-size: 14px;">
+        <li>Assignment Type: <%= @assignment.assignment_type.titleize %></li>
+        <li>Total Questions: <%= @assignment.assignment_questions.count %></li>
+        <li>Max Score: <%= @assignment.max_score %> points</li>
+        <li>Auto-gradeable Questions: <%= @assignment.assignment_questions.select(&:auto_gradeable?).count %></li>
+        <li>Manual Grading Required: <%= @assignment.assignment_questions.select(&:requires_manual_grading?).count %></li>
+      </ul>
+
+      <p>
+        Best regards,<br>
+        Learning Platform Team
+      </p>
+    </div>
+
+    <div class="footer">
+      <p>This email was sent automatically when a student submitted an assignment.</p>
+      <p>You can change your notification preferences in your instructor dashboard.</p>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+student_submission:
+  user: student
+  assignment: essay_assignment
+  status: submitted
+  submitted_at: <%= 1.day.ago %>
+  score: 0
+  max_score: 50
+  auto_graded: false
+
+student_draft:
+  user: student  
+  assignment: quiz_assignment
+  status: draft
+  score: 0
+  max_score: 100
+  auto_graded: false
+
+graded_submission:
+  user: student
+  assignment: coding_assignment
+  status: graded
+  submitted_at: <%= 2.days.ago %>
+  graded_at: <%= 1.day.ago %>
+  score: 75
+  max_score: 80
+  auto_graded: true
+  feedback: "Good work on the coding assignment!"
