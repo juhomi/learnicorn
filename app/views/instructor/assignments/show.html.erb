@@ -95,15 +95,16 @@
           </div>
           <div>
             <% if @assignment.assignment_questions.any? %>
-              <%= link_to "Ready to Publish", 
-                          publish_instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
-                          method: :patch,
-                          class: "btn btn-success btn-sm",
-                          data: { 
-                            confirm: "Publish this assignment? Students will be able to see and take it immediately.",
-                            disable_with: "<i class='fas fa-spinner fa-spin'></i> Publishing..." 
-                          },
-                          title: "Make assignment visible to students" %>
+              <%= button_to "Ready to Publish", 
+                            publish_instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                            method: :patch,
+                            class: "btn btn-success btn-sm",
+                            form_class: "d-inline",
+                            data: { 
+                              confirm: "Publish this assignment? Students will be able to see and take it immediately.",
+                              disable_with: "<i class='fas fa-spinner fa-spin'></i> Publishing..." 
+                            },
+                            title: "Make assignment visible to students" %>
             <% else %>
               <%= link_to "Add Questions First", 
                           new_instructor_course_lesson_assignment_assignment_question_path(@course, @lesson, @assignment, type: 'multiple_choice'), 
@@ -188,14 +189,15 @@
             <%= link_to "Edit Assignment", 
                         edit_instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
                         class: "btn btn-outline-primary btn-sm" %>
-            <%= link_to (@assignment.published? ? "Unpublish" : "Publish"), 
-                        publish_instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
-                        method: :patch,
-                        class: "btn btn-#{@assignment.published? ? 'warning' : 'success'} btn-sm",
-                        data: { 
-                          confirm: (@assignment.published? ? "Are you sure you want to unpublish this assignment? Students will no longer be able to access it." : "Are you sure you want to publish this assignment? Students will be able to see and take it."),
-                          disable_with: "<i class='fas fa-spinner fa-spin'></i> #{@assignment.published? ? 'Unpublishing' : 'Publishing'}..." 
-                        } %>
+            <%= button_to (@assignment.published? ? "Unpublish" : "Publish"), 
+                          publish_instructor_course_lesson_assignment_path(@course, @lesson, @assignment), 
+                          method: :patch,
+                          class: "btn btn-#{@assignment.published? ? 'warning' : 'success'} btn-sm",
+                          form_class: "d-inline",
+                          data: { 
+                            confirm: (@assignment.published? ? "Are you sure you want to unpublish this assignment? Students will no longer be able to access it." : "Are you sure you want to publish this assignment? Students will be able to see and take it."),
+                            disable_with: "<i class='fas fa-spinner fa-spin'></i> #{@assignment.published? ? 'Unpublishing' : 'Publishing'}..." 
+                          } %>
           </div>
         </div>
       </div>
@@ -470,6 +472,9 @@ function initializeAssignmentPage() {
   
   // Smooth scroll to newly added question
   initializeQuestionScroll();
+  
+  // Reinitialize Bootstrap dropdowns
+  initializeBootstrapDropdowns();
 }
 
 function initializeAlertDismissal() {
@@ -527,6 +532,28 @@ function initializeQuestionScroll() {
 document.addEventListener('DOMContentLoaded', initializeAssignmentPage);
 document.addEventListener('turbo:load', initializeAssignmentPage);
 document.addEventListener('turbo:render', initializeAssignmentPage);
+
+function initializeBootstrapDropdowns() {
+  // Find all dropdown toggles and reinitialize them
+  const dropdownTogglesList = document.querySelectorAll('[data-bs-toggle="dropdown"]');
+  console.log('Found', dropdownTogglesList.length, 'dropdown toggles to reinitialize');
+  
+  dropdownTogglesList.forEach(function(dropdownToggleEl) {
+    // Dispose existing dropdown instance if it exists
+    const existingDropdown = bootstrap.Dropdown.getInstance(dropdownToggleEl);
+    if (existingDropdown) {
+      existingDropdown.dispose();
+    }
+    
+    // Create new dropdown instance
+    try {
+      new bootstrap.Dropdown(dropdownToggleEl);
+      console.log('✓ Dropdown reinitialized:', dropdownToggleEl);
+    } catch (error) {
+      console.warn('Could not initialize dropdown:', error);
+    }
+  });
+}
 
 // Clean up on navigation
 document.addEventListener('turbo:before-visit', function() {

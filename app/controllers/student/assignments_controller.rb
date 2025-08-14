@@ -13,11 +13,11 @@ class Student::AssignmentsController < ApplicationController
   end
 
   def show
-    @submission = get_or_create_submission
-    @can_take = @submission.draft?
+    @submission = @assignment.assignment_submissions.find_by(user: current_user)
+    @can_take = @submission.nil? || @submission.draft?
     @can_retake = false
 
-    if @submission.completed?
+    if @submission&.completed?
       @answers = @submission.assignment_answers.includes(:assignment_question)
       @grade_stats = {
         score: @submission.score,
