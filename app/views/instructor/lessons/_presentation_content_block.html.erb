@@ -1,0 +1,82 @@
+<% case content_block.block_type %>
+<% when 'text' %>
+  <div class="text-content">
+    <% if content_block.content.present? %>
+      <%= simple_format(content_block.content, {}, wrapper_tag: "div") %>
+    <% else %>
+      <p style="color: #999; text-align: center;">No text content available</p>
+    <% end %>
+  </div>
+
+<% when 'image' %>
+  <div class="image-content">
+    <% if content_block.file_url.present? %>
+      <%= image_tag content_block.file_url, alt: content_block.alt_text.presence || "Lesson image" %>
+      <% if content_block.alt_text.present? %>
+        <div class="caption"><%= content_block.alt_text %></div>
+      <% end %>
+    <% else %>
+      <div class="placeholder">
+        <i class="fas fa-image" style="font-size: 4rem; color: #666; margin-bottom: 20px;"></i>
+        <p style="color: #999;">Image not available</p>
+      </div>
+    <% end %>
+  </div>
+
+<% when 'video' %>
+  <div class="video-content">
+    <% if content_block.file_url.present? %>
+      <% if content_block.file_url.include?('youtube.com') || content_block.file_url.include?('youtu.be') %>
+        <% 
+          # Extract YouTube video ID
+          video_id = nil
+          if content_block.file_url.include?('youtube.com/watch?v=')
+            video_id = content_block.file_url.split('v=')[1]&.split('&')[0]
+          elsif content_block.file_url.include?('youtu.be/')
+            video_id = content_block.file_url.split('youtu.be/')[1]&.split('?')[0]
+          end
+        %>
+        <% if video_id %>
+          <iframe 
+            src="https://www.youtube.com/embed/<%= video_id %>?rel=0&showinfo=0&modestbranding=1" 
+            frameborder="0" 
+            allowfullscreen>
+          </iframe>
+        <% else %>
+          <p style="text-align: center; color: #999;">Invalid YouTube URL</p>
+        <% end %>
+      <% elsif content_block.file_url.include?('vimeo.com') %>
+        <% 
+          # Extract Vimeo video ID
+          video_id = content_block.file_url.split('/').last&.split('?')[0]
+        %>
+        <iframe 
+          src="https://player.vimeo.com/video/<%= video_id %>" 
+          frameborder="0" 
+          allowfullscreen>
+        </iframe>
+      <% else %>
+        <video controls style="max-width: 100%; border-radius: 15px;">
+          <source src="<%= content_block.file_url %>" type="video/mp4">
+          Your browser does not support the video tag.
+        </video>
+      <% end %>
+      
+      <% if content_block.alt_text.present? %>
+        <div class="caption" style="margin-top: 20px;"><%= content_block.alt_text %></div>
+      <% end %>
+    <% else %>
+      <div class="placeholder" style="text-align: center;">
+        <i class="fas fa-video" style="font-size: 4rem; color: #666; margin-bottom: 20px;"></i>
+        <p style="color: #999;">No video URL provided</p>
+      </div>
+    <% end %>
+  </div>
+
+<% else %>
+  <div class="unknown-content" style="text-align: center;">
+    <i class="fas fa-question-circle" style="font-size: 3rem; color: #666; margin-bottom: 20px;"></i>
+    <h3 style="color: #999;">Unknown Content Type</h3>
+    <p style="color: #777;">Content type '<%= content_block.block_type %>' is not supported in presentation mode.</p>
+  </div>
+<% end %>

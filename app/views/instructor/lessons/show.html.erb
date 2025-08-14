@@ -23,6 +23,14 @@
             <p class="text-muted mb-0">Lesson <%= @lesson.position %> of <%= @course.lessons.count %></p>
           </div>
           <div>
+            <% if @lesson.has_content_blocks? %>
+              <%= link_to present_instructor_course_lesson_path(@course, @lesson), 
+                          class: "btn btn-success me-2", 
+                          title: "Enter presentation mode",
+                          target: "_blank" do %>
+                <i class="fas fa-tv"></i> Present Mode
+              <% end %>
+            <% end %>
             <%= link_to "Edit Lesson", edit_instructor_course_lesson_path(@course, @lesson), class: "btn btn-outline-primary" %>
           </div>
         </div>

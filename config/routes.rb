@@ -49,6 +49,9 @@ Rails.application.routes.draw do
     get "/", to: "dashboard#index"
     resources :courses do
       resources :lessons do
+        member do
+          get :present
+        end
         resources :content_blocks do
           member do
             patch :move
