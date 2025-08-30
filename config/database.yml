@@ -81,22 +81,28 @@ test:
 # Read https://guides.rubyonrails.org/configuring.html#configuring-a-database
 # for a full overview on how database connection configuration can be specified.
 #
+#production:
+#  primary: &primary_production
+#    <<: *default
+#    database: <%= ENV.fetch("PRODUCTION_DATABASE_NAME") %>
+#    username: <%= ENV.fetch("PRODUCTION_DATABASE_USERNAME") %>
+#    password: <%= ENV.fetch("PRODUCTION_DATABASE_PASSWORD") %>
+#    host: <%= ENV.fetch("PRODUCTION_DATABASE_HOST") %>
+#  cache:
+#    <<: *primary_production
+#    database: <%= ENV.fetch("PRODUCTION_CACHE_DATABASE_NAME") %>
+#    migrations_paths: db/cache_migrate
+#  queue:
+#    <<: *primary_production
+#    database: <%= ENV.fetch("PRODUCTION_QUEUE_DATABASE_NAME") %>
+#    migrations_paths: db/queue_migrate
+#  cable:
+#    <<: *primary_production
+#    database: <%= ENV.fetch("PRODUCTION_CABLE_DATABASE_NAME") %>
+#    migrations_paths: db/cable_migrate
+
 production:
-  primary: &primary_production
-    <<: *default
-    database: <%= ENV.fetch("PRODUCTION_DATABASE_NAME") %>
-    username: <%= ENV.fetch("PRODUCTION_DATABASE_USERNAME") %>
-    password: <%= ENV.fetch("PRODUCTION_DATABASE_PASSWORD") %>
-    host: <%= ENV.fetch("PRODUCTION_DATABASE_HOST") %>
-  cache:
-    <<: *primary_production
-    database: <%= ENV.fetch("PRODUCTION_CACHE_DATABASE_NAME") %>
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: <%= ENV.fetch("PRODUCTION_QUEUE_DATABASE_NAME") %>
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: <%= ENV.fetch("PRODUCTION_CABLE_DATABASE_NAME") %>
-    migrations_paths: db/cable_migrate
+  adapter: postgresql
+  encoding: unicode
+  pool: 5
+  url: <%= ENV['DATABASE_URL'] %>
