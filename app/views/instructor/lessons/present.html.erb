@@ -169,6 +169,22 @@
       color: var(--text-primary);
       font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
     }
+
+    /* Elegant Template */
+    body.template-elegant {
+      --bg-primary: linear-gradient(135deg, #fdfcfb 0%, #f7f5f3 50%, #f0eee9 100%);
+      --bg-secondary: rgba(253, 252, 251, 0.95);
+      --bg-content: rgba(255, 255, 255, 0.85);
+      --text-primary: #2c2c2c;
+      --text-secondary: #444444;
+      --text-muted: #666666;
+      --accent-color: #c9953d;
+      --border-color: rgba(201, 149, 61, 0.2);
+      --shadow-color: rgba(44, 44, 44, 0.1);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Source Sans Pro', 'Segoe UI', -apple-system, sans-serif;
+    }
     
     /* Minimal template specific overrides */
     body.template-minimal .content-block {
@@ -188,6 +204,270 @@
       background: var(--accent-color);
       color: white;
       border-color: var(--accent-color);
+    }
+
+    /* Elegant template specific overrides */
+    body.template-elegant .content-block {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%);
+      border: 2px solid var(--border-color);
+      box-shadow: 
+        0 12px 35px var(--shadow-color),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(15px);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    body.template-elegant .content-block::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201, 149, 61, 0.1), transparent);
+      animation: elegant-shine 3s ease-in-out infinite;
+    }
+    
+    @keyframes elegant-shine {
+      0% { left: -100%; }
+      50% { left: 100%; }
+      100% { left: 100%; }
+    }
+    
+    body.template-elegant .content-block h1,
+    body.template-elegant .content-block h2,
+    body.template-elegant .content-block h3 {
+      color: var(--accent-color);
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(201, 149, 61, 0.1);
+      position: relative;
+      z-index: 2;
+    }
+    
+    body.template-elegant .content-block p,
+    body.template-elegant .content-block li {
+      position: relative;
+      z-index: 2;
+    }
+    
+    body.template-elegant .nav-button {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%);
+      border: 2px solid var(--border-color);
+      color: var(--accent-color);
+      box-shadow: 
+        0 6px 20px rgba(201, 149, 61, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    body.template-elegant .nav-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201, 149, 61, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    body.template-elegant .nav-button:hover::before {
+      left: 100%;
+    }
+    
+    body.template-elegant .nav-button:hover {
+      background: linear-gradient(135deg, var(--accent-color) 0%, #d4a853 100%);
+      color: white;
+      border-color: var(--accent-color);
+      box-shadow: 0 8px 25px rgba(201, 149, 61, 0.3);
+      transform: translateY(-50%) scale(1.05);
+    }
+    
+    /* Enhanced Slide Overview for Elegant Theme */
+    body.template-elegant .slide-overview {
+      background: linear-gradient(135deg, rgba(253, 252, 251, 0.98) 0%, rgba(247, 245, 243, 0.95) 100%);
+      backdrop-filter: blur(25px);
+      border-right: 3px solid var(--border-color);
+      box-shadow: 4px 0 25px rgba(201, 149, 61, 0.1);
+    }
+    
+    body.template-elegant .slide-overview h4 {
+      color: var(--text-primary);
+      font-size: 1.2rem;
+      font-weight: 600;
+      text-shadow: 0 1px 2px rgba(201, 149, 61, 0.1);
+      padding: 15px 0;
+      border-bottom: 2px solid var(--border-color);
+      background: linear-gradient(90deg, transparent, rgba(201, 149, 61, 0.05), transparent);
+      margin: -20px -20px 20px -20px;
+      padding-left: 20px;
+      padding-right: 20px;
+    }
+    
+    body.template-elegant .lesson-header {
+      color: var(--accent-color);
+      background: linear-gradient(90deg, rgba(201, 149, 61, 0.08), rgba(201, 149, 61, 0.03));
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid var(--border-color);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-size: 0.85rem;
+    }
+    
+    body.template-elegant .lesson-header small {
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: normal;
+    }
+    
+    body.template-elegant .slide-thumbnail {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(253, 252, 251, 0.8) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    body.template-elegant .slide-thumbnail::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201, 149, 61, 0.1), transparent);
+      transition: left 0.6s ease;
+    }
+    
+    body.template-elegant .slide-thumbnail:hover::before {
+      left: 100%;
+    }
+    
+    body.template-elegant .slide-thumbnail:hover {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%);
+      border-color: var(--accent-color);
+      box-shadow: 0 6px 20px rgba(201, 149, 61, 0.15);
+      transform: translateX(4px);
+    }
+    
+    body.template-elegant .slide-thumbnail.active {
+      border-color: var(--accent-color);
+      background: linear-gradient(135deg, rgba(201, 149, 61, 0.12) 0%, rgba(201, 149, 61, 0.08) 100%);
+      box-shadow: 
+        0 6px 20px rgba(201, 149, 61, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      transform: translateX(6px);
+    }
+    
+    body.template-elegant .slide-thumbnail .slide-number {
+      color: var(--accent-color);
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    
+    body.template-elegant .slide-thumbnail .slide-preview {
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    /* Enhanced Header for Elegant Theme */
+    body.template-elegant .presentation-header {
+      background: linear-gradient(135deg, rgba(253, 252, 251, 0.98) 0%, rgba(247, 245, 243, 0.95) 100%);
+      backdrop-filter: blur(25px);
+      border-bottom: 3px solid var(--border-color);
+      box-shadow: 0 4px 20px rgba(201, 149, 61, 0.1);
+    }
+    
+    body.template-elegant .lesson-title {
+      background: linear-gradient(135deg, var(--accent-color), #d4a853);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: none;
+    }
+    
+    body.template-elegant .lesson-title small {
+      -webkit-text-fill-color: var(--text-muted);
+    }
+    
+    /* Enhanced Footer for Elegant Theme */
+    body.template-elegant .presentation-footer {
+      background: linear-gradient(135deg, rgba(253, 252, 251, 0.98) 0%, rgba(247, 245, 243, 0.95) 100%);
+      backdrop-filter: blur(25px);
+      border-top: 3px solid var(--border-color);
+      box-shadow: 0 -4px 20px rgba(201, 149, 61, 0.1);
+    }
+
+    /* Enhanced Floating Drawer for Elegant Theme */
+    body.template-elegant:fullscreen .presentation-footer,
+    body.template-elegant:-webkit-full-screen .presentation-footer,
+    body.template-elegant:-moz-full-screen .presentation-footer {
+      background: linear-gradient(135deg, rgba(253, 252, 251, 0.95) 0%, rgba(247, 245, 243, 0.92) 100%);
+      backdrop-filter: blur(30px);
+      border: 3px solid var(--border-color);
+      border-bottom: none;
+      border-radius: 30px 30px 0 0;
+      box-shadow: 
+        0 -15px 50px rgba(201, 149, 61, 0.15),
+        0 -8px 30px var(--shadow-color),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Elegant drawer shine effect */
+    body.template-elegant:fullscreen .presentation-footer::after,
+    body.template-elegant:-webkit-full-screen .presentation-footer::after,
+    body.template-elegant:-moz-full-screen .presentation-footer::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(201, 149, 61, 0.1), transparent);
+      animation: drawer-shine 4s ease-in-out infinite;
+    }
+
+    @keyframes drawer-shine {
+      0% { left: -100%; }
+      50% { left: 100%; }
+      100% { left: 100%; }
+    }
+
+    body.template-elegant:fullscreen .presentation-footer:hover,
+    body.template-elegant:-webkit-full-screen .presentation-footer:hover,
+    body.template-elegant:-moz-full-screen .presentation-footer:hover {
+      box-shadow: 
+        0 -20px 60px rgba(201, 149, 61, 0.2),
+        0 -10px 40px var(--shadow-color),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+    
+    body.template-elegant .control-button {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(253, 252, 251, 0.9) 100%);
+      border: 2px solid var(--border-color);
+      color: var(--accent-color);
+      box-shadow: 0 4px 15px rgba(201, 149, 61, 0.1);
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    body.template-elegant .control-button:hover {
+      background: linear-gradient(135deg, var(--accent-color) 0%, #d4a853 100%);
+      color: white;
+      border-color: var(--accent-color);
+      box-shadow: 0 6px 25px rgba(201, 149, 61, 0.2);
+      transform: translateY(-2px);
     }
 
     /* Apply template variables to existing styles */
@@ -527,6 +807,107 @@
       justify-content: center;
       gap: 20px;
       border-top: 1px solid var(--border-color);
+      position: relative;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Floating Drawer Footer for Fullscreen */
+    body:fullscreen .presentation-footer,
+    body:-webkit-full-screen .presentation-footer,
+    body:-moz-full-screen .presentation-footer {
+      position: fixed;
+      bottom: -80px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      min-width: 600px;
+      max-width: 80vw;
+      background: var(--bg-secondary);
+      backdrop-filter: blur(25px);
+      border: 2px solid var(--border-color);
+      border-radius: 25px 25px 0 0;
+      box-shadow: 
+        0 -10px 40px var(--shadow-color),
+        0 -5px 20px rgba(0, 0, 0, 0.1);
+      z-index: 2000;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0.9;
+    }
+
+    /* Hover trigger area */
+    body:fullscreen .presentation-footer::before,
+    body:-webkit-full-screen .presentation-footer::before,
+    body:-moz-full-screen .presentation-footer::before {
+      content: '';
+      position: absolute;
+      bottom: -20px;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background: transparent;
+      z-index: 2001;
+    }
+
+    /* Show drawer on hover */
+    body:fullscreen .presentation-footer:hover,
+    body:-webkit-full-screen .presentation-footer:hover,
+    body:-moz-full-screen .presentation-footer:hover {
+      bottom: 0;
+      opacity: 1;
+      box-shadow: 
+        0 -15px 50px var(--shadow-color),
+        0 -8px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Hover area at bottom of screen */
+    body:fullscreen .footer-hover-trigger,
+    body:-webkit-full-screen .footer-hover-trigger,
+    body:-moz-full-screen .footer-hover-trigger {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40px;
+      background: transparent;
+      z-index: 1999;
+      pointer-events: auto;
+    }
+
+    /* Subtle bottom indicator in fullscreen */
+    body:fullscreen .footer-hover-trigger::before,
+    body:-webkit-full-screen .footer-hover-trigger::before,
+    body:-moz-full-screen .footer-hover-trigger::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+      opacity: 0.3;
+      border-radius: 2px 2px 0 0;
+      animation: pulse-indicator 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-indicator {
+      0%, 100% { opacity: 0.3; width: 60px; }
+      50% { opacity: 0.7; width: 100px; }
+    }
+
+    /* Hide indicator when footer is shown */
+    body:fullscreen .presentation-footer:hover ~ .footer-hover-trigger::before,
+    body:-webkit-full-screen .presentation-footer:hover ~ .footer-hover-trigger::before,
+    body:-moz-full-screen .presentation-footer:hover ~ .footer-hover-trigger::before {
+      opacity: 0;
+    }
+
+    /* Show drawer when hovering the trigger area */
+    body:fullscreen .footer-hover-trigger:hover + .presentation-container .presentation-footer,
+    body:-webkit-full-screen .footer-hover-trigger:hover + .presentation-container .presentation-footer,
+    body:-moz-full-screen .footer-hover-trigger:hover + .presentation-container .presentation-footer {
+      bottom: 0;
+      opacity: 1;
     }
 
     .control-button {
@@ -621,6 +1002,11 @@
 
     .template-preview.minimal {
       background: #ffffff;
+    }
+
+    .template-preview.elegant {
+      background: linear-gradient(135deg, #fdfcfb 0%, #f0eee9 100%);
+      border: 1px solid #c9953d;
     }
 
     /* Empty State */
@@ -831,6 +1217,9 @@
     </button>
   <% end %>
 
+  <!-- Footer Hover Trigger for Fullscreen -->
+  <div class="footer-hover-trigger" id="footerHoverTrigger"></div>
+
   <div class="presentation-container">
     <!-- Header -->
     <div class="presentation-header">
@@ -937,6 +1326,10 @@
             <div class="template-preview minimal"></div>
             <span>Minimal</span>
           </div>
+          <div class="template-option" data-template="template-elegant">
+            <div class="template-preview elegant"></div>
+            <span>Elegant</span>
+          </div>
         </div>
       </div>
       
@@ -1011,6 +1404,91 @@
       
       // Store toggleOverview function globally for keyboard events
       window.toggleOverview = toggleOverview;
+      
+      // Floating Footer Drawer functionality
+      const footerHoverTrigger = document.getElementById('footerHoverTrigger');
+      const presentationFooter = document.querySelector('.presentation-footer');
+      let footerTimeout;
+      
+      function showFooterDrawer() {
+        if (presentationFooter && document.fullscreenElement) {
+          presentationFooter.style.bottom = '0';
+          presentationFooter.style.opacity = '1';
+        }
+      }
+      
+      function hideFooterDrawer() {
+        if (presentationFooter && document.fullscreenElement) {
+          footerTimeout = setTimeout(() => {
+            presentationFooter.style.bottom = '-80px';
+            presentationFooter.style.opacity = '0.9';
+          }, 1000); // Hide after 1 second of no interaction
+        }
+      }
+      
+      function cancelHideFooter() {
+        if (footerTimeout) {
+          clearTimeout(footerTimeout);
+          footerTimeout = null;
+        }
+      }
+      
+      // Mouse movement at bottom of screen
+      let mouseY = 0;
+      document.addEventListener('mousemove', function(e) {
+        mouseY = e.clientY;
+        if (document.fullscreenElement && mouseY > window.innerHeight - 60) {
+          cancelHideFooter();
+          showFooterDrawer();
+        } else if (document.fullscreenElement && mouseY < window.innerHeight - 150) {
+          hideFooterDrawer();
+        }
+      });
+      
+      // Footer hover events
+      if (presentationFooter) {
+        presentationFooter.addEventListener('mouseenter', function() {
+          if (document.fullscreenElement) {
+            cancelHideFooter();
+            showFooterDrawer();
+          }
+        });
+        
+        presentationFooter.addEventListener('mouseleave', function() {
+          if (document.fullscreenElement && mouseY < window.innerHeight - 100) {
+            hideFooterDrawer();
+          }
+        });
+      }
+      
+      // Fullscreen change events
+      document.addEventListener('fullscreenchange', function() {
+        if (document.fullscreenElement) {
+          // Entering fullscreen - hide footer initially
+          setTimeout(() => {
+            if (presentationFooter) {
+              presentationFooter.style.bottom = '-80px';
+              presentationFooter.style.opacity = '0.9';
+            }
+          }, 500);
+        } else {
+          // Exiting fullscreen - reset footer
+          cancelHideFooter();
+          if (presentationFooter) {
+            presentationFooter.style.bottom = '';
+            presentationFooter.style.opacity = '';
+          }
+        }
+      });
+      
+      // Similar events for webkit and moz
+      document.addEventListener('webkitfullscreenchange', function() {
+        document.dispatchEvent(new Event('fullscreenchange'));
+      });
+      
+      document.addEventListener('mozfullscreenchange', function() {
+        document.dispatchEvent(new Event('fullscreenchange'));
+      });
       
       // Template Switching functionality
       const templateButton = document.getElementById('templateButton');
