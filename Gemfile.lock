@@ -452,9 +452,6 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kamal
-  net-imap
-  net-pop
-  net-smtp
   pg (~> 1.1)
   propshaft
   puma (>= 5.0)
@@ -471,9 +468,6 @@ DEPENDENCIES
   turbo-rails
   tzinfo-data
   web-console
-
-RUBY VERSION
-   ruby 3.3.3p89
 
 BUNDLED WITH
    2.6.9
