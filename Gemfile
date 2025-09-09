@@ -1,5 +1,7 @@
 source "https://rubygems.org"
 
+ruby "3.3.3"
+
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.0"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
@@ -23,6 +25,11 @@ gem "jbuilder"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
+
+# Ruby 3.3 requires these to be explicit since they were extracted from stdlib
+gem "net-pop", require: false
+gem "net-smtp", require: false  
+gem "net-imap", require: false
 
 
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
