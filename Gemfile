@@ -24,6 +24,11 @@ gem "jbuilder"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
+# Required for Ruby 3.3+ compatibility
+gem "net-pop", "~> 0.1.2"
+gem "net-smtp", "~> 0.5.0"
+gem "net-imap", "~> 0.4.0"
+
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cache"
 gem "solid_queue"
