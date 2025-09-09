@@ -52,12 +52,18 @@ class Instructor::AssignmentQuestionsController < ApplicationController
       respond_to do |format|
         format.html { redirect_to instructor_course_lesson_assignment_path(@course, @lesson, @assignment),
                      notice: "Question updated successfully!" }
-        format.turbo_stream { render :update }
+        format.turbo_stream { 
+          flash.now[:notice] = "Question updated successfully!"
+          render :update 
+        }
       end
     else
       # Set up variables needed for the edit template
       setup_allowed_question_types
-      render :edit, status: :unprocessable_entity
+      respond_to do |format|
+        format.html { render :edit, status: :unprocessable_entity }
+        format.turbo_stream { render :edit, status: :unprocessable_entity }
+      end
     end
   end
 

@@ -1,3 +1,4 @@
+<!-- Update questions container if it exists (on assignment show page) -->
 <%= turbo_stream.update "questions-container" do %>
   <% @assignment.assignment_questions.ordered.each_with_index do |question, index| %>
     <div class="question-item mb-4 p-3 border rounded <%= 'recently-updated' if question.id == @question.id %>">
@@ -62,6 +63,18 @@
   <% end %>
 <% end %>
 
+<!-- Show success message on edit page -->
+<%= turbo_stream.prepend "main" do %>
+  <div class="alert alert-success alert-dismissible fade show position-fixed" 
+       style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" 
+       id="success-notification">
+    <i class="fas fa-check-circle"></i>
+    <strong>Success!</strong> Question updated successfully!
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<!-- Also try to update flash messages container if it exists (on assignment show page) -->
 <%= turbo_stream.prepend "flash-messages" do %>
   <div class="alert alert-success alert-dismissible fade show" role="alert">
     <i class="fas fa-check-circle"></i>
@@ -71,8 +84,9 @@
 <% end %>
 
 <script>
-  // Add animation to updated question
+  // Handle success notification
   setTimeout(() => {
+    // Add animation to updated question (if on assignment show page)
     const updatedQuestion = document.querySelector('.recently-updated');
     if (updatedQuestion) {
       updatedQuestion.style.border = '2px solid #007bff';
@@ -86,6 +100,22 @@
         updatedQuestion.style.backgroundColor = 'transparent';
         updatedQuestion.classList.remove('recently-updated');
       }, 3000);
+    }
+    
+    // Handle success notification on edit page
+    const notification = document.getElementById('success-notification');
+    if (notification) {
+      // Auto-hide notification after 5 seconds
+      setTimeout(() => {
+        notification.remove();
+      }, 5000);
+      
+      // Add option to go back to assignment
+      const backButton = document.createElement('a');
+      backButton.href = '<%= instructor_course_lesson_assignment_path(@course, @lesson, @assignment) %>';
+      backButton.className = 'btn btn-sm btn-outline-success mt-2 d-block text-center';
+      backButton.innerHTML = '<i class="fas fa-arrow-left"></i> Back to Assignment';
+      notification.appendChild(backButton);
     }
   }, 100);
 </script>

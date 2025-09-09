@@ -1,7 +1,5 @@
 source "https://rubygems.org"
 
-ruby "3.3.3"
-
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.0"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
@@ -26,14 +24,6 @@ gem "jbuilder"
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 
-# Ruby 3.3+ requires these network gems to be explicit
-gem "net-protocol"
-gem "net-pop"
-gem "net-smtp"  
-gem "net-imap"
-
-
-
 # Use the database-backed adapters for Rails.cache, Active Job, and Action Cable
 gem "solid_cache"
 gem "solid_queue"
@@ -51,7 +41,8 @@ gem "thruster", require: false
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 # gem "image_processing", "~> 1.2"
 
-gem "claude-on-rails"
+gem "claude_swarm", "0.1.20"
+gem "claude-on-rails", "0.2.0"
 gem "rubyXL", "~> 3.4"
 
 group :development, :test do

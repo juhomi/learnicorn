@@ -29,7 +29,7 @@
         <%= form_with model: [@course, @lesson, @assignment, @question], 
                       url: instructor_course_lesson_assignment_assignment_question_path(@course, @lesson, @assignment, @question), 
                       method: :patch,
-                      local: true do |form| %>
+                      local: false do |form| %>
           
           <% if @question.errors.any? %>
             <div class="alert alert-danger alert-dismissible fade show">
@@ -83,7 +83,7 @@
                       <span class="input-group-text"><%= ('A'.ord + i).chr %></span>
                       <input type="text" name="assignment_question[choices][]" 
                              class="form-control" 
-                             value="<%= existing_choices[i]&.gsub(/^[A-D]\)\s*/, '') %>"
+                             value="<%= existing_choices[i]&.gsub(/^[A-Z]\.\s*/, '') %>"
                              placeholder="Enter choice <%= ('A'.ord + i).chr %>"
                              <%= 'required' if i < 2 %>>
                     </div>
@@ -147,7 +147,10 @@
                           confirm: "Are you sure you want to delete this question?",
                           class: "btn btn-outline-danger me-2" %>
               <%= form.submit "Update Question", class: "btn btn-primary",
-                              data: { disable_with: "<i class='fas fa-spinner fa-spin'></i> Updating..." } %>
+                              data: { 
+                                disable_with: "<i class='fas fa-spinner fa-spin'></i> Updating...",
+                                turbo_confirm: false
+                              } %>
             </div>
           </div>
         <% end %>
@@ -209,18 +212,61 @@ document.addEventListener('DOMContentLoaded', function() {
   const correctRadios = document.querySelectorAll('input[name="correct_choice"]');
   const form = document.querySelector('form');
   
-  if (correctRadios.length > 0) {
+  if (correctRadios.length > 0 && form) {
     // Add hidden field for correct answer
-    const correctAnswerField = document.createElement('input');
-    correctAnswerField.type = 'hidden';
-    correctAnswerField.name = 'assignment_question[correct_answer]';
+    let correctAnswerField = form.querySelector('input[name="assignment_question[correct_answer]"]');
+    if (!correctAnswerField) {
+      correctAnswerField = document.createElement('input');
+      correctAnswerField.type = 'hidden';
+      correctAnswerField.name = 'assignment_question[correct_answer]';
+      form.appendChild(correctAnswerField);
+    }
+    
+    // Set initial value from current question
     correctAnswerField.value = '<%= @question.correct_answer %>';
-    form.appendChild(correctAnswerField);
     
     correctRadios.forEach((radio, index) => {
       radio.addEventListener('change', function() {
-        correctAnswerField.value = index.toString();
+        if (this.checked) {
+          correctAnswerField.value = index.toString();
+          console.log('Updated correct answer to:', index);
+        }
       });
+    });
+    
+    // Set initial value based on checked radio button
+    const checkedRadio = document.querySelector('input[name="correct_choice"]:checked');
+    if (checkedRadio) {
+      correctAnswerField.value = checkedRadio.value;
+    }
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+      const questionText = form.querySelector('[name="assignment_question[question_text]"]');
+      const choices = form.querySelectorAll('[name="assignment_question[choices][]"]');
+      
+      if (!questionText.value.trim()) {
+        e.preventDefault();
+        alert('Please enter a question.');
+        questionText.focus();
+        return;
+      }
+      
+      // Check if we have at least 2 filled choices for multiple choice
+      const filledChoices = Array.from(choices).filter(choice => choice.value.trim());
+      if (filledChoices.length < 2) {
+        e.preventDefault();
+        alert('Please provide at least 2 answer choices.');
+        choices[0].focus();
+        return;
+      }
+      
+      // Check if a correct answer is selected
+      if (!correctAnswerField.value) {
+        e.preventDefault();
+        alert('Please select the correct answer.');
+        return;
+      }
     });
   }
 });

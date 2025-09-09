@@ -1,0 +1,28 @@
+<!-- Show error notification -->
+<%= turbo_stream.prepend "main" do %>
+  <div class="alert alert-danger alert-dismissible fade show position-fixed" 
+       style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;" 
+       id="error-notification">
+    <i class="fas fa-exclamation-triangle"></i>
+    <strong>Error!</strong> Please fix the following issues:
+    <ul class="mb-0 mt-1">
+      <% @question.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<script>
+  // Handle error notification
+  setTimeout(() => {
+    const notification = document.getElementById('error-notification');
+    if (notification) {
+      // Auto-hide notification after 8 seconds
+      setTimeout(() => {
+        notification.remove();
+      }, 8000);
+    }
+  }, 100);
+</script>

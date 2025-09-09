@@ -67,7 +67,11 @@
           <div class="mb-3">
             <%= form.label :content, "Text Content", class: "form-label form-label-sm" %>
             <%= form.text_area :content, rows: 5, class: "form-control", 
-                               placeholder: "Enter your text content. You can use basic HTML tags for formatting." %>
+                               placeholder: "Enter your text content. You can use basic HTML tags for formatting.",
+                               disabled: !@content_block.text?,
+                               data: { 
+                                 content_block_form_target: "textContent" 
+                               } %>
             <div class="form-text-sm"><i class="fas fa-code"></i> HTML formatting supported</div>
           </div>
         </div>
@@ -78,14 +82,24 @@
               <div class="mb-3">
                 <%= form.label :file_url, "Image URL", class: "form-label form-label-sm" %>
                 <%= form.url_field :file_url, class: "form-control", 
-                                   placeholder: "https://example.com/image.jpg" %>
+                                   placeholder: "https://example.com/image.jpg",
+                                   required: false,
+                                   disabled: !@content_block.image?,
+                                   data: { 
+                                     content_block_form_target: "imageFileUrl" 
+                                   } %>
+                <div class="form-text-sm"><i class="fas fa-link"></i> Enter a valid URL (e.g., https://example.com/image.jpg)</div>
               </div>
             </div>
             <div class="col-md-4">
               <div class="mb-3">
                 <%= form.label :alt_text, "Alt Text", class: "form-label form-label-sm" %>
                 <%= form.text_field :alt_text, class: "form-control", 
-                                    placeholder: "Image description" %>
+                                    placeholder: "Image description",
+                                    disabled: !@content_block.image?,
+                                    data: { 
+                                      content_block_form_target: "imageAltText" 
+                                    } %>
                 <div class="form-text-sm"><i class="fas fa-universal-access"></i> For accessibility</div>
               </div>
             </div>
@@ -96,7 +110,11 @@
           <div class="mb-3">
             <%= form.label :file_url, "Video URL", class: "form-label form-label-sm" %>
             <%= form.url_field :file_url, class: "form-control", 
-                               placeholder: "YouTube, Vimeo, or direct video URL" %>
+                               placeholder: "YouTube, Vimeo, or direct video URL",
+                               disabled: !@content_block.video?,
+                               data: { 
+                                 content_block_form_target: "videoFileUrl" 
+                               } %>
             <div class="form-text-sm"><i class="fas fa-play-circle"></i> YouTube, Vimeo, and direct video files supported</div>
           </div>
         </div>
@@ -124,10 +142,12 @@
       // Add active class to selected option
       element.classList.add('active');
       
-      // Update hidden field and trigger change event
+      // Update hidden field and trigger change event only if value changed
       const hiddenField = document.querySelector('#content_block_block_type');
-      hiddenField.value = value;
-      hiddenField.dispatchEvent(new Event('change'));
+      if (hiddenField.value !== value) {
+        hiddenField.value = value;
+        hiddenField.dispatchEvent(new Event('change'));
+      }
     }
     
     function clearContentBlockForm() {
@@ -143,5 +163,17 @@
         document.getElementById('content_block_form').innerHTML = '';
       });
     }
+    
+    // Ensure fields are properly displayed on page load
+    document.addEventListener('DOMContentLoaded', function() {
+      const formContainer = document.querySelector('[data-controller="content-block-form"]');
+      if (formContainer) {
+        // Trigger the Stimulus controller to show the correct fields
+        const hiddenField = document.querySelector('#content_block_block_type');
+        if (hiddenField) {
+          hiddenField.dispatchEvent(new Event('change'));
+        }
+      }
+    });
   </script>
 <% end %>
